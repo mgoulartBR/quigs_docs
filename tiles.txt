@@ -1,0 +1,77 @@
+// Quigs 1.01 Application for Symbos
+// Name:
+// Coder:
+// Date / Version:
+
+// Declare variables
+
+Var Woman:Sheet
+Var f:Int
+Var g:Int
+Var playing:Int=0
+Var ImgIds(16):Int
+Var ImgTile(16):Int
+// End declares
+
+Function Main:Void()
+	// Main loop
+	
+	If playing Then
+		g=0
+		For f=Image1.Display To Image16.Display
+			ImgTile(g)=(ImgTile(g)+1)Mod  16
+			Ctrl.Image.Tile.Set ImgIds(g),Woman,ImgTile(g)
+			Ctrl.Refresh ImgIds(g)
+			g=g+1
+		Next
+	EndIf
+	
+EndF
+
+Function Form1.Open.Event:Void()
+	
+	//Lets load in the Sheet - Tiles
+	If Screen.Colour = 16 Then
+		//Its a 16 colour images so xxx.qs2
+		Woman.Load(App.Path+"bekin.qs2")
+	Else
+		//Its a 4 colour image so xxx.qs1
+		Woman.Load(App.Path+"bekin.qs1")
+	EndIf
+	g=0
+	//Image1.Display & Image16.Display are the continuous image positions on the form 1..16
+	For f=Image1.Display To Image16.Display
+		ImgIds(g)=Ctrl.GetID(Form1,f)
+		ImgTile(g)=g
+		;Set The image to be of SheetRef and Tile number
+		Ctrl.Image.Tile.Set ImgIds(g),Woman,g
+		Ctrl.Refresh ImgIds(g)
+		g=g+1
+	Next
+EndF
+Function Button1.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	playing=1
+EndF
+Function Button2.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	playing=0
+EndF
+Function Button3.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	Woman.Free
+	Form1.Close
+EndF
+

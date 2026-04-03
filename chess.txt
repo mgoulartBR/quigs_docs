@@ -1,0 +1,1613 @@
+// Quigs 1.01 Application for Symbos
+// Name:
+// Coder:
+// Date / Version:
+
+// Declare variables
+
+Var bpawn:Int =1				//Black pawn 1
+Var bcastle:Int =2			//Black Castle 2
+Var bknight:Int = 3			//Black Knight 3
+Var bbishop:Int =4			//Black Bishop 4
+Var bqueen:Int=5				//Black Queen 5
+Var bking:Int=6				//Black King 6
+Var wpawn:Int=8				//White Pawn 8
+Var wcastle:Int=9			//White Castle 9
+Var wknight:Int=10			//White Knight 10
+Var wbishop:Int=11			//White Bishop 11
+Var wqueen:Int=12			//White Queen 12
+Var wking:Int=13				//White King 13
+
+Var gs:String
+
+Var OldDrw(128):Byte = [255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255]
+Var Selected(128):Byte		//Chess board 8x8 Square can be set to Selected fo purpose of highlighting Square
+Var Selected2(128):Byte
+//Var IBoard(128):Byte = [255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+//255,255,255,255,8,8,0,0,13,0,8,8,255,255,255,255,
+//255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+//255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+//255,255,255,255,0,5,0,0,0,0,0,0,255,255,255,255,
+//255,255,255,255,0,0,0,0,0,0,5,0,255,255,255,255,
+//255,255,255,255,0,0,0,0,6,0,0,0,255,255,255,255,
+//255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255]
+
+Var IBoard(128):Byte = [255,255,255,255,9,10,11,12,13,11,10,9,255,255,255,255,
+255,255,255,255,8,8,8,8,8,8,8,8,255,255,255,255,
+255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+255,255,255,255,0,0,0,0,0,0,0,0,255,255,255,255,
+255,255,255,255,1,1,1,1,1,1,1,1,255,255,255,255,
+255,255,255,255,2,3,4,5,6,4,3,2,255,255,255,255]
+
+Var PBoard(128):Byte					//Playboard 8x8 Holds Black & White Piece Info for each square
+Var OBoard(128):Byte
+
+Var ScrUpgradePiece(128):Byte
+Var ScrUpgradePos(128):Byte
+Var ScrUpgradeValue(128):Byte
+Var HuntKingCount:Int
+
+Var ScrPiece(14,128):Int= [5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,-20,-20,-20,-20,-20,-20,-20,-10,5,5,5,5,5,5,5,5,-15,-15,-15,-15,-15,-15,-15,-15,5,5,5,5,
+5,5,5,5,-11,-11,-12,-13,-13,-12,-11,-11,5,5,5,5,5,5,5,5,-10,-10,-11,-12,-12,-11,-10,-10,5,5,5,5,
+5,5,5,5,-10,-10,-10,-12,-12,-10,-10,-10,5,5,5,5,5,5,5,5,-11,- 9,- 9,-10,-10,- 9,- 9,-11,5,5,5,5,
+5,5,5,5,-11,-11,-11,- 8,- 8,-11,-11,-11,5,5,5,5,5,5,5,5,-10,-10,-10,-10,-10,-10,-10,-10,5,5,5,5,
+5,5,5,5,-50,-50,-50,-50,-50,-50,-50,-50,5,5,5,5,
+5,5,5,5,-51,-52,-52,-52,-52,-52,-52,-51,5,5,5,5,
+5,5,5,5,-49,-50,-50,-50,-50,-50,-50,-49,5,5,5,5,
+5,5,5,5,-49,-50,-50,-50,-50,-50,-50,-49,5,5,5,5,
+5,5,5,5,-49,-50,-50,-50,-50,-50,-50,-49,5,5,5,5,
+5,5,5,5,-49,-50,-50,-50,-50,-50,-50,-49,5,5,5,5,
+5,5,5,5,-49,-50,-50,-50,-50,-50,-50,-49,5,5,5,5,
+5,5,5,5,-50,-50,-50,-51,-51,-50,-50,-50,5,5,5,5,
+5,5,5,5,-25,-26,-27,-27,-27,-27,-26,-25,5,5,5,5,5,5,5,5,-26,-28,-30,-31,-30,-31,-28,-26,5,5,5,5,
+5,5,5,5,-27,-30,-31,-32,-32,-31,-30,-27,5,5,5,5,5,5,5,5,-27,-31,-32,-33,-33,-32,-31,-27,5,5,5,5,
+5,5,5,5,-27,-30,-32,-33,-33,-32,-30,-30,5,5,5,5,5,5,5,5,-27,-31,-31,-32,-32,-31,-31,-30,5,5,5,5,
+5,5,5,5,-26,-28,-30,-30,-30,-30,-28,-30,5,5,5,5,5,5,5,5,-25,-26,-27,-27,-27,-27,-26,-25,5,5,5,5,
+5,5,5,5,-28,-29,-29,-29,-29,-29,-29,-28,5,5,5,5,
+5,5,5,5,-29,-30,-30,-30,-30,-30,-30,-29,5,5,5,5,
+5,5,5,5,-29,-30,-31,-31,-31,-31,-30,-29,5,5,5,5,
+5,5,5,5,-29,-31,-31,-31,-31,-31,-31,-29,5,5,5,5,
+5,5,5,5,-29,-30,-31,-31,-31,-31,-30,-29,5,5,5,5,
+5,5,5,5,-29,-31,-30,-30,-30,-30,-31,-29,5,5,5,5,
+5,5,5,5,-29,-30,-30,-30,-30,-30,-30,-29,5,5,5,5,
+5,5,5,5,-28,-29,-29,-29,-29,-29,-29,-28,5,5,5,5,
+5,5,5,5,-88,-89,-89,-90,-90,-89,-89,-88,5,5,5,5,5,5,5,5,-89,-90,-90,-90,-90,-90,-90,-89,5,5,5,5,
+5,5,5,5,-89,-90,-91,-91,-91,-91,-91,-89,5,5,5,5,5,5,5,5,-90,-90,-91,-91,-91,-91,-90,-89,5,5,5,5,
+5,5,5,5,-90,-90,-91,-91,-91,-91,-90,-89,5,5,5,5,5,5,5,5,-89,-90,-91,-91,-91,-91,-90,-89,5,5,5,5,
+5,5,5,5,-89,-90,-90,-90,-90,-90,-90,-89,5,5,5,5,5,5,5,5,-88,-89,-89,-90,-90,-89,-89,-88,5,5,5,5,
+5,5,5,5,-897,-896,-896,-895,-895,-896,-896,-897,5,5,5,5,
+5,5,5,5,-897,-896,-896,-895,-895,-896,-896,-897,5,5,5,5,
+5,5,5,5,-897,-896,-896,-895,-895,-896,-896,-897,5,5,5,5,
+5,5,5,5,-897,-896,-896,-895,-895,-896,-896,-897,5,5,5,5,
+5,5,5,5,-898,-897,-897,-896,-896,-897,-897,-898,5,5,5,5,
+5,5,5,5,-899,-898,-898,-898,-898,-898,-898,-899,5,5,5,5,
+5,5,5,5,-902,-902,-900,-900,-900,-900,-902,-902,5,5,5,5,
+5,5,5,5,-902,-903,-901,-900,-900,-901,-903,-902,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,
+5,5,5,5,10,10,10,10,10,10,10,10,5,5,5,5,5,5,5,5,11,11,11, 8, 8,11,11,11,5,5,5,5,
+5,5,5,5,11, 9, 9,10,10, 9, 9,11,5,5,5,5,5,5,5,5,10,10,10,12,12,10,10,10,5,5,5,5,
+5,5,5,5,10,10,11,12,12,11,10,10,5,5,5,5,5,5,5,5,11,11,12,13,13,12,11,11,5,5,5,5,
+5,5,5,5,15,15,15,15,15,15,15,15,5,5,5,5,5,5,5,5,10,10,10,10,10,10,10,10,5,5,5,5,
+5,5,5,5,50,50,50,51,51,50,50,50,5,5,5,5,
+5,5,5,5,49,50,50,50,50,50,50,49,5,5,5,5,
+5,5,5,5,49,50,50,50,50,50,50,49,5,5,5,5,
+5,5,5,5,49,50,50,50,50,50,50,49,5,5,5,5,
+5,5,5,5,49,50,50,50,50,50,50,49,5,5,5,5,
+5,5,5,5,49,50,50,50,50,50,50,49,5,5,5,5,
+5,5,5,5,51,52,52,52,52,52,52,51,5,5,5,5,
+5,5,5,5,50,50,50,50,50,50,50,50,5,5,5,5,
+5,5,5,5,25,26,27,27,27,27,26,25,5,5,5,5,5,5,5,5,26,28,30,31,30,31,28,26,5,5,5,5,
+5,5,5,5,27,30,31,32,32,31,30,27,5,5,5,5,5,5,5,5,27,31,32,33,33,32,31,27,5,5,5,5,
+5,5,5,5,27,30,32,33,33,32,30,30,5,5,5,5,5,5,5,5,27,31,31,32,32,31,31,30,5,5,5,5,
+5,5,5,5,26,28,30,30,30,30,28,30,5,5,5,5,5,5,5,5,25,26,27,27,27,27,26,25,5,5,5,5,
+5,5,5,5,28,29,29,29,29,29,29,28,5,5,5,5,
+5,5,5,5,29,30,30,30,30,30,30,29,5,5,5,5,
+5,5,5,5,29,31,30,30,30,30,31,29,5,5,5,5,
+5,5,5,5,29,30,31,31,31,31,30,29,5,5,5,5,
+5,5,5,5,29,31,31,31,31,31,31,29,5,5,5,5,
+5,5,5,5,29,30,31,31,31,31,30,29,5,5,5,5,
+5,5,5,5,29,30,30,30,30,30,30,29,5,5,5,5,
+5,5,5,5,28,29,29,29,29,29,29,28,5,5,5,5,
+5,5,5,5,88,89,89,90,90,89,89,88,5,5,5,5,5,5,5,5,89,90,90,90,90,90,90,89,5,5,5,5,
+5,5,5,5,89,90,91,91,91,91,90,89,5,5,5,5,5,5,5,5,90,90,91,91,91,91,90,89,5,5,5,5,
+5,5,5,5,90,90,91,91,91,91,90,89,5,5,5,5,5,5,5,5,89,91,91,91,91,91,90,89,5,5,5,5,
+5,5,5,5,89,90,90,90,90,90,90,89,5,5,5,5,5,5,5,5,88,89,89,90,90,89,89,88,5,5,5,5,
+5,5,5,5,902,903,901,900,900,901,903,902,5,5,5,5,
+5,5,5,5,902,902,900,900,900,900,902,902,5,5,5,5,
+5,5,5,5,899,898,898,898,898,898,898,899,5,5,5,5,
+5,5,5,5,898,897,897,896,896,897,897,898,5,5,5,5,
+5,5,5,5,897,896,896,895,895,896,896,897,5,5,5,5,
+5,5,5,5,897,896,896,895,895,896,896,897,5,5,5,5,
+5,5,5,5,897,896,896,895,896,896,896,897,5,5,5,5,
+5,5,5,5,897,896,896,895,895,896,896,897,5,5,5,5]
+
+;These are 254 so I can INC H
+Var PType(254):Byte
+Var PFrom(254):Byte
+Var PToo(254):Byte
+Var PScore(254):Int
+Var PListPlace(16):Byte
+Var PListPiece(16):Byte
+Var PListCount:Int
+
+Var CalcMoves(128,8):Byte
+Var CalcScore(128):Int
+
+Var GameMode:Int=0 		//What game mode application is in 0-Menu 1-Playing
+Var WhiteCheck:Byte
+Var BlackCheck:Byte
+Var MoveMade:Int		//counter that counts down to help flash pieces after move is made
+
+Var pieces:Sheet
+Var logo:Sheet
+Var a:Int
+Var b:Int
+Var c:Int
+Var d:Int
+
+Var i2:Int
+Var j:Int
+Var k:Int
+Var k1:Int
+Var k2:Int
+Var ty:Int
+Var x:Int
+Var y:Int
+Var Count:Int
+Var CountLow:Int
+Var state:Int=0
+Var a1:Int
+Var a2:Int
+Var a3:Int
+Var MovePiece:Int=-1
+Var Score:Int
+Var CompCalc:Int=0
+Var High1:Int=0
+Var Low1:Int=0
+Var High2:Int=0
+Var Low2:Int=0
+Var ReqMiniMax:Int
+
+Var aType:Int
+Var afrom:Int
+Var aToo:Int
+
+Var n:Int
+Var n1:Int
+Var n2:Int
+Var n3:Int
+Var i9:Int
+
+Var depth_Score(24):Int
+Var depth_Place(24):Int
+Var GameState:Int=0
+
+Var c1:Int
+Var c2:Int
+Var c3:Int
+Var c4:Int
+Var c5:Int
+Var cack:Byte
+;Var WhiteBlack:Byte
+Var za:Int
+
+
+Var bx1:Int
+Var bx2:Int
+Var bx3:Int
+Var bx4:Int
+Var bx5:Int
+
+Var bx8:Int
+Var bx9:Int
+Var bx10:Int
+
+Var Lowest:Int=0					//Holds the Lowest Score during a Calc
+Var Highest:Int=0				//Holds the Highest Score during a Calc
+Var Peanut:Int
+
+Var Skill1:Int
+Var Skill2:Int
+Var Skill3:Int
+
+;Var StartCalcFrom:Int
+Var MoveChecked:Int
+;Var chuck:Int
+
+Var Turn:Byte					//Who's turn Black 0  or White 1
+Var Move:Int					//Number of Moves Black & White have taken
+
+Var bFrom:Int
+Var bToo:Int
+
+// End declares
+
+Function Main:Void()				//Main Chess Game Loop
+	// Main loop
+	
+	
+	
+	
+	If GameMode=1 Then
+		If MoveMade>0 Then
+			If MoveMade=70 Then
+				StoreSelected
+			EndIf
+			If MoveMade=60 Or MoveMade=40 Or MoveMade =20 Then
+				ClearSelected
+				DrawBoard
+			EndIf
+			If MoveMade=50 Or MoveMade=30 Or MoveMade=10 Then
+				ReStoreSelected
+				DrawBoard
+			EndIf
+			
+			MoveMade=MoveMade-1
+			If MoveMade=0 Then
+				ClearSelected
+				DrawBoard
+				Turn=(Turn+1) And 1
+				If Turn=0 Then
+					Label19.Text.RSet "White Move"
+					IncrementMoveDisplay
+				Else
+					Label19.Text.RSet "Black Move"
+				EndIf
+				If Turn=1 And PlayAsWhite.Selected.Get Then
+					HuntKing(1)
+					DrawBoard
+					CalcMove(0,Skill1,Skill2,Skill3)
+					RemoveScrBoard			;Removes Board Score from king hunt
+				EndIf
+				If Turn=0 And PlayAsBlack.Selected.Get Then
+					HuntKing(0)
+					DrawBoard
+					CalcMove(1,Skill1,Skill2,Skill3)
+					RemoveScrBoard			;Removes Board Scores from King Hunt
+				EndIf
+				Count=0
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function Form1.Open.Event:Void()			//Initialize Form and load in the Required Graphics
+	Skill1=1
+	Skill2=0
+	Skill3=0
+	PlayAsWhite.Selected.Set
+	ResetBoard
+	ShowSides(0)
+	
+	pieces.Load(App.Path+ "chessp1.qs1")
+	logo.Load(App.Path+"clogo.qs1")
+	Image65.Tile.Set logo,0
+	Image65.Refresh
+	
+	
+	
+	
+	DrawBoard
+	
+	
+	
+	
+	
+	
+	
+EndF
+
+Function ShowSides:Void(a)				//Shows the relevant right side panel for menu (0) or during game (1)
+	Var i:Int						//Loop variable
+	For i=0 To 29
+		Ctrl.Visible.Set Ctrl.GetID(Form1,PlayTurn1.Display+i),a
+	Next
+	For i=0 To 3
+		Ctrl.Visible.Set Ctrl.GetID(Form1,SkillSlider.Display+i),Not(a)
+	Next
+	Box1.Refresh
+	
+	RefreshMoveDisplay
+	Ctrl.RefreshSequence SkillSlider,4
+EndF
+
+Function ResetBoard:Void()				//Reset the Game board, Turn & Move to Initial Settings
+	Var i:Int						//Loop Variable
+	For i=0 To 127
+		PBoard(i)=IBoard(i)
+	Next
+	For i=Label48.Display To Label24.Display Step -3
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i),""
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i+1),""
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i+2),""
+	Next
+	Turn=0:Move=1
+	PlayTurn1.Text.Set ""
+	PlayW1.Text.Set ""
+	PlayB1.Text.Set ""
+EndF
+Function UpdateMoveDisplay:Void(c1,c2,c4)			//Updates Moves Display with Piece movements per move/turn
+	;c1=Black 0/White 1
+	;c2=PToo number
+	;c4=PFrom
+	
+	c3=OBoard(c4)
+	gs=""
+	If c3=wqueen Or c3=bqueen Then
+		gs="Q"
+	EndIf
+	If c3=wking Or c3=bking Then
+		gs="K"
+	EndIf
+	If c3=wbishop Or c3=bbishop Then
+		gs="B"
+	EndIf
+	If c3=wcastle Or c3=bcastle Then
+		gs="R"
+	EndIf
+	If c3=wknight Or c3=bknight Then
+		gs="N"
+	EndIf
+	
+	c3=Shr4(c4)+1
+	gs=gs+Chr(((c4+4) And 7)+97)+Str(c3)
+	If OBoard(c2)>0 Then
+		gs=gs+"x"
+	Else
+		gs=gs+"-"
+	EndIf
+	c3=Shr4(c2)+1
+	gs=gs+Chr(((c2+4) And 7)+97)+Str(c3)
+	If c1=0 Then
+		If WhiteCheck=1 Then
+			gs=gs+"C"
+		EndIf
+		PlayB1.Text.Set gs
+	Else
+		If BlackCheck=1 Then
+			gs=gs+"C"
+		EndIf
+		PlayW1.Text.Set gs
+	EndIf
+EndF
+Function IncrementMoveDisplay:Void()		//Shifts move display up and increses the Move count
+	Var i:Int						//Loop variable
+	For i=Label48.Display To Label24.Display Step -3
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i),Ctrl.Label.Text.Get(Ctrl.GetID(Form1,i-3))
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i+1),Ctrl.Label.Text.Get(Ctrl.GetID(Form1,i-2))
+		Ctrl.Label.Text.Set Ctrl.GetID(Form1,i+2),Ctrl.Label.Text.Get(Ctrl.GetID(Form1,i-1))
+	Next
+	Move=Move+1
+	PlayTurn1.Text.Set Str(Move)
+	PlayW1.Text.Set "-"
+	PlayB1.Text.Set "-"
+EndF
+Function RefreshMoveDisplay:Void()
+	Ctrl.RefreshSequence PlayTurn1,14
+	Ctrl.RefreshSequence Label36,14
+EndF
+Function DrawBoard:Void()			//Redraws the Chessboard with Pieces
+	Var i:Int
+	k1=0
+	k2=4
+	n=0
+	n1=0
+	n2=0
+	
+	Var gh:Int=0
+	
+	For i=0 To 7
+		For i2=0 To 7
+			j=PBoard(k2)*4 + (k1 And 1)+2-Selected(k2)
+			If j>31 Then
+				j=j-4
+			EndIf
+			If j<>OldDrw(k2)Then
+				OldDrw(k2)=j
+				a=Ctrl.GetID(Form1,i2+(i*8)+Image1.Display)
+				
+				
+				
+				
+				Ctrl.Image.Tile.Set a,pieces,j
+				If n1=0 Then
+					n2=a
+					n1=1
+					n=0
+				EndIf
+				n=n+1
+				If  n>15 Then
+					
+					gh=gh+1
+					
+					
+					;					If gh=2 Then
+					;						a=n2
+					;						Asm
+					;						Di
+					;						.afj2	Jr	afj2
+					;						Ei
+					;						Quigs
+					;					EndIf
+					
+					Ctrl.RefreshSequence n2,n-1
+					n2=a
+					n=1
+				EndIf
+				;Ctrl.Refresh a
+			Else
+				If n1=1  Then
+					If n>1 Then
+						Ctrl.RefreshSequence n2,n
+						
+					Else
+						Ctrl.Refresh n2
+					EndIf
+					gh=gh+1
+					n1=0
+					n=0
+				EndIf
+			EndIf
+			k2=k2+1
+			k1=k1+1
+		Next
+		k1=k1-1
+		k2=k2+8
+	Next
+	
+	
+	
+	
+	
+	If n1=1  Then
+		If n>1 Then
+			Ctrl.RefreshSequence n2,n-1
+		Else
+			Ctrl.Refresh n2
+		EndIf
+		n1=0
+		n=0
+	EndIf
+EndF
+Function TotalBoard:Int()				//Totals the Pieces score value on each of the 8x8 squares for a Total Board Score
+	Var i:Int
+	j=0
+	k=4
+	For i=0 To 7
+		j=j+ScrPiece(PBoard(k),k)+ScrPiece(PBoard(k+1),k+1)+ScrPiece(PBoard(k+2),k+2)+ScrPiece(PBoard(k+3),k+3)+ScrPiece(PBoard(k+4),k+4)+ScrPiece(PBoard(k+5),k+5)+ScrPiece(PBoard(k+6),k+6)+ScrPiece(PBoard(k+7),k+7)
+		k=k+16
+	Next
+	Return j
+EndF
+Function SetWhiteBlack:Void(c1,c2)
+	If c1=0 Then
+		;Set to check for Black
+		Asm
+		Ld 		a,202
+		Quigs
+	Else
+		Asm
+		Ld 		a,194
+		Quigs
+	EndIf
+	Asm
+	Ld 		(PM_ChangeMe1),a
+	Ld 		(PM_ChangeMe2),a
+	Quigs
+	
+	If c2=0 Then
+		Asm
+		Ld 		hl,PM_Clear
+		Ld 		(PM_RedirectClear1+1),hl
+		Ld 		(PM_RedirectClear2+1),hl
+		Ld 		hl,PM_Oppo
+		Ld 		(PM_RedirectOppo1+1),hl
+		Ld 		(PM_RedirectOppo2+1),hl
+		Quigs
+	Else
+		If c1=0 Then
+			Asm
+			Ld 		hl,PM_Clear2ndPhaseBlack
+			Ld 		(PM_RedirectClear1+1),hl
+			Ld 		(PM_RedirectClear2+1),hl
+			Ld 		hl,PM_Oppo2ndPhaseBlack
+			Ld 		(PM_RedirectOppo1+1),hl
+			Ld 		(PM_RedirectOppo2+1),hl
+			Quigs
+		Else
+			Asm
+			Ld 		hl,PM_Clear2ndPhaseWhite
+			Ld 		(PM_RedirectClear1+1),hl
+			Ld 		(PM_RedirectClear2+1),hl
+			Ld 		hl,PM_Oppo2ndPhaseWhite
+			Ld 		(PM_RedirectOppo1+1),hl
+			Ld 		(PM_RedirectOppo2+1),hl
+			Quigs
+		EndIf
+	EndIf
+	
+EndF
+
+Function Board.Event:Void()				//Control what happens when User clicks on one of the squares on the board
+	;Click on a chess board square
+	Var i:Int						//Board Square clicked
+	
+	If Turn=Not(PlayAsWhite.Selected.Get) And GameMode=1 Then
+		i=Event.Control-Image1.Display
+		a=((i/8)*16)+(i And 7)+4
+		c4=0
+		If Selected(a)=0 Then
+			ClearSelected
+			If PlayAsWhite.Selected.Get Then
+				SetWhiteBlack(1,0) 		;WhiteBlack=1
+				DoAWhiteCheck
+			Else
+				SetWhiteBlack(0,0)		;WhiteBlack=0
+				DoABlackCheck
+			EndIf
+			If Count>0  Then
+				a=a-1
+				For i=0 To Count-1
+					Selected(PToo(i))=(Selected(PToo(i))+2)And 3
+				Next
+				MovePiece=a
+				Selected(a)=2
+			EndIf
+		Else
+			;So was highlit
+			If a<>MovePiece Then
+				
+				If MakeMove(1,a,MovePiece) Then
+					MoveMade=70
+				EndIf
+			EndIf
+			ClearSelected
+			MovePiece=0
+		EndIf
+		Count=0
+		DrawBoard
+		
+	EndIf
+	
+	
+EndF
+Function MakeMove:Int(aType,aToo,afrom)
+	
+	StoreBoard
+	If aType=1 Then
+		ClearSelected
+		PBoard(aToo)=PBoard(afrom)
+		PBoard(afrom)=0
+		Selected(aToo)=2
+		Selected(afrom)=2
+	EndIf
+	DrawBoard
+	//
+	If Turn=0 Then
+		;White Moved
+		If CheckOnWhite Then
+			bx1=MsgBox("That moves you into check","Please try again!","",1,1,1)
+			ReStoreBoard
+			Return 0
+		EndIf
+		If CheckOnBlack Then
+			BlackCheck=1
+		EndIf
+		UpdateMoveDisplay(1,aToo,afrom)
+	Else
+		;Black Moved
+		If CheckOnBlack Then
+			bx1=MsgBox("That moves you into check","Please try again!","",1,1,1)
+			ReStoreBoard
+			Return 0
+		EndIf
+		If CheckOnWhite Then
+			WhiteCheck=1
+		EndIf
+		UpdateMoveDisplay(0,aToo,afrom)
+	EndIf
+	RefreshMoveDisplay
+	
+	Return 1
+EndF
+Function CheckOnWhite:Int()
+	Var i:Int
+	WhiteCheck=0
+	Count=0
+	SetWhiteBlack(0,0)  	;WhiteBlack=1
+	MultiBlackCheck
+	For i=1 To Count-1
+		If PBoard(PToo(i))=wking Then
+			Return 1
+		EndIf
+	Next
+EndF
+Function CheckOnBlack:Int()
+	Var i:Int
+	BlackCheck=0
+	Count=0
+	SetWhiteBlack(1,0)  	;WhiteBlack=1
+	MultiWhiteCheck
+	For i=1 To Count-1
+		If PBoard(PToo(i))=bking Then
+			Return 1
+		EndIf
+	Next
+EndF
+Function StoreBoard:Void()
+	Var i:Int
+	//Store Board
+	For i=0 To 127
+		OBoard(i)=PBoard(i)
+	Next
+EndF
+Function ReStoreBoard:Void()
+	Var i:Int
+	//ReStore Board
+	For i=0 To 127
+		PBoard(i)=OBoard(i)
+	Next
+EndF
+Function ClearSelected:Void()
+	Var i:Int
+	For i=0 To 127
+		Selected(i)=0
+	Next
+EndF
+Function StoreSelected:Void()
+	Var i:Int
+	For i=0 To 127
+		Selected2(i)=Selected(i)
+	Next
+EndF
+Function ReStoreSelected:Void()
+	Var i:Int
+	For i=0 To 127
+		Selected(i)=Selected2(i)
+	Next
+EndF
+
+
+AFunction PMove_Clear:Int(b)
+	Asm
+	
+	Ld    		a,(Var_wrd_a)
+	Add		l
+	Jp		m,PM_Out
+	Ld           	c,a
+	Ld 		de,ar1_byt_PBoard+2
+	Ld 		l,a
+	Ld 		h,0
+	Add		hl,de
+	Ld 		a,(hl)
+	Cp 		0
+	.PM_RedirectClear2
+	Jp		z,PM_Clear
+	Jp		PM_Out
+	Quigs
+EndF
+
+AFunction PMove_Oppo:Int(b)
+	Asm
+	Ld    		a,(Var_wrd_a)
+	Add		l
+	Jp		m,PM_Out
+	Ld           	c,a
+	Ld 		de,ar1_byt_PBoard+2
+	Ld 		l,a
+	Ld 		h,0
+	Add		hl,de
+	Ld 		a,(hl)
+	Cp 		0
+	Jp		z,PM_Out
+	Jp		m,PM_Out
+	And		%1000
+	.PM_ChangeMe2
+	Jp		z,PM_Out
+	.PM_RedirectOppo2
+	Jp		PM_Oppo
+EndF
+
+
+AFunction PMove_Clear_Oppo:Int(b)		//Check if Chessboard square is Opposition or Clear set. Return 0 for anything but Clear
+	Asm
+	Ld    		a,(Var_wrd_a)
+	Add		l
+	Jp		m,PM_Out
+	Ld           	c,a
+	Ld 		de,ar1_byt_PBoard+2
+	Ld 		l,a
+	Ld 		h,0
+	Add		hl,de
+	Ld 		a,(hl)
+	Cp 		0
+	
+	.PM_RedirectClear1
+	Jp		z,PM_Clear
+	Jp		m,PM_Out
+	And		%1000
+	.PM_ChangeMe1
+	Jp		z,PM_Out
+	.PM_RedirectOppo1
+	Jp		PM_Oppo
+	
+	.PM_Oppo
+	Ld      	hl,(Var_wrd_count)
+	Ex 		de,hl
+	Ld		hl,ar1_byt_PType+2
+	Add 		hl,de
+	Ld             	a,1
+	Ld 		(hl),a
+	Inc		h
+	Ld             	a,(Var_wrd_a)
+	Ld 		(hl),a
+	Inc		h
+	Ld 		(hl),c
+	Inc 		de
+	Ld 		(Var_wrd_count),de
+	.PM_Out
+	Ld 		hl,0
+	ret
+	
+	.PM_Clear
+	Ld      	hl,(Var_wrd_count)
+	Ex 		de,hl
+	Ld		hl,ar1_byt_PType+2
+	Add 		hl,de
+	Ld             	a,1
+	Ld 		(hl),a
+	Inc		h
+	Ld             	a,(Var_wrd_a)
+	Ld 		(hl),a
+	Inc		h
+	Ld             	a,(Var_byt_cack)
+	Ld 		(hl),c
+	Inc 		de
+	Ld 		(Var_wrd_count),de
+	Ld 		hl,1
+	ret
+	
+	.PM_Oppo2ndPhaseWhite
+	call		PM_2ndPhaseWhite
+	Ld 		hl,0
+	ret
+	.PM_Clear2ndPhaseWhite
+	call		PM_2ndPhaseWhite
+	Ld 		hl,1
+	ret
+	.PM_Oppo2ndPhaseBlack
+	call		PM_2ndPhaseBlack
+	Ld 		hl,0
+	ret
+	.PM_Clear2ndPhaseBlack
+	call		PM_2ndPhaseBlack
+	Ld 		hl,1
+	ret
+	
+	.PM_2ndPhaseWhite
+	Ld      	hl,(Var_wrd_count)
+	Ld		de,ar1_byt_PType+2
+	Add 		hl,de
+	Ld             	a,1
+	Ld 		(hl),a
+	Inc		h
+	Ld             	a,(Var_wrd_a)
+	Ld 		(hl),a
+	Inc		h
+	Ld 		(hl),c
+	
+	Quigs
+	BoardAdd(Count)
+	If Score>a3 Then
+		a3=Score
+		If a3>Lowest Then
+			BoardRemove
+			Asm
+			Ld 	hl,80
+			Ld  	(Var_wrd_c4),hl
+			pop	hl
+			pop	hl
+			ret
+			Quigs
+		EndIf
+	EndIf
+	BoardRemove
+	Asm
+	ret
+	
+	.PM_2ndPhaseBlack
+	Ld      	hl,(Var_wrd_count)
+	Ld		de,ar1_byt_PType+2
+	Add 		hl,de
+	Ld             	a,1
+	Ld 		(hl),a
+	Inc		h
+	Ld             	a,(Var_wrd_a)
+	Ld 		(hl),a
+	Inc		h
+	Ld 		(hl),c
+	
+	Quigs
+	BoardAdd(Count)
+	If Score<a3 Then
+		a3=Score
+		If a3<Highest Then
+			BoardRemove
+			Asm
+			Ld 	hl,80
+			Ld  	(Var_wrd_c4),hl
+			pop	hl
+			pop	hl
+			ret
+			Quigs
+		EndIf
+	EndIf
+	BoardRemove
+	
+	Asm
+	ret
+	Quigs
+	;.PM_CO_Clear
+	;;If CompCalc Then
+	;PType(Count)=1
+	;PFrom(Count)=a
+	;PToo(Count)=cack
+	;Count=Count+1
+	;;Else
+	;;Selected(cack)=(Selected(cack)+2) And 3
+	;;EndIf
+	;Return 1
+EndF
+
+Function PosMoveBlackPawn:Void()
+	
+	JumpTable Shr4(a) To Bp0_Exit,Bp1,BpNormal,BpNormal,BpNormal,BpNormal,Bp6,Bp0_Exit
+	.Bp6					;FirstLine Jump 2
+	If PMove_Clear(-16)Then
+		c2=PMove_Clear(-32)
+	EndIf
+	c2=PMove_Oppo(-15)
+	c2=PMove_Oppo(-17)
+	Jump Bp0_Exit
+	.BpNormal				;Move down line only
+	c2= PMove_Clear(-16)
+	c2=PMove_Oppo(-15)
+	c2=PMove_Oppo(-17)
+	Jump Bp0_Exit
+	.Bp1					;This Will turn to queen
+	c2= PMove_Clear(-16)
+	c2=PMove_Oppo(-15)
+	c2=PMove_Oppo(-17)
+	.Bp0_Exit
+	
+EndF
+Function PosMoveWhitePawn:Void()
+	
+	JumpTable Shr4(a) To Wp0_Exit,Wp1,WpNormal,WPNormal,WpNormal,WpNormal,Wp6,Wp0_Exit
+	.Wp1					;Line1
+	If PMove_Clear(16)Then
+		c2=PMove_Clear(32)
+	EndIf
+	c2=PMove_Oppo(15)
+	c2=PMove_Oppo(17)
+	Jump Wp0_Exit
+	.WpNormal				;Move down line only
+	c2= PMove_Clear(16)
+	c2=PMove_Oppo(15)
+	c2=PMove_Oppo(17)
+	Jump WP0_Exit
+	.Wp6					;Line 6 - This Will turn to queen
+	c2= PMove_Clear(16)
+	c2=PMove_Oppo(15)
+	c2=PMove_Oppo(17)
+	.Wp0_Exit
+	
+EndF
+Function PosMoveKnight:Void()
+	c2=PMove_Clear_Oppo(31)		;x=-1,y=+2
+	c2=PMove_Clear_Oppo(-33)		;x=-1,y=-2
+	c2=PMove_Clear_Oppo(33)		;x=+1,y=+2
+	c2=PMove_Clear_Oppo(-31)		;x=+1,y=-2
+	c2=PMove_Clear_Oppo(14)		;x=-2,y=+1
+	c2=PMove_Clear_Oppo(-18)		;x=-2 ,y=-1
+	c2=PMove_Clear_Oppo(18) 		;x=2,y=1
+	c2=PMove_Clear_Oppo(-14)		;x=2,y=-1
+EndF
+
+Function PosMoveCastle:Void()
+	If PMove_Clear_Oppo(-1) Then							;x=-1,y=0
+		If PMove_Clear_Oppo(-2) Then						;x=-2:y=0
+			If PMove_Clear_Oppo(-3) Then					;x=-3,y=0
+				If PMove_Clear_Oppo(-4) Then				;x-4,y+0
+					If PMove_Clear_Oppo(-5) Then			;x-5,y+0
+						If PMove_Clear_Oppo(-6) Then		;x-6,y+0
+							c2=PMove_Clear_Oppo(-7)		;x-7,y+0
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(1) Then							;x+1,y+0
+		If PMove_Clear_Oppo(2) Then 						;x+2,y+0
+			If PMove_Clear_Oppo(3) Then					;x+3,y+0
+				If PMove_Clear_Oppo(4) Then				;x+4,y+0
+					If PMove_Clear_Oppo(5) Then			;x+5,y+0
+						If PMove_Clear_Oppo(6) Then		;x+6,y+0
+							c2=PMove_Clear_Oppo(7)		;x+7,y+0
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(-16) Then							;x+0,y-1
+		If PMove_Clear_Oppo(-32) Then 						;x+0,y-2
+			If PMove_Clear_Oppo(-48) Then					;x+0,y-3
+				If PMove_Clear_Oppo(-64) Then				;x+0,y-4
+					If PMove_Clear_Oppo(-80) Then			;x+0,y-5
+						If PMove_Clear_Oppo(-96) Then		;x+0,y-6
+							c2=PMove_Clear_Oppo(112)		;x+0,y-7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(16) Then							;x+0,y+1
+		If PMove_Clear_Oppo(32) Then 						;x+0,y+2
+			If PMove_Clear_Oppo(48) Then					;x+0,y+3
+				If PMove_Clear_Oppo(64) Then				;x+0,y+4
+					If PMove_Clear_Oppo(80) Then			;x+0,y+5
+						If PMove_Clear_Oppo(96) Then		;x+0,y+6
+							c2=PMove_Clear_Oppo(112)		;x+0,y+7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function PosMoveQueen:Void()
+	PosMoveCastle		;Does horizontal - vertical check
+	PosMoveBishop		;Does Diagonals
+EndF
+Function PosMoveBishop:Void()
+	If PMove_Clear_Oppo(-17) Then							;x-1,y-1
+		If PMove_Clear_Oppo(-34) Then 						;x-2,y-2
+			If PMove_Clear_Oppo(-51) Then					;x-3,y-3
+				If PMove_Clear_Oppo(-68) Then				;x-4,y-4
+					If PMove_Clear_Oppo(-85) Then			;x-5,y-5
+						If PMove_Clear_Oppo(-102) Then		;x-6,y-6
+							c2=PMove_Clear_Oppo(-119)	;x-7,y-7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(-15) Then							;x+1,y-1
+		If PMove_Clear_Oppo(-30) Then 						;x+2,y-2
+			If PMove_Clear_Oppo(-45) Then					;x+3,y-3
+				If PMove_Clear_Oppo(-60) Then				;x+4,y-4
+					If PMove_Clear_Oppo(-75) Then			;x+5,y-5
+						If PMove_Clear_Oppo(-90) Then		;x+6,y-6
+							c2=PMove_Clear_Oppo(-105)	;x+7,y-7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(17) Then							;x-1,y+1
+		If PMove_Clear_Oppo(34) Then 						;x-2,y+2
+			If PMove_Clear_Oppo(51) Then					;x-3,y+3
+				If PMove_Clear_Oppo(68) Then				;x-4,y+4
+					If PMove_Clear_Oppo(85) Then			;x-5,y+5
+						If PMove_Clear_Oppo(102) Then		;x-6,y+6
+							c2=PMove_Clear_Oppo(119)		;x-7,y+7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	If PMove_Clear_Oppo(15) Then							;x+1,y+1
+		If PMove_Clear_Oppo(30) Then 						;x+2,y+2
+			If PMove_Clear_Oppo(45) Then					;x+3,y+3
+				If PMove_Clear_Oppo(60) Then				;x+4,y+4
+					If PMove_Clear_Oppo(75) Then			;x+5,y+5
+						If PMove_Clear_Oppo(90) Then		;x+6,y+6
+							c2=PMove_Clear_Oppo(105)		;x+7,y+7
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+Function PosMoveKing:Void()
+	c2=PMove_Clear_Oppo(15)		;x-1,y+1
+	c2=PMove_Clear_Oppo(-1)		;x-1,y+0
+	c2=PMove_Clear_Oppo(-17)		;x-1,y-1
+	c2=PMove_Clear_Oppo(17)		;x+1,y+1
+	c2=PMove_Clear_Oppo(1)		;x+1,y+0
+	c2=PMove_Clear_Oppo(-15)		;x+1,y-1
+	c2=PMove_Clear_Oppo(16)		;x+0,y+1
+	c2=PMove_Clear_Oppo(-16)		;x+0,y-1
+EndF
+
+Function HuntKing:Void(n1)
+	//Get King position in bx2
+	a=-1
+	If n1=0 Then
+		n2=bking
+		SetWhiteBlack(0,0)
+		n3=9
+	Else
+		SetWhiteBlack(1,0)
+		n2=wking
+		n3=-9
+	EndIf
+	For bx1=1 To 127
+		If PBoard(bx1)=n2 Then
+			a=bx1
+		EndIf
+	Next
+	Count=0
+	HuntKingCount=0
+	//Upgrade Queen Move
+	c2=n3
+	For bx1 = 1 To 5
+		If n1=0 Then
+			n2=wqueen
+		Else
+			n2=bqueen
+		EndIf
+		UpgradeScrBoard(n2,-bx1,c2)		;x-
+		UpgradeScrBoard(n2,bx1,c2)			;x+
+		UpgradeScrBoard(n2,bx1*16,c2)		;x+
+		UpgradeScrBoard(n2,-(bx1*16),c2)	;x+
+		UpgradeScrBoard(n2,(bx1*16)-bx1,c2)		;x+
+		UpgradeScrBoard(n2,(bx1*16)+bx1,c2)		;x+
+		UpgradeScrBoard(n2,-(bx1*16)-bx1,c2)		;x+
+		UpgradeScrBoard(n2,-(bx1*16)+bx1,c2)		;x+
+		//Upgrade Bishop Move
+		If n1=0 Then
+			n2=wbishop
+		Else
+			n2=bbishop
+		EndIf
+		UpgradeScrBoard (n2,(bx1*16)-bx1,c2)		;x+
+		UpgradeScrBoard (n2,(bx1*16)+bx1,c2)		;x+
+		UpgradeScrBoard (n2,-(bx1*16)-bx1,c2)		;x+
+		UpgradeScrBoard (n2,-(bx1*16)+bx1,c2)		;x+
+		//Upgrade castle Move
+		If n1=0 Then
+			n2=wcastle
+		Else
+			n2=bcastle
+		EndIf
+		UpgradeScrBoard (n2,-bx1,c2)			;x-
+		UpgradeScrBoard (n2,bx1,c2)			;x+
+		UpgradeScrBoard (n2,bx1*16,c2)			;x+
+		UpgradeScrBoard (n2,-(bx1*16),c2)		;x+
+		If n1=0 Then
+			c2=c2-1
+		Else
+			c2=c2+1
+		EndIf
+	Next
+	//Upgrade Knight
+	If n1=0 Then
+		n2=wknight
+	Else
+		n2=bknight
+	EndIf
+	c2=n3
+	UpgradeScrBoard (n2,-31,c2)			;x-
+	UpgradeScrBoard (n2,-33,c2)			;x-
+	UpgradeScrBoard (n2,31,c2)			;x-
+	UpgradeScrBoard (n2,33,c2)			;x-
+	UpgradeScrBoard (n2,-14,c2)			;x-
+	UpgradeScrBoard (n2,-18,c2)			;x-
+	UpgradeScrBoard (n2,14,c2)			;x-
+	UpgradeScrBoard (n2,18,c2)			;x-
+	If n1=0 Then
+		c2=c2-1
+	Else
+		c2=c2+1
+	EndIf
+	UpgradeScrBoard (n2,-51,c2)			;x-
+	UpgradeScrBoard (n2,-45,c2)			;x-
+	UpgradeScrBoard (n2,51,c2)			;x-
+	UpgradeScrBoard (n2,45,c2)			;x-
+	UpgradeScrBoard (n2,-64,c2)			;x-
+	UpgradeScrBoard (n2,64,c2)			;x-
+	UpgradeScrBoard (n2,-4,c2)			;x-
+	UpgradeScrBoard (n2,4,c2)			;x-
+	
+	
+	
+	
+	
+EndF
+Function UpgradeScrBoard:Void(bx3,bx4,bx5)
+	
+	If PMove_Clear(bx4)
+	HuntKingCount=HuntKingCount+1
+	ScrPiece(bx3,a+bx4)=ScrPiece(bx3,a+bx4)+bx5
+	ScrUpgradePiece(HuntKingCount)=bx3
+	ScrUpgradePos(HuntKingCount)=a+bx4
+	ScrUpgradeValue(HuntKingCount)=bx5
+	;Selected(a+bx4)=2
+EndIf
+
+EndF
+Function RemoveScrBoard:Void()
+	For bx1=1 To HuntKingCount
+		ScrPiece(ScrUpgradePiece(bx1),ScrUpgradePos(bx1))=ScrPiece(ScrUpgradePiece(bx1),ScrUpgradePos(bx1))-bx5
+	Next
+	HuntKingCount=0
+EndF
+
+Function DoABlackCheck:Void()
+	If c4<10 Then
+		JumpTable PBoard(a) To dx0,dx1,dx2,dx3,dx4,dx5,dx6,dx0,dx0,dx0,dx0,dx0,dx0,dx0
+		.dx1 PosMoveBlackPawn
+		Jump dx0
+		.dx2 PosMoveCastle
+		Jump dx0
+		.dx3 PosMoveKnight
+		Jump dx0
+		.dx4 PosMoveBishop
+		Jump dx0
+		.dx5 PosMoveQueen
+		Jump dx0
+		.dx6 PosMoveKing
+		.dx0
+	EndIf
+	a=a+1
+EndF
+Function DoAWhiteCheck:Void()
+	If c4<10 Then
+		JumpTable PBoard(a) To dy0,dy0,dy0,dy0,dy0,dy0,dy0,dy0,dy8,dy9,dy10,dy11,dy12,dy13
+		.dy8 PosMoveWhitePawn
+		Jump dy0
+		.dy9 PosMoveCastle
+		Jump dy0
+		.dy10 PosMoveKnight
+		Jump dy0
+		.dy11 PosMoveBishop
+		Jump dy0
+		.dy12 PosMoveQueen
+		Jump dy0
+		.dy13 PosMoveKing
+		.dy0
+	EndIf
+	a=a+1
+EndF
+
+
+
+Function BoardAdd:Void(a1)
+	;Check what type of Move it was
+	;If PType(a)=1 Then
+	;Get current From Stored
+	b=PFrom(a1)
+	PListPlace(PListCount)=b
+	PListPiece(PListCount)=PBoard(b)
+	Score=Score-ScrPiece(PBoard(b),b)
+	;Get current Too Stored
+	c=PToo(a1)
+	PListPlace(PListCount+1)=c
+	PListPiece(PListCount+1)=PBoard(c)
+	Score=Score-ScrPiece(PBoard(c),c)
+	PBoard(c)=PBoard(b)
+	Score=Score+ScrPiece(PBoard(c),c)
+	PBoard(b)=0
+	PListCount=PListCount+2
+	;EndIf
+EndF
+Function BoardRemove:Void()
+	
+	PListCount=PListCount-2
+	b=PListPlace(PListCount)
+	c=PListPlace(PListCount+1)
+	Score=Score-ScrPiece(PBoard(b),b)-ScrPiece(PBoard(c),c)
+	
+	PBoard(b)=PListPiece(PListCount)
+	PBoard(c)=PListPiece(PListCount+1)
+	Score=Score+ScrPiece(PBoard(b),b)+ScrPiece(PBoard(c),c)
+	
+EndF
+
+Function CalcMove:Void(c5,bx8,bx9,bx10)
+	
+	ReqMiniMax=10000/((bx8)+1)
+	If bx9>0 Then
+		ReqMiniMax=10000/(((bx8*bx9))+1)
+	EndIf
+	If bx10>0 Then
+		ReqMiniMax=10000/((bx9*bx8)+(bx8+1))
+	EndIf
+	
+	MoveChecked=0
+	
+	If c5=1 Then
+		CalcMiniMax(1,bx8)
+	Else
+		CalcMiniMax(0,bx8)
+	EndIf
+	;Store Results in first slots
+	za=1
+	For bx1=1 To bx8
+		If bx8>1 Then
+			For bx2=1 To bx9
+				CalcScore(za)=depth_Score(bx1)
+				CalcMoves(za,0)=PFrom(depth_Place(bx1))
+				CalcMoves(za,1)=PToo(depth_Place(bx1))
+				za=za+1
+			Next
+		Else
+			CalcScore(za)=depth_Score(bx1)
+			CalcMoves(za,0)=PFrom(depth_Place(bx1))
+			CalcMoves(za,1)=PToo(depth_Place(bx1))
+		EndIf
+	Next
+	;If only single move
+	If bx9<1 Then
+		bx4=1
+		Jump CalcMoveExit
+	EndIf
+	//Store Board
+	StoreBoard
+	
+	za=1
+	For bx1=1 To bx8
+		//0=From 1=Too
+		;za=((bx1-1)*bx9)+1
+		PBoard(CalcMoves(za,1))=PBoard(CalcMoves(za,0))
+		PBoard(CalcMoves(za,0))=0
+		Score=CalcScore(za)
+		If c5=1 Then
+			CalcMiniMax(0,bx9)					;Black swapped around
+		Else
+			CalcMiniMax(1,bx9)					;White swapped
+		EndIf
+		For bx2=1 To bx9
+			CalcScore(za)=depth_Score(bx2)
+			CalcMoves(za,6)=PFrom(depth_Place(bx2))
+			CalcMoves(za,7)=PToo(depth_Place(bx2))
+			za=za+1
+		Next
+		ReStoreBoard
+	Next
+	If bx10<1 Then
+		//Sort Best Move
+		bx4=-1
+		If c5=1 Then
+			High1=-30000
+			For bx1=1 To bx8
+				If CalcScore(bx1)>=High1 Then
+					bx4=bx1
+					High1=CalcScore(bx1)
+				EndIf
+			Next
+		Else
+			Low1=30000
+			For bx1=1 To bx8
+				If CalcScore(bx1)<=Low1 Then
+					bx4=bx1
+					Low1=CalcScore(bx1)
+				EndIf
+			Next
+		EndIf
+		Jump 	CalcMoveExit
+	EndIf
+	
+	;Depth 4
+	za=1
+	bx4=-4
+	Low1=30000
+	High1=-30000
+	For bx1=1 To bx8
+		If c5=1 Then
+			bx5=30000
+		Else
+			bx5=-30000
+		EndIf
+		For bx2=1 To bx9
+			PBoard(CalcMoves(za,1))=PBoard(CalcMoves(za,0))
+			PBoard(CalcMoves(za,0))=0
+			PBoard(CalcMoves(za,7))=PBoard(CalcMoves(za,6))
+			PBoard(CalcMoves(za,6))=0
+			Score=CalcScore(za)
+			If c5=1 Then
+				CalcMiniMax(1,1)					;Black swapped around
+				CalcScore(za)=depth_Score(1)
+				If bx5>=CalcScore(za) Then
+					bx5=CalcScore(za)
+					;bx4=za
+				EndIf
+			Else
+				CalcMiniMax(0,1)					;White swapped
+				CalcScore(za)=depth_Score(1)
+				If bx5<=CalcScore(za) Then
+					bx5=CalcScore(za)
+					;bx4=za
+				EndIf
+			EndIf
+			za=za+1
+			ReStoreBoard
+		Next
+		If c5=1 Then
+			If bx5>=High1 Then
+				High1=bx5
+				bx4=((bx1-1)*bx9)+1
+			EndIf
+		Else
+			If bx5<=Low1 Then
+				Low1=bx5
+				bx4=((bx1-1)*bx9)+1
+			EndIf
+		EndIf
+	Next
+	
+	;	za=1
+	;	TextBox1.Text.Set ""
+	;	For bx1=1 To bx8
+	;		For bx2=1 To bx9
+	;			c4=CalcMoves(za,0)
+	;			c2=CalcMoves(za,1)
+	;			c3=Shr4(c4)+1
+	;			gs=Chr(((c4+4) And 7)+97)+Str(c3)+"-"
+	;			c3=Shr4(c2)+1
+	;			gs=gs+Chr(((c2+4) And 7)+97)+Str(c3)
+	;			If za=bx4 Then
+	;				TextBox1.Text.Set TextBox1.Text.Get+Str(za)+"* "+gs+"="+Str(CalcScore(za))+Chr(13)+Chr(10)
+	;			Else
+	;				TextBox1.Text.Set TextBox1.Text.Get+Str(za)+" "+gs+"="+Str(CalcScore(za))+Chr(13)+Chr(10)
+	;			EndIf
+	;			za=za+1
+	;		Next
+	;	Next
+	;	TextBox1.Refresh
+	
+	.CalcMoveExit
+	c4=MakeMove(1,CalcMoves(bx4,1),CalcMoves(bx4,0))
+	Label21.Text.RSet "-"
+	MoveMade=70
+EndF
+
+Function CalcMiniMax:Void(n,n1)
+	Var i:Int
+	Count=0
+	If n=1 Then
+		SetWhiteBlack(1,0)  	;WhiteBlack=1
+		MultiWhiteCheck
+		PListCount=0
+		CountLow=Count
+		
+		Label21.Text.RSet "Thinking "+Str((ReqMiniMax*MoveChecked)/100)+"%"
+		MoveChecked=MoveChecked+1
+		
+		SetWhiteBlack(0,1)  	;WhiteBlack=0 ;SecondPhase=1
+		Highest=-30000
+		c3=0
+		For i=1 To n1
+			depth_Score(i)=-30000
+			depth_Place(i)=-1
+		Next
+		For i=0 To CountLow-1
+			BoardAdd(i)
+			a3=30000
+			;a=4
+			MultiBlackCheck
+			PScore(i)=a3
+			If a3=>Highest Then
+				n2=0
+				n3=30000
+				For i2=1 To n1
+					If depth_Score(i2)<=n3 Then
+						n3=depth_Score(i2)
+						n2=i2
+					EndIf
+				Next
+				depth_Score(n2)=a3
+				depth_Place(n2)=i
+				n3=30000
+				For i2=1 To n1
+					If depth_Score(i2)<=n3 Then
+						n3=depth_Score(i2)
+					EndIf
+				Next
+				Highest=n3
+			EndIf
+			BoardRemove
+		Next
+	Else
+		SetWhiteBlack(0,0)  		 ;WhiteBlack=0
+		MultiBlackCheck
+		PListCount=0
+		CountLow=Count
+		Label21.Text.RSet "Thinking "+Str((ReqMiniMax*MoveChecked)/100)+"%"
+		MoveChecked=MoveChecked+1
+		SetWhiteBlack(1,1) 		 ;WhiteBlack=1
+		Lowest=30000
+		c3=0
+		For i=1 To n1
+			depth_Score(i)=30000
+			depth_Place(i)=-1
+		Next
+		For i=0 To CountLow-1
+			BoardAdd(i)
+			a3=-30000
+			MultiWhiteCheck
+			PScore(i)=a3
+			If a3<=Lowest Then
+				n2=0
+				n3=-30000
+				For i2=1 To n1
+					If depth_Score(i2)>n3 Then
+						n3=depth_Score(i2)
+						n2=i2
+					EndIf
+				Next
+				depth_Score(n2)=a3
+				depth_Place(n2)=i
+				n3=-30000
+				For i2=1 To n1
+					If depth_Score(i2)>n3 Then
+						n3=depth_Score(i2)
+					EndIf
+				Next
+				Lowest=n3
+			EndIf
+			BoardRemove
+		Next
+	EndIf
+EndF
+
+Function MultiWhiteCheck:Void()
+	a=4
+	For c4=0 To 7
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		DoAWhiteCheck
+		a=a+8
+	Next
+EndF
+Function MultiBlackCheck:Void()
+	a=4
+	For c4=0 To 7
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		DoABlackCheck
+		a=a+8
+	Next
+EndF
+
+
+Function Button1.Event:Void()
+	
+	If GameMode=0 Then
+		ResetBoard
+		ShowSides(1)
+		Button1.Text.RSet "Quit Game"
+		Turn=1
+		MoveMade=1
+		GameMode=1
+		Move=0
+	Else
+		ShowSides(0)
+		Button1.Text.RSet "Start Game"
+		GameMode=0
+	EndIf
+	
+	
+	
+	;	For Peanut=1 To 16
+	;		For i=0 To 127
+	;			Selected(i)=0
+	;		Next
+	;		CalcMove(1,1,0,0)
+	;		DrawBoard
+	;		RefreshMoveDisplay
+	;		Selected(bx1)=0:Selected(bx2)=0
+	;		DrawBoard
+	;
+	;		For i=0 To 127
+	;			Selected(i)=0
+	;		Next
+	;		CalcMove(0,12,1,0)
+	;		DrawBoard
+	;		IncrementMoveDisplay
+	;		RefreshMoveDisplay
+	;		Selected(bx1)=0:Selected(bx2)=0
+	;		DrawBoard
+	;	Next
+	;
+EndF
+Function SkillSlider.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	Label51.Text.RSet "Skill:"+Str(SkillSlider.Value.Get+1)
+	
+	If SkillSlider.Value.Get=0 Then
+		Skill1=1
+		Skill2=0
+		Skill3=0
+	EndIf
+	If SkillSlider.Value.Get=1 Then
+		Skill1=4
+		Skill2=1
+		Skill3=0
+	EndIf
+	If SkillSlider.Value.Get=2 Then
+		Skill1=12
+		Skill2=1
+		Skill3=0
+	EndIf
+	If SkillSlider.Value.Get=3 Then
+		Skill1=4
+		Skill2=4
+		Skill3=1
+	EndIf
+	If SkillSlider.Value.Get=4 Then
+		Skill1=8
+		Skill2=4
+		Skill3=1
+	EndIf
+	If SkillSlider.Value.Get=5 Then
+		Skill1=10
+		Skill2=6
+		Skill3=1
+	EndIf
+	If SkillSlider.Value.Get=6 Then
+		Skill1=12
+		Skill2=8
+		Skill3=1
+	EndIf
+	
+	
+	
+EndF
+
+
+

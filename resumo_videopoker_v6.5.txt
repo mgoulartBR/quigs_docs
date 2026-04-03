@@ -1,0 +1,197 @@
+================================================================================
+RESUMO COMPLETO - VIDEO POKER PARA SYMBOS/QUIGS - v6.5
+================================================================================
+Data: 08/02/2026
+Sessões: Claude Sonnet 4.5 (Perplexity) + Claude Opus 4.6 (Claude.ai)
+Projeto: Quigs IDE para SymbOS (MSX)
+
+================================================================================
+ESTADO ATUAL DO JOGO
+================================================================================
+
+FUNCIONANDO:
+✔ Código compila sem erros
+✔ Jogo abre normalmente no SymbOS (MSX real)
+✔ Botão DEAL funciona - lógica de jogo completa
+✔ Botões + e - funcionam quando Event configurado no Form Designer
+✔ Credits calculados corretamente
+✔ Labels funcionam (LblResult, LblBet, LblCredits)
+✔ Avaliação de mãos funciona (Two Pair, Jacks+, etc.)
+✔ BtnDeal.Text.Set muda entre "DEAL" e "DRAW"
+✔ Screen.Colour = 16 (modo 16 cores confirmado)
+✔ Ctrl.GetID retorna valores (ex: -7899)
+✔ File.Exist(App.Path+"cards.qs2") = TRUE (arquivo existe)
+✔ shCards.Load App.Path+"cards.qs2" não dá erro
+
+NÃO FUNCIONANDO:
+✘ CARTAS NÃO APARECEM - ImageBox controls ficam invisíveis
+✘ HOLD indicators não aparecem
+✘ Tela fica verde onde deveriam estar as cartas
+
+================================================================================
+CÓDIGO ATUAL (v6.5) - videopoker_v6.txt
+================================================================================
+
+ESTRUTURA:
+- IncludeSheet "cards",1,1,16,40
+- Var shCards:Sheet
+- shCards.Load App.Path+"cards.qs2"
+- cidCard(i) = Ctrl.GetID(Form1,CardImgX.Display)
+- Ctrl.Image.Tile.Set cidCard(i),shCards,tileNum
+- Ctrl.Refresh cidCard(i)
+
+DEBUG NA v6.5:
+- Sheet.Status(shCards): 0=Empty, 1=In use, >99=Error
+- Sheet.Tiles(shCards): número de tiles no sheet
+- LblResult mostra "S=X T=X"
+- SE S=0: sheet não carregou (vazio)
+- SE S=1 e T=56: sheet carregou corretamente
+- SE S>99: erro no carregamento
+
+EVENTOS NO FORM DESIGNER (NECESSÁRIO CONFIGURAR):
+- BtnDeal → Event: BtnDeal.Event  ← FUNCIONANDO
+- BtnBetUp → Event: BtnBetUp.Event ← PRECISA CONFIGURAR
+- BtnBetDn → Event: BtnBetDn.Event ← PRECISA CONFIGURAR
+- CardImg1-5 → Event: CardImg1.Event etc. (para HOLD toggle)
+
+================================================================================
+CONTROLES NO FORM DESIGNER
+================================================================================
+
+Imagens (ImageBox Control):
+- CardImg1 a CardImg5: Width=16, Height=40, Sheet No=1, Tile No=13
+  * "For Reference Only - Empty at launch"
+- HoldImg1 a HoldImg5: Width=16, Height=40
+
+Botões:
+- BtnDeal: Event=BtnDeal.Event
+- BtnBetUp: Event=BtnBetUp.Event (CONFIRMAR SE CONFIGURADO)
+- BtnBetDn: Event=BtnBetDn.Event (CONFIRMAR SE CONFIGURADO)
+
+Labels:
+- LblResult, LblBet, LblCredits
+
+================================================================================
+SPRITE SHEET
+================================================================================
+
+Arquivo: cards16_half_indexed.png → cards.qs2
+- 224×160 pixels (half-width para ratio 2:1 do MSX)
+- 16 cores indexadas, 56 tiles de 16×40
+- Layout: 4 rows × 14 cols
+  Row 0: Copas 2-A + BACK (tiles 0-13)
+  Row 1: Ouros 2-A + HOLD (tiles 14-27)
+  Row 2: Paus 2-A + EMPTY (tiles 28-41)
+  Row 3: Espadas 2-A + WIN (tiles 42-55)
+- TILE_BACK=13, TILE_HOLD=27, TILE_EMPTY=41, TILE_WIN=55
+
+================================================================================
+CRONOLOGIA COMPLETA DE TENTATIVAS (CARTAS)
+================================================================================
+
+1. CardImg1.Tile.Set shCards,gTile → NÃO aparece
+2. CardImg1.Tile.Set(shCards,gTile) → NÃO aparece
+3. Ctrl.Image.Tile.Set CardImg1,shCards,0 → NÃO aparece
+4. SetObjGraphic CardImg1,shCards,gTile → NÃO COMPILA
+5. IncludeSheet + shCards:Int=1 + Ctrl.Image.Tile.Set → NÃO aparece
+6. Var shCards:Sheet + shCards.Load + Ctrl.Image.Tile.Set → NÃO aparece
+7. Ctrl.GetID + Ctrl.Image.Tile.Set cidCard(i) → NÃO aparece
+8. 5 abordagens simultâneas (A-E) sem IncludeSheet → NENHUMA funciona
+9. File.Exist test → "LOAD OK" (arquivo existe)
+10. [PRÓXIMO] Sheet.Status + Sheet.Tiles debug → AGUARDANDO TESTE
+
+================================================================================
+DADOS DE DEBUG COLETADOS
+================================================================================
+
+Screen.Colour = 16          → OK
+CID0 = -7899                → Control ID (endereço 16-bit signed)
+File.Exist(cards.qs2) = TRUE → Arquivo existe na pasta
+"LOAD OK" exibido           → .Load não deu exceção
+
+FALTA VERIFICAR:
+- Sheet.Status(shCards) → sheet realmente carregou? (1=OK, 0=vazio, >99=erro)
+- Sheet.Tiles(shCards)  → quantos tiles? (esperado: 56)
+
+================================================================================
+COMANDOS DESCOBERTOS NO MANUAL (manual.txt)
+================================================================================
+
+SHEET MANAGEMENT (linhas 425-430 do manual):
+- Sheet.Load Sheet%,SheetFile$     → Carrega sheet
+- Sheet.Free Sheet%                → Libera memória
+- Sheet.Status% Sheet%             → 0=Empty, 1=In use, >99=Error
+- Sheet.Tiles% Sheet%              → Número de tiles
+- Sheet.Size% Sheet%               → Tamanho em bytes
+- Sheet.Colour.Depth% Sheet%       → 0=4 cores, 1=16 cores
+
+IMAGE CONTROL (linha 92):
+- Ctrl.Image.Tile.Set Control%,Sheet%,Tile%  → Set tile
+- Ctrl.Refresh Control%                       → Redraw control
+- Ctrl.GetID%(Form,DisplayPos)               → Get control ID
+
+TOOL IMAGE (linha 259):
+- Tool.ImgBox.Tile.Set Control%,Sheet%,Tile% → Para Tool controls
+
+NOTA: Manual mostra Sheet.Load Sheet%,SheetFile$ (2 params)
+vs código usa shCards.Load "file" (method style)
+→ Ambos podem funcionar pois 2048 usa method style
+
+================================================================================
+HIPÓTESES RESTANTES (ORDENADAS POR PROBABILIDADE)
+================================================================================
+
+1. **SHEET NÃO CARREGOU DE VERDADE**:
+   .Load não deu erro mas Sheet.Status pode ser 0 (empty) ou >99 (error)
+   File.Exist=TRUE não garante que .Load funcionou
+   → v6.5 TESTA com Sheet.Status e Sheet.Tiles
+
+2. **CONFLITO IncludeSheet + .Load**:
+   Ambos tentam usar o mesmo sheet container
+   → Se Sheet.Status=0, tentar REMOVER IncludeSheet
+
+3. **TAMANHO DO CONTROLE ERRADO**:
+   Width=16 mas display width=32 (pixel ratio 2:1)
+   → Testar com Width=32 no Form Designer
+
+4. **Ctrl.Image.Tile.Set RECEBE Int MAS shCards É Sheet**:
+   Manual diz Sheet% (Int), código passa Var:Sheet
+   → Testar com Var shCards:Int e Sheet.Load shCards,"file"
+
+5. **IMAGEBOX PRECISA DE CONFIGURAÇÃO ADICIONAL**:
+   Talvez precise de Form1.Control.Refresh ao invés de Ctrl.Refresh
+   → Explorer usa Form1.Control.Refresh após setar tiles
+
+================================================================================
+PRÓXIMOS PASSOS
+================================================================================
+
+1. TESTAR v6.5 - ler "S=X T=X" no LblResult
+2. SE S=0 ou S>99: sheet não carregou → investigar por quê
+3. SE S=1 e T=56: sheet OK → problema é no ImageBox control
+   → Testar Width=32 no Form Designer
+   → Testar Form1.Control.Refresh ao invés de Ctrl.Refresh
+   → Testar com sheet do 2048 (ntiles.qs2) para isolar problema
+4. CONFIGURAR Events de BtnBetUp e BtnBetDn no Form Designer
+5. Perguntar na comunidade SymbOS/Quigs
+
+================================================================================
+REFERÊNCIAS FUNCIONAIS
+================================================================================
+
+2048.txt: TileSheet:Sheet + .Load + Ctrl.GetID + Ctrl.Image.Tile.Set
+Explorer.txt: smallIcons:Sheet + .Load + Ctrl.Image.Tile.Set + Form1.Control.Refresh
+Snake.txt: shCards:Int + LoadSheet() + SetObjGraphic (estilo antigo)
+
+================================================================================
+AMBIENTE
+================================================================================
+Usuário: Marcelo (BigFive), Rio de Janeiro
+Hardware: MSX + SymbOS + SD Mapper, monitor LG
+IDE: Quigs
+Output: Volume 4.0 GB > SYMBOS > APPS > App01.exe + cards.qs2
+Projeto: Z:\media\marcelo\...\MSX\Quigs\empty.qpf
+
+================================================================================
+FIM DO RESUMO - v6.5
+================================================================================

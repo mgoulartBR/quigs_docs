@@ -1,0 +1,569 @@
+// explorer.bin (for all the actions copy move delete files or folders using the clipboard form explorer.exe
+// Name: explorer.bin (explfile.qpf) rename exe to .bin after compile
+// Coder: Edoz
+// Date / Version: 1.2 19-FEB-2025
+// Declare variables
+Var smallIcons:Sheet 				//images
+Var action:Int 					//0-none 1-Delete 2-Copy 3-Move
+Var actionlabel:String				//String used for the text label for the action above
+Var commandline:String				//String to put commandline parameters into
+Var sourceDIR:String 				//Source directory	from commandline
+Var destinationDIR:String  			//Destination directory from commndline
+Var timercount:Int 				//Timer for anumation
+Var x:Int=24					//screenlocation for animation
+Var y:Int=1					//screenlocation for animation
+Var AnimationOn:Int=1				//animation 1 enabled 0 disabled
+Var FileOrFolderInput(80):String 		//Items sorted 0=sourcedirectory (and action) 1=destination directory all other are files (max)64
+Var FileOrFolderType(80):String			//The type of the obejct, 0=File 1=Directory
+Var i:Int					//Loop for startup getting data from commandline
+Var j:Int					//Loop for startup getting data from commandline
+Var type:Int 					//0=file 1=folder (first character of the commandline parameters, objects are splitted by |
+Var TotalObjects:Int				//Total file or folder objects for the action
+Var CurrentObject:Int 				//Current file or folder object for the action
+Var NextObject:Int				//Counter to see if there are more objects to process
+Var sourceFile:File				//Source File to process
+Var destinationFile:File 			//Destination File to Process
+Var TotalAmount:Long 				//Total amount of memory bytes to copy
+Var amount:Int 					//The amount of memory, in a chunck (2k)
+Var mem:Memory 					//Memory Bank to use for the copy, set at startup, default 2048 but can be larger or smaller
+Var ProgressAmount:Int 				//The value of the progressbar to caclulate the progress bar value
+Var Tempdata:String 				//To store data in temp
+Var Copying:Int 				//If there is a copy active yes or no (1/0)
+Var Fsource:String 				//Source of the file
+Var Fdestination:String 			//Destination of the file
+Var MsgBoxresponse:Int 				//MessageBOX response action  (Yes/NO/Cancel)
+Var FolderCopy:Int=0 				//Is there a copy action busy for a compete folder   (yes/no)
+// for deleting all in folders
+Var StartPath:String 				//Path for starting the deleting of files and folders
+Var deleteAction:Int 				//Is the deleteaction action yes or no
+Var SubDir:String 				//Subdirectroy for deleting
+Var TmpDir:String 				//Store the deleted directroy in tmp
+Var s:Int 					//General counter for the delete folder part
+Var b:Int 					//General counter for the delete folder part
+Var Dir_found:Int 				//Delete the directroy if found
+Var TMPStartpath:String 			//Save the path for deleting folders temp.
+//copyfolder copy part
+Var pathsrc:String 				//Source of the folder to copy 
+Var pathdst:String 				//Deistination of the folder to copy
+Var filepos(20):Int 				//the depth file possition
+Var depth:Int 					//the current depth in the folder
+Var entries(255):String 			//The amount of entries (files/folders) in the folder (max. 255)
+Var entriestype(255):Int 			//The type of the entry in the folder (array)
+Var entry:Int 					//The current entry
+Var name:String  				//The current filename
+Var nameType:Int 				//The current type of the entry
+Var parrent:String 				//The parrent path from before
+Var deleteAfterCopy:Int=0 			///Delete all objects after move (yes or no)
+
+Function Form1.Open.Event:Void()
+	//Load the commandline parameter to see what the action is
+	//The data fields are splitted by | the first parameter is the destination directory and te action, copy/move/delete
+	//The second datafield is the source directory of the action
+	smallIcons.Load App.Path+"explore5.qs2"
+	mem.Create 4096,0
+	//commandline ="A:\explfile.exe 2C:\TEST\|C:\|0autoexec.bat|0command2.com|0nexttor.sys|0msxdos2.sys|0symbos.ini|"
+	commandline=Clipboard.Text.Get
+	Clipboard.Text.Set("")
+	j=0
+	For i=1 To Len(commandline)
+		If Mid(commandline,i,1) <> "|" Then
+			//First save the complet value in the string till |
+			FileOrFolderInput(j) = FileOrFolderInput(j) +Mid(commandline,i,1)
+		Else
+			j=j+1
+		EndIf
+	Next
+	//Set the object to value 2 (0=action+destinationpath 1=sourcepath 2>files or folder with 0 or 1 in front
+	CurrentObject =2
+	NextObject=2
+	TotalObjects = j
+	LBLAction.Text.RSet ("Items :" +Str(TotalObjects))
+	destinationDIR = Mid(FileOrFolderInput(0),2,Len(FileOrFolderInput(0))-1)
+	action= CInt(Mid(FileOrFolderInput(0),1,1))
+	sourceDIR = FileOrFolderInput(1)
+	Form1.Status.Text.Set ("Destination: " + destinationDIR)
+	Form1.Status.Refresh
+	LBLAction.Text.RSet ("Buffering....")
+	//split type and filename
+	For i=CurrentObject To TotalObjects
+		FileOrFolderType(i) = Left(FileOrFolderInput(i),1)
+		Tempdata=FileOrFolderInput(i)
+		FileOrFolderInput(i) = Mid(Tempdata,2,Len(Tempdata)-1)
+	Next
+	If action=0 Then
+		MsgBoxresponse=MsgBox ("There was no data on the clipboard","Please retry!" ,"Action canceled.",MsgBox.Title.Error,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Form1.Close.Event
+	ElseIf action>3 Then
+		MsgBoxresponse=MsgBox ("Internal Error","start Explore.exe" ,"Action canceled.",MsgBox.Title.Error,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Form1.Close.Event
+	EndIf
+	If action=2 Then
+		commandline = "4"+Replace(commandline,FileOrFolderInput(0)+"|","")
+		Clipboard.Text.Set(Mid(commandline,1,Len(commandline)-2)+"|")
+	Else
+		Clipboard.Text.Set("")
+	EndIf
+	ProgressAmount= 255 / TotalObjects
+	If Screen.Colour()  > 4 Then
+		Image2.Tile.Set(smallIcons,5)
+		If action=1 Then
+			actionlabel ="Deleting files..."
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,2)
+		EndIf
+		If action=2 Then
+			actionlabel ="Copying files..."
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,0)
+		EndIf
+		If action=3  Then
+			actionlabel ="Moving files..."
+			Image1.Tile.Set(smallIcons,1)
+			Image3.Tile.Set(smallIcons,0)
+		EndIf
+	Else
+		Image2.Tile.Set(smallIcons,10)
+		If action=1 Then
+			actionlabel ="Deleting files..."
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,8)
+		EndIf
+		If action=2 Then
+			actionlabel ="Copying files..."
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,6)
+		EndIf
+		If action=3  Then
+			actionlabel ="Moving files..."
+			Image1.Tile.Set(smallIcons,7)
+			Image3.Tile.Set(smallIcons,6)
+		EndIf
+	EndIf
+	Image1.Refresh
+	Image2.Refresh
+	Image3.Refresh
+	LBLAction.Text.RSet (actionlabel)
+EndF
+
+Function Main:Void()
+	// Main loop
+	EnableAnimation
+	If action=1 Then
+		deleteFileFolder
+	EndIf
+	If action=2 Then
+		CopyFiles
+	EndIf
+	If action=3 Then
+		If CurrentObject => TotalObjects Then
+			// All complete
+			UpdateProgress
+			Form1.Close.Event
+		Else
+			//File or Folder Move
+			FileOrFolderMove
+			UpdateProgress
+			CurrentObject=CurrentObject+1
+		EndIf
+		If deleteAfterCopy=1 Then
+			action=2
+			CurrentObject=2
+		EndIf
+	EndIf
+	If CurrentObject => TotalObjects Then
+		Form1.Close.Event
+	EndIf
+EndF
+
+Function CopyFiles:Void()
+	// Copying 0=(Not Copying) 1=(Copying) 2=(Finished Copy) or it detects a folder to copy! (see diretory copy/copyfolder)
+	If Copying=0 And FolderCopy=0 Then
+		// Start new file to copy
+		If CurrentObject => TotalObjects Then
+			// All complete
+			UpdateProgress
+			Copying=0
+			Form1.Close.Event
+		Else
+			If FileOrFolderType(CurrentObject) ="0" Then
+				//Check if source destination is not the same
+				If sourceDIR+FileOrFolderInput(CurrentObject) <> destinationDIR+FileOrFolderInput(CurrentObject) Then
+					FileToCopy(sourceDIR+FileOrFolderInput(CurrentObject),destinationDIR+FileOrFolderInput(CurrentObject))
+				Else
+					MsgBoxresponse=MsgBox ("Source and destination","the same!" ,"Skip: "+ FileOrFolderInput(CurrentObject),MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+					Copying=2
+				EndIf
+			Else
+				//Check if source destination is not the same
+				If sourceDIR+FileOrFolderInput(CurrentObject) <> destinationDIR+FileOrFolderInput(CurrentObject) Then
+					//Check if  destination is not in the source
+					If FindStr(destinationDIR+FileOrFolderInput(CurrentObject),sourceDIR+FileOrFolderInput(CurrentObject),0) > 0 Then
+						MsgBoxresponse=MsgBox ("Cannot copy the source","into the destination" ,"Abort",MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+						FolderCopy=0
+						Form1.Close.Event
+					Else
+						//Copy directory wiht content after folder is completed it will continue with the clipboard
+						FolderCopy=1
+						Copying=2
+						CopyFolder
+					EndIf
+				Else
+					MsgBoxresponse=MsgBox ("Source and destination","the same!" ,"Skip: "+ FileOrFolderInput(CurrentObject),MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+					Copying=2
+				EndIf
+			EndIf
+		EndIf
+	ElseIf  Copying=1 Then
+		FilePartCopy
+	ElseIf Copying=2 And FolderCopy=0  Then
+		//Go for the item
+		If deleteAfterCopy=1 Then
+			File.Delete (sourceDIR+FileOrFolderInput(CurrentObject))
+		EndIf
+		CurrentObject = CurrentObject +1
+		UpdateProgress
+		Copying=0
+	ElseIf Copying=2 And FolderCopy=2 Then
+		//file in the folder copy is done go back to the copyfolder routine to see if there is more (still active)
+		CopyFolder
+	EndIf
+EndFunc
+
+Function FileToCopy:Void(Fsource,Fdestination)
+	If Copying=0 Then
+		lblFilename.Text.RSet (Fsource)
+		Form1.Status.Text.Set ("Destination: " + Fdestination)
+		Form1.Status.Refresh
+		sourceFile.OpenBinary(Fsource)
+		If sourceFile.Error = 1 Then
+			destinationFile.NewBinary(Fdestination)
+			If destinationFile.Error=1 Then
+				TotalAmount=%0
+				Copying=1	//Start copying
+			Else
+				GoForError
+			EndIf
+		Else
+			GoForError
+		EndIf
+	EndIf
+EndF
+
+Function FilePartCopy:Void()
+	amount=sourceFile.ReadMemory(mem.Bank,mem.Addr,4096)
+	If amount>0 Then
+		destinationFile.WriteMemory(mem.Bank,mem.Addr,amount)
+		If destinationFile.Error =1 Then
+			TotalAmount=TotalAmount+Long.FromInt(amount)
+			lblbytes.Text.RSet ("(" + String.FromLong(TotalAmount) + ")")
+		Else
+			GoForError
+		EndIf
+	Else
+		sourceFile.Close
+		destinationFile.Close
+		Copying=2		//This means finished copying file
+	EndIf
+EndF
+
+Function ReadDir:Void()
+	Dir.Read pathsrc+"\*.*",8
+	entry=0
+	While Dir.Read.Entry >0
+		Dir.Read.Next
+		If Dir.Read.Name <> "" And Dir.Read.Name <> ".."  Then
+			entries(entry)=Dir.Read.Name
+			entriestype(entry)=Dir.Read.Attr
+			If entry<255 Then
+				entry=entry+1
+			Else
+				MsgBoxresponse=MsgBox ("Folder copy issues","> 255 files in one folder" ,"Try to copy files only ",MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+				GoForError
+			EndIf
+		EndIf
+	Wend
+EndF
+
+Function GoForError:Void()
+	MsgBoxresponse=MsgBox ("Disk error!","SourceErr: "+ Str(sourceFile.Error),"DestinationERR: "+ Str(destinationFile.Error),MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	destinationFile.Close
+	sourceFile.Close
+	If FolderCopy=2 Then
+		File.Delete (pathdst + "\" + name)
+	Else
+		File.Delete (Fdestination)
+	EndIf
+	Form1.Close.Event
+EndF
+
+Function CopyFolder:Void()
+	// This routine is called every main if there is a folder copy action
+	If FolderCopy=1  Then
+		FolderCopy=2
+		pathsrc=sourceDIR+FileOrFolderInput(CurrentObject)
+		pathdst=destinationDIR+FileOrFolderInput(CurrentObject)
+		//Check if the copy is in the same path or it is the same source and destination
+		//if destinytion has the whole source path in its own path, then cancel it
+		Dir.New destinationDIR+FileOrFolderInput(CurrentObject)
+		depth=0
+		filepos(depth) = 0
+		ReadDir
+	EndIf
+	If FolderCopy=2 And Copying=2 Then
+		If entry >  filepos(depth)  Then
+			name = entries(filepos(depth))
+			nameType = entriestype(filepos(depth))
+			filepos(depth) = filepos(depth) + 1
+			If nameType <> Dir.Attr.Directory Then
+				lblFilename.Text.RSet(pathsrc + "\" + name)
+				sourceFile.OpenBinary(pathsrc + "\" + name)
+				If sourceFile.Error = 1 Then
+					destinationFile.NewBinary(pathdst + "\" + name)
+					If destinationFile.Error=1 Then
+						TotalAmount=%0
+						Copying=1	//Start copying
+					Else
+						GoForError
+					EndIf
+				Else
+					GoForError
+				EndIf
+			Else
+				Dir.New(pathdst + "\" + name)
+				pathsrc = pathsrc + "\" + name
+				pathdst = pathdst + "\" + name
+				depth = depth + 1
+				filepos(depth) = 0
+				ReadDir
+			EndIf
+		Else
+			//       ##remove all files In pathsrc, If this is a move command##
+			If depth > 0  Then
+				Progress1.Value.Set (Progress1.Value.Get+1)
+				Progress1.Refresh
+				pathsrc=Goparent(pathsrc)
+				pathdst=Goparent(pathdst)
+				depth = depth - 1
+				ReadDir
+			Else
+				//compete folder copy complete, delete source if it was a move.
+				If deleteAfterCopy=1 Then
+					delDirAll(sourceDIR+FileOrFolderInput(CurrentObject))
+				EndIf
+				FolderCopy=0
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function Goparent:String(parrent)
+	Var temp:String
+	Var t:Int
+	Var u:Int
+	temp=Replace (parrent,"/","\")
+	For t=1 To Len(temp)-1
+		If Mid(temp,t,1)="\" Then
+			u=t
+		EndIf
+	Next
+	Return  Left(temp,u-1)
+EndF
+
+Function deleteFileFolder:Void()
+	If CurrentObject = TotalObjects Then
+		// All pending Actions done
+		Form1.Close.Event
+	Else
+		//go to the next action
+		lblFilename.Text.RSet (destinationDIR+FileOrFolderInput(CurrentObject))
+		If FileOrFolderType(CurrentObject) = "0" Then
+			//Delete File
+			File.Delete (destinationDIR + FileOrFolderInput(CurrentObject))
+		ElseIf FileOrFolderType(CurrentObject) ="1" Then
+			//delete Folder
+			Dir.Read destinationDIR + FileOrFolderInput(CurrentObject) +"\*.*",8
+			If Dir.Read.Entry = 0  Then
+				Dir.Delete (destinationDIR + FileOrFolderInput(CurrentObject))
+			Else
+				MsgBoxresponse=MsgBox ("Folder(s) not empty! Delete all?",destinationDIR + FileOrFolderInput(CurrentObject)+"\" ,"Do you want to continue?",2,2,0)
+				If MsgBoxresponse=MsgBox.Result.Yes Then
+					//deletedir that contains files
+					delDirAll (destinationDIR + FileOrFolderInput(CurrentObject))
+				EndIf
+			EndIf
+		EndIf
+		CurrentObject=CurrentObject+1
+		UpdateProgress
+	EndIf
+EndF
+
+Function delDirAll:Void(StartPath)
+	TMPStartpath  = StartPath +  "\"
+	TmpDir = StartPath +  "\"
+	deleteAction=0
+	While deleteAction=0
+		Dir.Read TmpDir,15
+		Dir_found = 0
+		While Dir.Read.Entry = 1 And Dir_found = 0
+			If Dir.Read.Name <> ".." And (Dir.Read.Attr And Dir.Attr.Directory)> 0 Then
+				TmpDir=TmpDir + Dir.Read.Name + "\"
+				Dir_found = 1
+			EndIf
+			Dir.Read.Next
+		Wend
+		If Dir_found = 0 Then
+			lblFilename.Text.RSet (TmpDir)
+			EnableAnimation
+			File.Delete (TmpDir+"*.*")
+			If TmpDir = TMPStartpath Then
+				deleteAction=1
+				Dir.Delete(TmpDir)
+				//Exit Loop
+			Else
+				Dir.Delete(TmpDir)
+				For s=1 To Len(TmpDir)-1
+					If Mid(TmpDir,s,1)="\" Then
+						b=s
+					EndIf
+				Next
+				TmpDir = Left(TmpDir,b)
+			EndIf
+		EndIf
+	Wend
+EndF
+
+Function FileOrFolderMove:Void()
+	//Check if the source disk is the same as the destination disk, by checking the drive letter
+	If Left(sourceDIR,1) = Left(destinationDIR,1) Then
+		lblFilename.Text.RSet (sourceDIR + FileOrFolderInput(CurrentObject))
+		If FileOrFolderType(CurrentObject)="0" Then
+			//moving files
+			File.Move(sourceDIR + FileOrFolderInput(CurrentObject), destinationDIR)
+		ElseIf FileOrFolderType(CurrentObject)="1" Then
+			//moving Folder
+			Dir.Move(sourceDIR + FileOrFolderInput(CurrentObject), destinationDIR)
+		EndIf
+	Else
+		//It is not a move but a copy because of other diskdrive (Delete the content after copy)
+		deleteAfterCopy=1
+	EndIf
+EndF
+
+Function UpdateProgress:Void
+	Progress1.Value.Set (Progress1.Value.Get+ProgressAmount)
+	Progress1.Refresh
+EndF
+
+Function EnableAnimation:Void()
+	If AnimationOn=1 Then
+		timercount=timercount +1
+		If timercount = 1 Then
+			AnimationFirst
+		EndIf
+		If timercount = 2 Then
+			AnimationSecond
+		EndIf
+		If timercount =3  Then
+			Animation
+		EndIf
+	EndIf
+EndF
+
+Function Animation:Void()
+	If timercount=3 Then
+		timercount = 0
+	EndIf
+	Image2.Position.Set(x,y)
+	If Screen.Colour()  > 4 Then
+		Image2.Tile.Set(smallIcons,4)
+	Else
+		Image2.Tile.Set(smallIcons,10)
+	EndIf
+	Image2.Refresh
+	x=x+4
+	If x=>144 Then
+		x=24
+		If Screen.Colour()  > 4 Then
+			Image2.Tile.Set(smallIcons,5)
+		Else
+			Image2.Tile.Set(smallIcons,5)
+		EndIf
+	EndIf
+	If Progress1.Value.Get = 255 Then
+		Progress1.Value.Set(0)
+	EndIf
+EndF
+
+Function AnimationFirst:Void()
+	If action=1 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,2)
+		Else
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,8)
+		EndIf
+	EndIf
+	If action=2 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,0)
+		Else
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,6)
+		EndIf
+	EndIf
+	If action=3 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,1)
+		Else
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,7)
+		EndIf
+	EndIf
+	Image1.Refresh
+	Image3.Refresh
+EndF
+
+Function AnimationSecond:Void()
+	If action=1 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,1)
+			Image3.Tile.Set(smallIcons,3)
+		Else
+			Image1.Tile.Set(smallIcons,7)
+			Image3.Tile.Set(smallIcons,9)
+		EndIf
+	EndIf
+	If action=2 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,0)
+			Image3.Tile.Set(smallIcons,0)
+		Else
+			Image1.Tile.Set(smallIcons,6)
+			Image3.Tile.Set(smallIcons,6)
+		EndIf
+	EndIf
+	If action=3 Then
+		If Screen.Colour()  > 4 Then
+			Image1.Tile.Set(smallIcons,1)
+			Image3.Tile.Set(smallIcons,0)
+		Else
+			Image1.Tile.Set(smallIcons,7)
+			Image3.Tile.Set(smallIcons,6)
+		EndIf
+	EndIf
+	Image1.Refresh
+	Image3.Refresh
+EndF
+
+Function Form1.Close.Event:Void()
+	mem.Free
+	smallIcons.Free
+	App.Exit
+EndF
+
+Function Button1.Event:Void()
+	Form1.Close.Event
+EndF

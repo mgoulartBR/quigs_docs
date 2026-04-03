@@ -1,0 +1,357 @@
+
+================================================================================
+RESUMO COMPLETO - DESENVOLVIMENTO VIDEO POKER PARA SYMBOS/QUIGS
+================================================================================
+Data: 07/02/2026 21:52
+Para: Claude Opus 4.6
+De: Claude Sonnet 4.5
+
+================================================================================
+OBJETIVO
+================================================================================
+Desenvolver um jogo de Video Poker em Quigs para SymbOS com gráficos de cartas 
+usando sprite sheets.
+
+================================================================================
+O QUE ESTÁ FUNCIONANDO
+================================================================================
+✓ Jogo compila sem erros
+✓ Jogo abre normalmente (sem crashes)
+✓ Botão DEAL funciona - a lógica do jogo está funcionando (exibe "Jacks+ +1" etc)
+✓ Lógica de créditos funciona - Credits e Bet são atualizados corretamente
+✓ Controles nomeados corretamente no Form Designer:
+  - CardImg1 a CardImg5 (5 controles Image para cartas)
+  - HoldImg1 a HoldImg5 (5 controles Image para indicadores HOLD)
+  - BtnDeal (botão Deal/Draw)
+  - BtnBetUp (botão +)
+  - BtnBetDn (botão -)
+  - LblCredits, LblBet, LblResult (labels)
+
+================================================================================
+PROBLEMAS ATUAIS
+================================================================================
+
+PROBLEMA 1: CARTAS NÃO APARECEM
+--------------------------------
+❌ Os controles Image (CardImg1-5 e HoldImg1-5) ficam vazios/invisíveis
+❌ A tela fica toda verde, sem nenhum gráfico de cartas
+❌ O arquivo cards.qs2 (18 KB, 16 cores) EXISTE e está na mesma pasta que app01.exe
+
+PROBLEMA 2: BOTÕES + E - NÃO FUNCIONAM
+---------------------------------------
+❌ Os botões BtnBetUp e BtnBetDn não respondem aos cliques
+❌ O valor de "Bet: 1" não muda ao clicar
+❌ As funções BtnBetUp.Event e BtnBetDn.Event estão implementadas corretamente
+
+================================================================================
+TENTATIVAS REALIZADAS (CRONOLÓGICAS)
+================================================================================
+
+TENTATIVA 1: Usar a sintaxe antiga com variável Int
+----------------------------------------------------
+Código:
+  Var shCards:Int=0
+  IncludeSheet "cards",1,1,16,40
+
+Resultado: Cartas não apareciam
+
+
+TENTATIVA 2: Usar Ctrl.Image.Tile.Set
+--------------------------------------
+Código:
+  Ctrl.Image.Tile.Set CardImg1, 1, gTile
+  Ctrl.Refresh CardImg1.Display
+
+Resultado: ❌ CRASH CATASTRÓFICO - tela disfuncional com gráficos corrompidos
+
+
+TENTATIVA 3: Voltar para sintaxe original
+------------------------------------------
+Código:
+  CardImg1.Tile.Set 1,gTile
+  CardImg1.Refresh
+
+Resultado: Jogo voltou a abrir sem crash, mas cartas continuam não aparecendo
+
+
+TENTATIVA 4: Usar Sheet.Load() com parênteses
+----------------------------------------------
+Código:
+  shCards = Sheet.Load(App.Path + "cards.qs2", 1)
+
+Resultado: ❌ ERRO DE COMPILAÇÃO - "Sheet.Load in Line 481"
+
+
+TENTATIVA 5: Descobrir sintaxe correta através de exemplos
+-----------------------------------------------------------
+Analisamos códigos funcionais (2048.txt, explorer.txt, flappy.txt) e descobrimos:
+
+Código CORRETO:
+  Var shCards:Sheet  // ← TIPO CORRETO!
+  shCards.Load App.Path+"cards.qs2"  // ← SINTAXE CORRETA (sem parênteses)
+
+Resultado: ✓ Compila sem erros, mas cartas ainda não aparecem
+
+================================================================================
+CÓDIGO ATUAL (versão file:52 - videopoker2.txt)
+================================================================================
+
+Declaração correta da variável:
+--------------------------------
+Var shCards:Sheet
+
+Carregamento do sheet:
+----------------------
+Function Form1.Open.Event:Void()
+    Randomize Time.Second.Get * Time.Minute.Get
+
+    ; Carregar o sprite sheet manualmente em runtime
+    shCards.Load App.Path+"cards.qs2"
+
+    ; Show card backs initially
+    For i=0 To 4
+        If i=0 Then
+            CardImg1.Tile.Set shCards,TILE_BACK
+            CardImg1.Refresh
+        EndIf
+        If i=1 Then
+            CardImg2.Tile.Set shCards,TILE_BACK
+            CardImg2.Refresh
+        EndIf
+        If i=2 Then
+            CardImg3.Tile.Set shCards,TILE_BACK
+            CardImg3.Refresh
+        EndIf
+        If i=3 Then
+            CardImg4.Tile.Set shCards,TILE_BACK
+            CardImg4.Refresh
+        EndIf
+        If i=4 Then
+            CardImg5.Tile.Set shCards,TILE_BACK
+            CardImg5.Refresh
+        EndIf
+
+        gSlot=i
+        gShow=0
+        ShowHold
+    Next
+
+    LblResult.Text.Set "Welcome to Video Poker!"
+    LblResult.Refresh
+    UpdateDisplay
+    gamePhase=0
+EndF
+
+Função ShowCard:
+----------------
+Function ShowCard:Void
+    If gSlot=0 Then
+        CardImg1.Tile.Set shCards,gTile
+        CardImg1.Refresh
+    EndIf
+    If gSlot=1 Then
+        CardImg2.Tile.Set shCards,gTile
+        CardImg2.Refresh
+    EndIf
+    If gSlot=2 Then
+        CardImg3.Tile.Set shCards,gTile
+        CardImg3.Refresh
+    EndIf
+    If gSlot=3 Then
+        CardImg4.Tile.Set shCards,gTile
+        CardImg4.Refresh
+    EndIf
+    If gSlot=4 Then
+        CardImg5.Tile.Set shCards,gTile
+        CardImg5.Refresh
+    EndIf
+EndF
+
+Função ShowHold:
+----------------
+Function ShowHold:Void
+    If gShow=1 Then
+        htile=TILE_HOLD  ; Tile 27
+    Else
+        htile=TILE_EMPTY  ; Tile 41
+    EndIf
+    If gSlot=0 Then
+        HoldImg1.Tile.Set shCards,htile
+        HoldImg1.Refresh
+    EndIf
+    If gSlot=1 Then
+        HoldImg2.Tile.Set shCards,htile
+        HoldImg2.Refresh
+    EndIf
+    If gSlot=2 Then
+        HoldImg3.Tile.Set shCards,htile
+        HoldImg3.Refresh
+    EndIf
+    If gSlot=3 Then
+        HoldImg4.Tile.Set shCards,htile
+        HoldImg4.Refresh
+    EndIf
+    If gSlot=4 Then
+        HoldImg5.Tile.Set shCards,htile
+        HoldImg5.Refresh
+    EndIf
+EndF
+
+Tiles constants:
+----------------
+Var TILE_BACK:Int=13   ; Verso da carta
+Var TILE_HOLD:Int=27   ; Indicador "HOLD"
+Var TILE_EMPTY:Int=41  ; Tile vazio/transparente
+Var TILE_WIN:Int=55    ; (não usado ainda)
+
+Funções de evento dos botões:
+------------------------------
+Function BtnDeal.Event:Void()
+    DoDeal
+EndF
+
+Function BtnBetUp.Event:Void()
+    DoBetUp
+EndF
+
+Function BtnBetDn.Event:Void()
+    DoBetDn
+EndF
+
+Função DoBetUp:
+---------------
+Function DoBetUp:Void
+    If gamePhase=0 Then
+        bet=bet+1
+        If bet>5 Then
+            bet=5
+        EndIf
+        UpdateDisplay
+    EndIf
+    If gamePhase=2 Then
+        bet=bet+1
+        If bet>5 Then
+            bet=5
+        EndIf
+        UpdateDisplay
+    EndIf
+EndF
+
+Função DoBetDn:
+---------------
+Function DoBetDn:Void
+    If gamePhase=0 Then
+        bet=bet-1
+        If bet<1 Then
+            bet=1
+        EndIf
+        UpdateDisplay
+    EndIf
+    If gamePhase=2 Then
+        bet=bet-1
+        If bet<1 Then
+            bet=1
+        EndIf
+        UpdateDisplay
+    EndIf
+EndF
+
+================================================================================
+HIPÓTESES PARA OS PROBLEMAS
+================================================================================
+
+PARA AS CARTAS NÃO APARECEREM:
+-------------------------------
+1. O sheet não está sendo carregado - shCards.Load falha silenciosamente
+2. Os controles Image não estão configurados no Form Designer - faltam propriedades
+3. Tile numbers errados - TILE_BACK=13 pode não existir no cards.qs2
+4. Formato do arquivo errado - cards.qs2 pode estar corrompido ou incompatível
+5. Sintaxe de Tile.Set incorreta - pode precisar de outra abordagem
+6. Os controles Image podem precisar ter Sheet e Tile inicializados no Form Designer
+7. Pode ser necessário usar IncludeSheet ao invés de Load runtime
+
+PARA OS BOTÕES NÃO FUNCIONAREM:
+--------------------------------
+1. Eventos não estão ligados no Form Designer - falta conectar eventos aos controles
+2. gamePhase impede execução - mas deveria funcionar no início (gamePhase=0)
+3. Os controles Button podem ter nomes ligeiramente diferentes no Form Designer
+4. Pode ser necessário usar outra sintaxe para eventos de Button
+
+================================================================================
+ARQUIVOS RELEVANTES
+================================================================================
+- Código fonte: videopoker2.txt (file:52)
+- Sprite sheet: cards.qs2 (18 KB, está na pasta do executável)
+- Executável compilado: app01.exe
+- Exemplos funcionais analisados: 2048.txt, explorer.txt, flappy.txt
+  (Estes exemplos usam: Var variavel:Sheet + variavel.Load App.Path+"arquivo.qs2")
+
+================================================================================
+PRÓXIMOS PASSOS SUGERIDOS
+================================================================================
+
+1. VERIFICAR SE O SHEET CARREGA:
+   Testar com tile 0 ao invés de 13:
+
+   CardImg1.Tile.Set shCards,0
+   CardImg1.Refresh
+
+2. VERIFICAR CONFIGURAÇÃO NO FORM DESIGNER:
+   - Cada Image deve ter Sheet No e Tile No configurados?
+   - Os controles têm tamanho suficiente (16x40 pixels)?
+   - Existe alguma propriedade "Visible" que precisa estar marcada?
+
+3. TESTAR CARREGAMENTO CONDICIONAL (como nos exemplos):
+
+   If Screen.Colour=4 Then
+       shCards.Load App.Path+"cards.qs1"
+   Else
+       shCards.Load App.Path+"cards.qs2"
+   EndIf
+
+4. INVESTIGAR EVENTOS DOS BOTÕES:
+   - Verificar se há alguma propriedade "Event" no Form Designer
+   - Verificar se os nomes dos botões têm espaços ou caracteres especiais
+   - Tentar adicionar debug dentro das funções Event para ver se são chamadas
+
+5. ADICIONAR DEBUG VISUAL:
+
+   LblResult.Text.Set "Tile 0: OK"
+   LblResult.Refresh
+
+6. TESTAR COM IncludeSheet AO INVÉS DE Load:
+   Voltar para a abordagem original:
+
+   IncludeSheet "cards",1,1,16,40
+
+   E usar ID fixo 1 ao invés de variável shCards
+
+7. VERIFICAR ESTRUTURA DO ARQUIVO cards.qs2:
+   - Quantos tiles tem?
+   - Tile 13 realmente existe?
+   - Está no formato correto de 16 cores?
+
+================================================================================
+OBSERVAÇÃO IMPORTANTE
+================================================================================
+O código COMPILA E RODA, a lógica funciona (veja "Jacks+ +1" sendo exibido), 
+mas os gráficos não renderizam. Isso sugere que o problema é específico ao 
+CARREGAMENTO OU RENDERIZAÇÃO DE SPRITES/TILES, não à lógica do jogo.
+
+A sintaxe atual está CORRETA segundo os exemplos analisados (2048.txt, 
+explorer.txt). Portanto, o problema pode estar em:
+- Configuração do Form Designer
+- Formato ou conteúdo do arquivo cards.qs2
+- Alguma inicialização necessária que está faltando
+
+================================================================================
+INFORMAÇÕES DO USUÁRIO
+================================================================================
+- Localização: Rio de Janeiro, Brasil
+- IDE: Quigs para SymbOS (MSX)
+- Plataforma: MSX com SymbOS
+- Arquivos estão no mesmo diretório: app01.exe e cards.qs2
+
+================================================================================
+FIM DO RESUMO
+================================================================================

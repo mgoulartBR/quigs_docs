@@ -1,0 +1,266 @@
+// Quigs 1.01 Application for Symbos
+// Name:
+// Coder:
+// Date / Version:
+
+// Declare variables
+
+Var a:Int
+Var b:Int
+Var f:Int
+Var g:Int
+Var g1:Int
+Var h:Int
+Var k:Int
+Var j:Int
+Var Grid(4,4):Int
+Var NTilesID(16):Int
+Var EmptyListX(20):Int
+Var EmptyListY(20):Int
+Var TileTotals(16):Int=[0,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192]
+Var Dir:Int
+Var score:Int=0
+Var hiscore:Int=0
+
+Var x:Int
+Var y:Int
+
+Var TileSheet:Sheet
+Var LogoSheet:Sheet
+Var Edge1Sheet:Sheet
+Var Edge2Sheet:Sheet
+
+// End declares
+
+Function Main:Void()
+	// Main loop
+	If Key(Key.Code.CursorLeft) Then
+		MoveLeft
+		PlaceTile
+	EndIf
+	If Key(Key.Code.CursorRight) Then
+		MoveRight
+		PlaceTile
+	EndIf
+	If Key(Key.Code.CursorUp) Then
+		MoveUp
+		PlaceTile
+	EndIf
+	If Key(Key.Code.CursorDown) Then
+		MoveDown
+		PlaceTile
+	EndIf
+EndF
+
+Function MoveLeft:Void()
+	k=1
+	While k=1
+		k=0
+		For x=1 To 3
+			For y=0 To 3
+				If Grid(y,x)>0 Then
+					If Grid(y,x)=Grid(y,x-1) Or Grid(y,x-1)=0 Then
+						k=1
+						If Grid(y,x-1)=0 Then
+							Grid(y,x-1)=Grid(y,x)
+						Else
+							Grid(y,x-1)=Grid(y,x-1)+1
+							score=score+TileTotals(Grid(y,x-1))
+						EndIf
+						Grid(y,x)=0
+						b=(x Mod 4)+(y*4)
+						Ctrl.Image.Tile.Set NTilesID(b-1),TileSheet,Grid(y,x-1)
+						Ctrl.Image.Tile.Set NTilesID(b),TileSheet,Grid(y,x)
+						Ctrl.Refresh NTilesID(b-1)
+						Ctrl.Refresh NTilesID(b)
+					EndIf
+				EndIf
+			Next
+		Next
+	Wend
+	UpdateScore
+	While Key(Key.Code.CursorLeft)
+	Wend
+EndF
+Function MoveRight:Void()
+	k=1
+	While k=1
+		k=0
+		For x=2 To 0 Step -1
+			For y=0 To 3
+				If Grid(y,x)>0 Then
+					If Grid(y,x)=Grid(y,x+1) Or Grid(y,x+1)=0 Then
+						k=1
+						If Grid(y,x+1)=0 Then
+							Grid(y,x+1)=Grid(y,x)
+						Else
+							Grid(y,x+1)=Grid(y,x+1)+1
+							score=score+TileTotals(Grid(y,x+1))
+						EndIf
+						Grid(y,x)=0
+						b=(x Mod 4)+(y*4)
+						Ctrl.Image.Tile.Set NTilesID(b+1),TileSheet,Grid(y,x+1)
+						Ctrl.Image.Tile.Set NTilesID(b),TileSheet,Grid(y,x)
+						Ctrl.Refresh NTilesID(b+1)
+						Ctrl.Refresh NTilesID(b)
+					EndIf
+				EndIf
+			Next
+		Next
+	Wend
+	UpdateScore
+	While Key(Key.Code.CursorRight)
+	Wend
+EndF
+Function MoveUp:Void()
+	k=1
+	While k=1
+		k=0
+		For y=1 To 3
+			For x=0 To 3
+				If Grid(y,x)>0 Then
+					If Grid(y,x)=Grid(y-1,x) Or Grid(y-1,x)=0 Then
+						k=1
+						If Grid(y-1,x)=0 Then
+							Grid(y-1,x)=Grid(y,x)
+						Else
+							Grid(y-1,x)=Grid(y-1,x)+1
+							score=score+TileTotals(Grid(y-1,x))
+						EndIf
+						Grid(y,x)=0
+						b=(x Mod 4)+(y*4)
+						Ctrl.Image.Tile.Set NTilesID(b-4),TileSheet,Grid(y-1,x)
+						Ctrl.Image.Tile.Set NTilesID(b),TileSheet,Grid(y,x)
+						Ctrl.Refresh NTilesID(b-4)
+						Ctrl.Refresh NTilesID(b)
+					EndIf
+				EndIf
+			Next
+		Next
+	Wend
+	UpdateScore
+	While Key(Key.Code.CursorUp)
+	Wend
+EndF
+Function MoveDown:Void()
+	k=1
+	While k=1
+		k=0
+		For y=2 To 0 Step -1
+			For x=0 To 3
+				If Grid(y,x)>0 Then
+					If Grid(y,x)=Grid(y+1,x) Or Grid(y+1,x)=0 Then
+						k=1
+						If Grid(y+1,x)=0 Then
+							Grid(y+1,x)=Grid(y,x)
+						Else
+							Grid(y+1,x)=Grid(y+1,x)+1
+							score=score+TileTotals(Grid(y+1,x))
+						EndIf
+						Grid(y,x)=0
+						b=(x Mod 4)+(y*4)
+						Ctrl.Image.Tile.Set NTilesID(b+4),TileSheet,Grid(y+1,x)
+						Ctrl.Image.Tile.Set NTilesID(b),TileSheet,Grid(y,x)
+						Ctrl.Refresh NTilesID(b+4)
+						Ctrl.Refresh NTilesID(b)
+					EndIf
+				EndIf
+			Next
+		Next
+	Wend
+	UpdateScore
+	While Key(Key.Code.CursorDown)
+	Wend
+EndF
+Function UpdateScore:Void()
+	ScoreLabel.Text.RSet Right("00000"+Str(score),6)
+	If score>hiscore Then
+		hiscore=score
+	EndIf
+	HiScoreLabel.Text.RSet Right("00000"+Str(hiscore),6)
+EndF
+Function Form1.Open.Event:Void()
+	// Load the Number Tiles image into Sheet container
+	;If Screen.Colour=4 Then
+	;	TileSheet.Load App.Path+"ntiles.qs1"
+	;	LogoSheet.Load App.Path+"logo.qs1"
+	;	Edge1Sheet.Load App.Path+"edge1.qs1"
+	;	Edge2Sheet.Load App.Path+"edge2.qs1"
+	;Else
+	TileSheet.Load App.Path+"ntiles.qs2"
+	LogoSheet.Load App.Path+"logo.qs2"
+	Edge1Sheet.Load App.Path+"edge1.qs2"
+	Edge2Sheet.Load App.Path+"edge2.qs2"
+	;EndIf
+	// Create List of NTiles ID's
+	h=0
+	For f=Image1.Display To Image1.Display+15
+		NTilesID(h)=Ctrl.GetID(Form1,f)
+		h=h+1
+	Next
+	logoImage.Tile.Set LogoSheet,0
+	edgetop.Tile.Set Edge1Sheet,1
+	edgebottom.Tile.Set Edge1Sheet,0
+	edgeleft.Tile.Set Edge2Sheet,1
+	edgeright.Tile.Set Edge2Sheet,0
+	logoImage.Refresh
+	edgetop.Refresh
+	edgebottom.Refresh
+	edgeleft.Refresh
+	edgeright.Refresh
+	
+	NewGame.Event
+EndF
+Function NewGame.Event:Void()
+	// generated on entry:
+	//
+	h=0
+	For y=0 To 3
+		For x=0 To 3
+			Ctrl.Image.Tile.Set NTilesID(h),TileSheet,0
+			Ctrl.Refresh NTilesID(h)
+			Grid(y,x)=0
+			h=h+1
+		Next
+	Next
+	score=0
+	UpdateScore
+	PlaceTile
+	PlaceTile
+EndF
+Function PlaceTile:Void()
+	// generate list of empty grid tiles and then place a 2 or 4 into a random empty post
+	// Make list of empty grid
+	h=0
+	For y=0 To 3
+		For x=0 To 3
+			If Grid(y,x)=0 Then
+				EmptyListX(h)=x
+				EmptyListY(h)=y
+				h=h+1
+			EndIf
+		Next
+	Next
+	// If grid is able to add tile
+	If h>0 Then
+		a=Rnd(h)
+		b=Rnd(4)
+		If b=3 Then
+			b=2		//4 Tile
+		Else
+			b=1		//2 Tile
+		EndIf
+		Grid(EmptyListY(a),EmptyListX(a))=b
+		//Work out Image number
+		b=(EmptyListX(a) Mod 4)+(EmptyListY(a)*4)
+		Ctrl.Image.Tile.Set NTilesID(b),TileSheet,Grid(EmptyListY(a),EmptyListX(a))
+		Ctrl.Refresh NTilesID(b)
+	Else
+		b=MsgBox("Game Over","Score was "+Str(score),"",MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.User)
+		score=0
+		NewGame.Event
+	EndIf
+EndF
+
+
+

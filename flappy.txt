@@ -1,0 +1,1124 @@
+// Quigs Symbos G9K Application
+// Flappy Example simple game by Edoz IN OKTOBER 2021 with a log of help from Quigs GOD Trebmint (AKA ROB)
+// Please don't look at the horrible code i did generate
+
+
+Var GameOn:Int=0				//status in the game or menu's
+Var PattsLoaded:Int=0
+Var SkipFrame:Int=0				//When slow skipe a frame
+
+// general counters or vars for loops
+
+Var f:Int=0
+Var k:Int=0
+Var i:Int=0
+Var g:Int=0
+Var h:Int=0
+Var g1:Int = 0
+Var h1:Int=0
+
+// Exit menu vars and X Y for mouse and Menu's
+
+Var menuOn:Int=0
+Var menuX:Int=64
+Var menuY:Int=64
+Var MouseKey:Int=0
+Var mouseX:Int=100
+Var mouseY:Int=100
+Var Pauze:Int=0
+Var PlayButtonAnimation:Int=0
+Var getReadyAnimation:Int=0
+Var waittostart:Int=0
+
+// Bird vars
+
+Var BirdX1:Int=114
+Var BirdY1:Int=60
+Var JumpIncrement:Int = 0
+Var Jumping:Int=0
+Var DoBirdAnimation:Int=0
+
+// Pipes different vars used
+
+Var pipe1X:Int=1
+Var pipe1y:Int=143
+Var Pipe1SizeGab:Int=5
+Var Pipe1GabStart:Int=3
+Var Top1:Int=0
+Var Bot1:Int=0
+Var pipe2X:Int=100
+Var pipe2y:Int=143
+Var Pipe2SizeGab:Int=5
+Var Pipe2GabStart:Int=3
+Var hasCollide:Int
+Var Top2:Int=0
+Var Bot2:Int=0
+Var pipe3X:Int=200
+Var pipe3y:Int=143
+Var Pipe3SizeGab:Int=5
+Var Pipe3GabStart:Int=3
+Var Top3:Int=0
+Var Bot3:Int=0
+Var pipespeed:Int=1
+Var DrawFirstLine:Int=0
+
+// Vars for the coldide routines
+
+Var cx1:Int=0
+Var cy1:Int=0
+Var cw1:Int=0
+Var ch1:Int=0
+Var cx2:Int=0
+Var cy2:Int=0
+Var cw2:Int=0
+Var ch2:Int=0
+
+//Score variables
+
+Var Digit0:Int
+Var Digit1:Int
+Var Digit2:Int
+Var Digit0High:Int
+Var Digit1High:Int
+Var Digit2High:Int
+Var Digit0Low:Int
+Var Digit1Low:Int
+Var Digit2Low:Int
+Var TopScore:Int=0
+Var Score:Int=0
+
+//General timers
+
+Var waittimer:Int=0
+Var falldown:Int=0
+Var loading:Int=0
+
+// Used to fade- in / out the logo during loading
+
+Var Pal1:Int
+Var Pal2:Int
+Var Pal3:Int
+Var Lev:Int
+Var Loop:Int
+
+//THIS is the STARTUP routine when the SymbOS app is executed
+//After this routine the MAIN routine will be the core of the app
+Function Initialize:Void()
+	// Initialize G9K App
+	// border color 0-63
+	// clear screen and set palletes
+	
+	For f=240 To 255
+		Ink.Set f,0,0,0
+	Next
+	
+	Ink.Palette.Set 0,240
+	Ink.Palette.Set 1,240
+	Ink.Palette.Set 2,240
+	Ink.Palette.Set 3,240
+	
+	BackColour.Set 5
+	Back.Palette.Set 2
+	Fore.Palette.Set 1
+	
+	//clear all sprites and set them
+	
+	For f=0 To 124
+		Sprite.Palette.Set f,0
+		Sprite.Position.Set f,200,0
+		Sprite.Display.Set	 f,0
+	Next
+	
+	Sprite.Refresh
+	
+	//Load splash screen
+	PattsLoaded = Fore.Pattern.Load (App.Path+ "flappy4.qpt",4928,32)
+	//First fill entire map with single blank tile
+	For f=0 To 31
+		For g=0 To 63
+			Fore.ScreenMap.Set 4928,g,f
+		Next
+	Next
+	i=4928
+	// First rectangle with image
+	For f=4 To 15
+		For g=6 To 27
+			Fore.ScreenMap.Set i,g,f
+			i=i+1
+		Next
+	Next
+	
+	//Fade the logo in
+	For f=0 To 127 Step 8
+		PalFade(32,240,128,f)
+		Ink.Palette.Set 1,128
+		VWait
+	Next
+	
+	// set pallete for the logo
+	
+	Ink.Palette.Set 3,32
+	Fore.Palette.Set 3
+	
+	//Startup complete (When loading is 0 it will start loading the game data in)
+	//GameOn=0 means still loading and not ready
+	
+	loading=0
+	GameOn=0
+	
+EndF
+
+// Colide routine used in the game to check game- over
+Function Collide:Int(cx1,cy1,cw1,ch1,cx2,cy2,cw2,ch2)
+	If cx1<cx2+cw2  Then
+		If cx1+cw1>=cx2 Then
+			If cy1<cy2+ch2 Then
+				If cy1+ch1>=cy2 Then
+					Return 1
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	Return 0
+EndF
+
+
+// Pal Fade routine for startup logo
+Function PalFade:Void(Pal1,Pal2,Pal3,Lev)
+	
+	For Loop=0 To 15
+		Ink.Set Pal3,Ink.Fade(Ink.Red.Get(Pal1),Ink.Red.Get(Pal2),Lev),Ink.Fade(Ink.Green.Get(Pal1),Ink.Green.Get(Pal2),Lev),Ink.Fade(Ink.Blue.Get(Pal1),Ink.Blue.Get(Pal2),Lev)
+		Pal1=Pal1+1
+		Pal2=Pal2+1
+		Pal3=Pal3+1
+	Next
+EndF
+
+
+// Score up routine is triggered when a pipe is passed. It will refresh the score board
+Function ScoreUP:Void
+	Score=Score+1
+	If Score => TopScore	Then
+		TopScore=Score
+	EndIf
+	
+	Digit0=Digit0+1
+	If Digit0>9 Then
+		Digit0=0
+		Digit1=Digit1+1
+		If Digit1>9 Then
+			Digit1=0
+			Digit2=Digit2+1
+			If Digit2>9 Then
+				Digit2=0
+			EndIf
+			Sprite.Pattern.Set 52, 124+(Digit2*2)
+			Sprite.Pattern.Set 53, 125+(Digit2*2)
+		EndIf
+		Sprite.Pattern.Set 50, 124+(Digit1*2)
+		Sprite.Pattern.Set 51, 125+(Digit1*2)
+	EndIf
+	Sprite.Pattern.Set 48, 124+(Digit0*2)
+	Sprite.Pattern.Set 49, 125+(Digit0*2)
+	
+EndF
+
+// Reset the scoreboard to 0 and display it
+Function DisplayAndResetScore:Void
+	
+	Digit0=0
+	Digit1=0
+	Digit2=0
+	
+	Sprite.Pattern.Set 48, 124+(Digit0*2)
+	Sprite.Pattern.Set 49, 125+(Digit0*2)
+	Sprite.Pattern.Set 50, 124+(Digit1*2)
+	Sprite.Pattern.Set 51, 125+(Digit1*2)
+	Sprite.Pattern.Set 52, 124+(Digit2*2)
+	Sprite.Pattern.Set 53, 125+(Digit2*2)
+	
+	Sprite.Position.Set 52,104,180
+	Sprite.Position.Set 53,104,196
+	Sprite.Position.Set 50,120,180
+	Sprite.Position.Set 51,120,196
+	Sprite.Position.Set 48,136,180
+	Sprite.Position.Set 49,136,196
+	
+EndF
+
+
+// Game over, when restarting the game all defaults will be set to begin state
+Function Restart:Void()
+	
+	Score=0
+	GameOn=1
+	waittostart=0
+	Pauze=0
+	BirdX1=114
+	BirdY1=60
+	
+	Sprite.Pattern.Set 36,191
+	Sprite.Pattern.Set 37,191
+	Sprite.Pattern.Set	 110,191
+	
+	pipespeed=1
+	pipe1X=1
+	pipe1y=143
+	pipe2X=100
+	pipe2y=143
+	pipe3X=200
+	pipe3y=143
+	Pipe1SizeGab=5
+	Pipe1GabStart=3
+	Pipe2SizeGab=5
+	Pipe2GabStart=3
+	Pipe3SizeGab=5
+	Pipe3GabStart=3
+	RemoveScoreBoard
+	
+	SetPipe1
+	SetPipe2
+	SetPipe3
+	//MovePipe1
+	Sprite.Position.Group0.Set 68,pipe1X,143,2,10
+	//MovePipe2
+	Sprite.Position.Group0.Set 88,pipe2X,143,2,10
+	//MovePipe3
+	If menuOn=0 Then
+		If GameOn>1  Then
+			Sprite.Position.Group0.Set 10,pipe3X,143,2,10
+		EndIf
+	EndIf
+	falldown=0
+	
+	ShowLogo
+	ShowTab
+	
+EndF
+
+
+// Routine to load the gamedata IN
+Function LoadGame:Void:()
+	
+	// Load sprites (patterns 8x8) into memory
+	// Total of sprites are 192 (16x16) = 4x192 = 768 = now 832 patterns (starts at 0)
+	PattsLoaded = Fore.Pattern.Load (App.Path+ "flappy1.qpt",0,0)
+	//Palette 0 = 0, Palette 1 =16, Palette 2=32,Palette 3=48 in g9k
+	//Lets Set Palette 1 back to the Black Palette
+	Ink.Palette.Set 1,240
+	
+	For f=0 To 124
+		Sprite.Palette.Set f,0
+		Sprite.Position.Set f,f,166
+		Sprite.Pattern.Set f,191
+	Next
+	
+	//Mouse and exit and pause button sprite set
+	Sprite.Pattern.Set 0,2
+	Sprite.Pattern.Set 1,22
+	Sprite.Pattern.Set 2,0
+	
+	Sprite.Position.Set 1,2,2
+	Sprite.Position.Set 2,238,2
+	
+	
+	//Load the foreground image after the sprites. sheetsize = 512x256 that is 32x64 patterns = 2048 = (+ start pos. 768 = 2816)
+	PattsLoaded = Fore.Pattern.Load (App.Path+ "flappy3.qpt",832,16)
+	//Load the background image starting at 2816
+	PattsLoaded = Back.Pattern.Load(App.Path+ "flappy2.qpt",2880,48)
+	
+	
+	//Fade out the logo as the game data was loaded
+	For  f=127 To 0 Step -8
+		PalFade(32,240,128,f)
+		Ink.Palette.Set 3,128
+		VWait
+	Next
+	
+	//Copy everyting to the layer as the game data is loaded (Fore and Back layer)
+	
+	i=832
+	For f=0 To 31
+		For g=0 To 63
+			Fore.ScreenMap.Set i,g,f
+			i=i+1
+		Next
+	Next
+	
+	i=2880
+	For f=0 To 31
+		For g=0 To 63
+			Back.ScreenMap.Set i,g,f
+			i=i+1
+		Next
+	Next
+	
+	//Set the palletes for the layers
+	
+	Ink.Palette.Set 0,0
+	Ink.Palette.Set 1,16
+	Ink.Palette.Set 2,48
+	
+	Back.Palette.Set 2
+	Fore.Palette.Set 1
+	
+	//Set the pipes for the first time
+	
+	SetPipe1
+	MovePipe1
+	
+	SetPipe2
+	MovePipe2
+	
+	SetPipe3
+	MovePipe3
+	
+	
+	// build up standard screen ITEMS for game start
+	
+	ShowTab
+	ShowLogo
+	
+	// Game is loaded and ready to use
+	loading=1
+	GameOn=1
+	
+EndF
+
+// The MAIN routine is the routine which is getting CPU time from SymbOS when the application gets CPU time from the OS
+// It always runs in a loop. In fact it is the core routine of the application
+Function Main:Void()
+	
+	// Checking game loading and status and start actions on triggers
+	
+	If loading=0 Then
+		loading=3
+		LoadGame
+	EndIf
+	
+	If loading=1 Then
+		
+		// Animation for the Play Button routine
+		If GameOn=1 And menuOn=0 Then
+			
+			PlayButtonAnimation=PlayButtonAnimation+1
+			If PlayButtonAnimation=20 Then
+				RemovePlay
+			Else
+				If PlayButtonAnimation = 40 Then
+					ShowPlay
+					PlayButtonAnimation=0
+				EndIf
+			EndIf
+		EndIf
+		
+		// Animation for the get ready logo
+		If GameOn=4 Then
+			getReadyAnimation=getReadyAnimation+1
+			If getReadyAnimation=10 Then
+				RemoveGetReady
+			Else
+				If getReadyAnimation = 20 Then
+					ShowGetReady
+					getReadyAnimation=0
+				EndIf
+			EndIf
+			
+		EndIf
+		
+		
+		// Read the mouse status from the OS (Does it once per routine to save time)
+		
+		mouseX = Mouse.X
+		mouseY = Mouse.Y
+		MouseKey = Mouse.Key
+		
+		// mouse should not go out of the window
+		
+		mouseX = Max(3,Min(mouseX,250))
+		mouseY = Max(3,Min(mouseY,203))
+		Sprite.Position.Set 0,mouseX,mouseY
+		
+		// Show Exit menu
+		If GameOn=1 And menuOn=0 Then
+			// Mouse Click will start the game
+			If MouseKey = 1 Then
+				If Collide(mouseX,mouseY,10,10,97,120,64,32)=1  Then
+					RemovePlay
+					//RemoveTab as the game starts
+					Sprite.Pattern.Set 36,174
+					Sprite.Pattern.Set 37,175
+					Sprite.Position.Group.Set 36,BirdX1,BirdY1,2,1
+					ShowGetReady
+					DisplayAndResetScore
+					pipespeed=4
+					GameOn=2
+				EndIf
+			EndIf
+		EndIf
+		
+		If menuOn=0 Then
+			//Right click will show the exit menu
+			If MouseKey = 1 And menuOn=0 And Collide(mouseX,mouseY,10,10,238,2,20,20)=1 Then
+				menuOn=1
+			EndIf
+			
+			// Pauze the game used the button
+			If MouseKey = 1 And menuOn=0 And Collide(mouseX,mouseY,10,10,2,2,20,20)=1 Then
+				If Pauze=1 Then
+					Pauze=0
+					Sprite.Pattern.Set 1,22
+				Else
+					Pauze=1
+					Sprite.Pattern.Set 1,24
+				EndIf
+				MouseKey=0
+			EndIf
+		Else
+			If menuOn=2 Then
+				//Exit the game as the user ends the game
+				If MouseKey=1 And  menuOn=2 And Collide(mouseX,mouseY,10,10,menuX+96,menuY+48,32,10)=1 Then
+					App.Exit
+				EndIf
+				//Cancel Exit the game by closing the exit menu with the cross
+				If MouseKey=1 And  menuOn=2 And Collide(mouseX,mouseY,10,10,menuX+110,menuY,20,20)=1 Then
+					RemoveMenu
+					menuX=64
+					menuY=64
+					If GameOn= 6 Then
+						ShowScoreBoard
+					EndIf
+					menuOn=0
+				EndIf
+				
+				//Moving the menu on the screen when pickedup with the mouse by the user
+				
+				If MouseKey=1  And Collide(menuX,menuY,104,10,mouseX,mouseY,104,10)=1 Then
+					menuX=mouseX-50
+					menuY=mouseY-4
+					Sprite.Position.Group.Set 3,menuX,menuY,8,4
+					
+				EndIf
+				
+			EndIf
+			
+			If menuOn=1 Then
+				menuOn=2
+				ShowMenu
+			EndIf
+			
+		EndIf
+		// scroll the layers in the screen
+		//		Fore.Scroll	 g,40
+		//		Back.Scroll 	Shr1(h),60+Shr4(BirdY1)
+		//		Sprite.Refresh
+		
+		
+		Fore.Scroll	 Shl2(g),160
+		Back.Scroll 	Shl2(Shr1(h)),Shl2(60+Shr4(BirdY1))
+		Sprite.Refresh
+		
+		g=(g+3)  And 511				;Layer 1 scroll moves left but wraps 512
+		h=(h+1)  And  1023				;Layer B scroll moves left but wraps 1024 as /2 for half speed
+		
+		// This game is initiate to start (state 4) remove the game menu items with delay and set the pipe speed
+		
+		If GameOn=4 Then
+			waittostart=waittostart+1
+			
+			If waittostart=>150 Then
+				waittostart=0
+				GameOn=5
+				RemoveGetReady
+				RemoveTab
+				pipespeed=2
+				
+			EndIf
+		EndIf
+		
+		If GameOn=3 Then
+			If MouseKey=1 Then
+				GameOn=4
+			EndIf
+		EndIf
+		
+		If GameOn=6 And menuOn=0  Then
+			If  MouseKey=2 Then
+				Restart
+			EndIf
+			
+			If falldown=1 Then
+				BirdY1=BirdY1+2
+				Sprite.Pattern.Set 36,204
+				Sprite.Pattern.Set 37,191
+				Sprite.Position.Group.Set 36,BirdX1,BirdY1,2,1
+				If BirdY1=>145 Then
+					falldown=3
+					Sprite.Pattern.Set	 110,204
+					Sprite.Position.Set  110,BirdX1,BirdY1
+					RemovePipe
+					ShowScoreBoard
+				EndIf
+				
+			EndIf
+			
+			If  falldown=3 Then
+				waittostart=waittostart+1
+				If waittostart=>500 Then
+					waittostart=0
+					Restart
+				EndIf
+			EndIf
+			
+		EndIf
+		
+		
+		If GameOn=5  Then
+			
+			If MouseKey =1 And menuOn=0  Then
+				// Jump the Bird when pressing the mouse key (if no exit menu is activated)
+				
+				If BirdX1<mouseX Then
+					BirdX1=BirdX1+1
+				Else
+					BirdX1=BirdX1-1
+				EndIf
+				
+			EndIf
+			
+			If MouseKey = 1 And Jumping=0 Then
+				JumpIncrement = -9
+				Jumping=1
+			EndIf
+			If JumpIncrement<1 Then
+				JumpIncrement=JumpIncrement+1
+			EndIf
+			If Jumping = 1 And JumpIncrement>0 Then
+				Jumping =0
+			EndIf
+			BirdY1=BirdY1+JumpIncrement
+			
+			If menuOn=0 Then
+				Sprite.Position.Group.Set 36,BirdX1,BirdY1,2,1
+			EndIf
+			
+			// Animation of the bird during the gameplay
+			
+			BirdY1=BirdY1+1
+			Sprite.Pattern.Set 36,174+k
+			Sprite.Pattern.Set 37,175+k
+			
+			If  DoBirdAnimation=0 Then
+				k=k+2
+				If k=6 Then
+					k=0
+				EndIf
+			EndIf
+			
+			DoBirdAnimation=DoBirdAnimation	+1
+			
+			If DoBirdAnimation= 10 Then
+				DoBirdAnimation=0
+			EndIf
+			
+			// Check bird position in the play field
+			// Bouderies of the play area and when hasColiide initate the gameover
+			
+			hasCollide=0
+			
+			If BirdY1 => 150 Then
+				BirdY1= 150
+				hasCollide=1
+			EndIf
+			
+			If BirdY1 =< 1 Then
+				BirdY1=1
+			EndIf
+			
+			
+			//check collisions against the pipes
+			
+			
+			If Collide(BirdX1,BirdY1,5,5,pipe1X,8,16,Top1-2)=1 Then
+				hasCollide=1
+			EndIf
+			If Collide(BirdX1,BirdY1,5,5,pipe2X,8,16,Top2-2)=1 Then
+				hasCollide=1
+			EndIf
+			If Collide(BirdX1,BirdY1,5,5,pipe3X,8,16,Top3-2)=1 Then
+				hasCollide=1
+			EndIf
+			If Collide(BirdX1,BirdY1,5,5,pipe1X,Bot1,16,140)=1 Then
+				hasCollide=1
+			EndIf
+			If Collide(BirdX1,BirdY1,5,5,pipe2X,Bot2,16,140)=1 Then
+				hasCollide=1
+			EndIf
+			If Collide(BirdX1,BirdY1,5,5,pipe3X,Bot3,16,140)=1 Then
+				hasCollide=1
+			EndIf
+			
+			// There was a game over as there was a collide
+			
+			If hasCollide = 1  Then
+				Sprite.Pattern.Set 36,180
+				Sprite.Pattern.Set 37,181
+				ShowGameOver
+				falldown=1
+				GameOn=6
+				Pauze=1
+				
+			EndIf
+		EndIf
+		
+		If menuOn=0 And Pauze=0  Then
+			
+			// Random pipe opening per pipe when exit the screen during scrolling
+			// There was no level implemented, this could be by making the pipe openings smaller during the game time.
+			// if the game is not starten (GameOn=2) then the pipes are all open the same
+			If GameOn=2 Then
+				GameOn=3
+				Pipe1GabStart = 2
+				Pipe1SizeGab =  6
+				SetPipe1
+				
+				Pipe2GabStart = 2
+				Pipe2SizeGab =  6
+				SetPipe2
+				
+				Pipe3GabStart = 2
+				Pipe3SizeGab =  6
+				SetPipe3
+				
+				getReadyAnimation=0
+			Else
+				// The game is started it will take a RND for every pipe opening (when out of the screen = -32)
+				
+				If GameOn=5 Then
+					If pipe1X=< -32 Then
+						
+						i=Rnd(5)
+						If i <1 Then
+							i=1
+						EndIf
+						Pipe1GabStart = i
+						Pipe1SizeGab = 5
+						SetPipe1
+						ScoreUP
+						pipe1X = 256
+					EndIf
+					
+					
+					If pipe2X=< -32 Then
+						
+						i=Rnd(5)
+						If i <1 Then
+							i=1
+						EndIf
+						Pipe2GabStart = i
+						Pipe2SizeGab = 4
+						SetPipe2
+						ScoreUP
+						pipe2X = 256
+					EndIf
+					
+					If pipe3X=< -32 Then
+						
+						i=Rnd(5)
+						If i <1 Then
+							i=1
+						EndIf
+						Pipe3GabStart = i
+						Pipe3SizeGab = 4
+						SetPipe3
+						ScoreUP
+						pipe3X = 256
+					EndIf
+				EndIf
+			EndIf
+			
+			//Move the pipes as they are sprites untill -32 then set them back to the beginning of the screen
+			
+			If pipe1X=< -32 Then
+				pipe1X = 256
+			EndIf
+			If pipe2X=< -32 Then
+				pipe2X = 256
+			EndIf
+			If pipe3X=< -32 Then
+				pipe3X = 256
+			EndIf
+			
+			
+			// derminate the speed of the moving sprites
+			
+			pipe1X=pipe1X-pipespeed
+			pipe2X=pipe2X-pipespeed
+			pipe3X=pipe3X-pipespeed
+			
+			MovePipe1
+			MovePipe2
+			MovePipe3
+			
+		EndIf
+		
+	EndIf
+	
+EndF
+
+
+// set Pipe1 before displaying it
+Function SetPipe1:Void()
+	
+	Pipe1GabStart = Pipe1GabStart *2
+	Pipe1SizeGab = Pipe1SizeGab *2
+	
+	
+	For i=68 To 86 Step 2
+		Sprite.Pattern.Set i,12
+		Sprite.Pattern.Set i+1,13
+	Next
+	
+	// Top up
+	Sprite.Pattern.Set 68+Pipe1GabStart,10
+	Sprite.Pattern.Set 68+Pipe1GabStart+1,11
+	
+	//Top Down
+	Sprite.Pattern.Set 68+Pipe1GabStart+Pipe1SizeGab,112
+	Sprite.Pattern.Set 68+Pipe1GabStart+Pipe1SizeGab+1,113
+	
+	// Clear open part
+	For i=Pipe1GabStart  +2 To Pipe1SizeGab+Pipe1GabStart-1
+		Sprite.Pattern.Set	 68+i,219
+	Next
+	Top1=155-((Pipe1SizeGab+Pipe1GabStart)*8)
+	Bot1=143 -((Pipe1GabStart)*8)
+	
+	
+EndF
+
+// Move the pipe as a group of sprites
+Function MovePipe1:Void()
+	
+	Sprite.Position.Group0.Set 68,pipe1X,143,2,10
+	
+EndF
+
+
+// set Pipe2 before displaying it
+Function SetPipe2:Void()
+	
+	Pipe2GabStart = Pipe2GabStart *2
+	Pipe2SizeGab = Pipe2SizeGab *2
+	
+	For i=88 To 106 Step 2
+		Sprite.Pattern.Set i,12
+		Sprite.Pattern.Set i+1,13
+	Next
+	
+	// Top up
+	Sprite.Pattern.Set 88+Pipe2GabStart,10
+	Sprite.Pattern.Set 88+Pipe2GabStart+1,11
+	
+	//Top Down
+	Sprite.Pattern.Set 88+Pipe2GabStart+Pipe2SizeGab,112
+	Sprite.Pattern.Set 88+Pipe2GabStart+Pipe2SizeGab+1,113
+	
+	// clear open part
+	
+	For i=Pipe2GabStart +2 To Pipe2SizeGab+Pipe2GabStart-1
+		Sprite.Pattern.Set	 88+i,219
+	Next
+	Top2=155-((Pipe2SizeGab+Pipe2GabStart)*8)
+	Bot2=143 -((Pipe2GabStart)*8)
+	
+EndF
+
+// Move pipe 2 as a group of sprites
+Function MovePipe2:Void()
+	
+	Sprite.Position.Group0.Set 88,pipe2X,143,2,10
+	
+EndF
+
+
+// set Pipe3 before displaying it
+// Pipe 3 is special, as it will only be shown during the game if the game is not
+// running the sprites for pipe3 are used for the menu's in the game as we have only limited amount of sprites
+// i desided to use the sprites for pipe3 as well for the menus
+Function SetPipe3:Void()
+	
+	If menuOn=0 And GameOn>1  Then
+		
+		Pipe3GabStart = Pipe3GabStart *2
+		Pipe3SizeGab = Pipe3SizeGab *2
+		
+		For i=10 To 28 Step 2
+			Sprite.Pattern.Set i,12
+			Sprite.Pattern.Set i+1,13
+			Sprite.Display.Set i,0
+			Sprite.Display.Set i+1,0
+		Next
+		
+		// Top up
+		Sprite.Pattern.Set 10+Pipe3GabStart,10
+		Sprite.Pattern.Set 10+Pipe3GabStart+1,11
+		
+		//Top Down
+		Sprite.Pattern.Set 10+Pipe3GabStart+Pipe3SizeGab,112
+		Sprite.Pattern.Set 10+Pipe3GabStart+Pipe3SizeGab+1,113
+		
+		// clear open part
+		
+		For i=Pipe3GabStart +2 To Pipe3SizeGab+Pipe3GabStart-1
+			Sprite.Pattern.Set	 10+i,219
+		Next
+		Top3=155-((Pipe3SizeGab+Pipe3GabStart)*8)
+		Bot3=143 -((Pipe3GabStart)*8)
+		
+		
+	EndIf
+	
+	
+EndF
+
+// Move pipe 3 as a group of sprites
+Function MovePipe3:Void()
+	If menuOn=0 And GameOn>1  Then
+		Sprite.Position.Group0.Set 10,pipe3X,143,2,10
+	EndIf
+	
+EndF
+
+// Menu item Show
+Function ShowGetReady:Void
+	f=56
+	For i=98 To 109
+		Sprite.Pattern.Set	 f,i
+		f=f+1
+	Next
+	
+	Sprite.Position.Group.Set 56,81,30,6,2
+EndF
+
+// Menu item Show
+Function ShowGameOver:Void
+	
+	f=56
+	For i=144 To 155
+		Sprite.Pattern.Set	 f,i
+		f=f+1
+	Next
+	
+	Sprite.Position.Group.Set 56,81,30,6,2
+	
+EndF
+
+// Menu item Show
+Function ShowPlay:Void
+	
+	f=48
+	For i=164 To 171
+		Sprite.Pattern.Set	 f,i
+		f=f+1
+	Next
+	
+	Sprite.Position.Group.Set 48,97,120,4,2
+	
+EndF
+
+// Menu item Show
+Function RemovePlay:Void
+	
+	For i=48 To 55
+		Sprite.Pattern.Set	 i,191
+		Sprite.Position.Set i,1,166
+	Next
+	
+EndF
+
+// Menu item Show
+Function RemoveGetReady:Void
+	
+	For i=56 To 67
+		Sprite.Pattern.Set	 i,191
+		Sprite.Position.Set i,1,166
+	Next
+	
+EndF
+
+// Menu item Show
+Function ShowTab:Void
+	
+	Sprite.Pattern.Set	 40,3
+	Sprite.Pattern.Set 41,4
+	Sprite.Pattern.Set	 42,7
+	Sprite.Pattern.Set 43,8
+	Sprite.Pattern.Set	 44,6
+	Sprite.Pattern.Set 45,5
+	Sprite.Pattern.Set 46,173
+	Sprite.Pattern.Set 47,172
+	
+	Sprite.Position.Set 40,95,100
+	Sprite.Position.Set 41,111,100
+	Sprite.Position.Set 42,133,100
+	Sprite.Position.Set 43,149,100
+	Sprite.Position.Set 44,122,100
+	Sprite.Position.Set 45,122,84
+	Sprite.Position.Set 46,130,60
+	Sprite.Position.Set 47,114,60
+	
+EndF
+
+// Menu item Show
+Function RemoveTab:Void
+	
+	For i=40 To 47
+		Sprite.Pattern.Set	 i,191
+		Sprite.Position.Set i,1,166
+	Next
+	
+EndF
+
+// Menu item Show
+Function ShowMenu:Void
+	f=34
+	For i=3 To 34
+		Sprite.Pattern.Set i,f
+		f=f+1
+	Next
+	
+	Sprite.Position.Group.Set 3,64,64,8,4
+EndF
+
+// Menu item Show
+Function RemoveMenu:Void
+	For i=3 To 34
+		Sprite.Pattern.Set i,191
+		Sprite.Position.Set i,1,166
+	Next
+EndF
+
+// Menu item Show
+Function RemovePipe:Void
+	For i=68 To 86 Step 2
+		Sprite.Pattern.Set i,191
+		Sprite.Pattern.Set i+1,191
+	Next
+	
+	For i=88 To 106 Step 2
+		Sprite.Pattern.Set i,191
+		Sprite.Pattern.Set i+1,191
+	Next
+	
+	For i=10 To 28 Step 2
+		Sprite.Pattern.Set i,191
+		Sprite.Pattern.Set i+1,191
+	Next
+EndF
+
+// Menu item Show
+Function ShowLogo:Void
+	f=56
+	For i=192 To 203
+		Sprite.Pattern.Set	 f,i
+		f=f+1
+	Next
+	Sprite.Position.Group.Set 56,81,30,6,2
+EndF
+
+// Menu item Show
+Function ShowScoreBoard:Void
+	f=66
+	For i=13 To 44
+		Sprite.Pattern.Set i,f
+		f=f+1
+	Next
+	
+	Sprite.Position.Group.Set 13,64,64,8,4
+	
+	If Score =>0 And Score<=10 Then
+		f=18
+		For i=3 To 6
+			Sprite.Pattern.Set i,f
+			f=f+1
+		Next
+		Sprite.Position.Group.Set 3,82,80,2,2
+	EndIf
+	
+	
+	If Score =>11 And Score<=20 Then
+		f=160
+		For i=3 To 6
+			Sprite.Pattern.Set i,f
+			f=f+1
+		Next
+		Sprite.Position.Group.Set 3,82,80,2,2
+	EndIf
+	
+	If Score =>21 And Score<=30 Then
+		f=14
+		For i=3 To 6
+			Sprite.Pattern.Set i,f
+			f=f+1
+		Next
+		Sprite.Position.Group.Set 3,82,80,2,2
+	EndIf
+	
+	If Score =>31  Then
+		f=156
+		For i=3 To 6
+			Sprite.Pattern.Set i,f
+			f=f+1
+		Next
+		Sprite.Position.Group.Set 3,82,80,2,2
+	EndIf
+	
+	//score translated to sprites patterns
+	
+	Digit0Low =  Score Mod 10
+	Digit1Low=	 (Score/10) Mod 10
+	Digit2Low=	(Score/100) Mod 10
+	
+	Sprite.Pattern.Set 7,114+Digit2Low
+	Sprite.Pattern.Set 8,114+Digit1Low
+	Sprite.Pattern.Set 9,114+Digit0Low
+	Sprite.Position.Set 7, 143,81
+	Sprite.Position.Set 8, 153,81
+	Sprite.Position.Set 9, 163,81
+	
+	//Highscore
+	
+	Digit0High=  TopScore Mod 10
+	Digit1High= (TopScore/10) Mod 10
+	Digit2High=(TopScore/100) Mod 10
+	
+	
+	Sprite.Pattern.Set 10,114+Digit2High
+	Sprite.Pattern.Set 11,114+Digit1High
+	Sprite.Pattern.Set 12,114+Digit0High
+	
+	Sprite.Position.Set 10, 143,102
+	Sprite.Position.Set 11, 153,102
+	Sprite.Position.Set 12, 163,102
+	
+EndF
+
+// Menu item Show
+Function RemoveScoreBoard:Void()
+	For i=3 To 44
+		Sprite.Pattern.Set i,191
+		Sprite.Position.Set i,1,166
+	Next
+EndF
+
+// Menu item Show
+Function RemoveLogo:Void
+	For i=192 To 203
+		Sprite.Pattern.Set	 i,191
+		Sprite.Position.Set i,1,166
+	Next
+EndF
+
+// End of the demo game, thanks for reading
+

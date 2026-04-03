@@ -1,0 +1,1018 @@
+// My Computer File Explorer 1.2 fOr Symbos
+// Name: explorer.exe
+// Coder: Edoz
+// Date / Version: 2025-FEB-09
+
+// Declare variables
+Var MyloadFile:File 			// General Open File for Reading
+Var MySaveFile:File 			// General Open File for Writing
+Var waitsometime:Int=0			// Used  to  wait some time to initiate a refresh on the filelist after the action
+Var wait:Int=0				// Wait "sometime" is enabeld yes or no (1/0)
+Var Formfocus:Int=0			// Value to see what form has the focus in the app
+Var smallIcons:Sheet			// Sheet for the small Icons in the toolbar
+Var smallfileicons:Sheet		// Small Icons sheet for in the file listbox
+Var Formopen:Int=1			// Int value to see which form is open
+Var IsMore:Int				// Used to clean the listbox
+Var Entry:Int				// Used to count the listbox
+Var CurrentPath(16):String=""		// It is the currentpath of the drive, drive is 0-16
+Var LastAdded(16):String=""		// It is the currentpath of the drive (but the last added on to see if it was changed)
+Var Level(32):Int=0			// This is the level of the path (max 32)
+Var drive:Int=0				// This is the current selected drive. 0 means back to root "My Computer"
+Var drivebefore:Int=99			// If the user was viewing a drive and you want to know what the view was before
+Var FolderRoot:Int=1			// Are we in the root of the current drive?
+Var s:String=""				// General string used in the goup function
+Var a:Int=0					// General int used in loops or for
+Var r:Int=0					// General int used in loops or for
+Var q:Int=0					// General int used in loops or for
+Var x:Int=0					// General int used in loops or for
+Var i:Int=0					// General int used in loops or for
+Var t:Int=0					// General int used in loops or for
+Var updateform1:Int=0			// Do the form needs an refresh/update?
+Var LastForm1SizeX:Int=0		// Last known X size of the form
+Var LastForm1SizeY:Int=0		// Last known Y side of the form
+Var sizeColumn0:Int=75			// Size for column in the listbox
+Var sizeColumn1:Int=35			// Size for column in the listbox
+Var sizeColumn2:Int=28			// Size for column in the listbox
+Var sizeColumn3:Int=100		// Size for column in the listbox
+Var MediumType:Int			// Type of disk medium
+Var sday:String				// used to calculate timedate value
+Var smonth:String				// used to calculate timedate value
+Var syear:String				// used to calculate timedate value
+Var ssecond:String			// used to calculate timedate value
+Var sminute:String			// used to calculate timedate value
+Var shour:String				// used to calculate timedate value
+Var fday:Int					// used to calculate timedate value
+Var fmonth:Int				// used to calculate timedate value
+Var fyear:Int				// used to calculate timedate value
+Var fsecond:Int				// used to calculate timedate value
+Var fminute:Int				// used to calculate timedate value
+Var fhour:Int				// used to calculate timedate value
+Var FileCount:Int				// value of how many files in the current directroy
+Var FolderCount:Int			// value of how many folders in the current directroy
+Var DateValue:Int				// Datestamp of the object
+Var Timevalue:Int				// Timestamp of the object
+Var resizeAddon:Int			// value to add to the form after a resize of the form (bigger of smaller)
+Var action:Int				// The action of the user (open the file, open the directroy etc.)
+Var selectaction:Int			// to enable disable the action during the action
+Var ClipboardAction:Int 			// The action of the clipboard, copy paste  select etc.
+Var ClipboardData:String 		// The string data of the clipboard
+Var ExecuteString:String 		// The string to execute as a program with parameters
+Var Ext:String="TXT,ASC,ROM,SMS,DSK,IMG,HLP,SPX,SWX,SPM,SWM,BAT,COM,JOB,SYS,SAV,EXE,FNT,KYB,DOC,DOX,DRV,VID,QS1,QS2,SGX,MDF,EML,ICN,C  ,A  ,LIB,QMA,QMB,QPT,QMT,ZIP,GZ ,INI,CFG,SET,BIN,BAS,Mid,MP3,MOD,SKM,ST2,PT3,SA2,MAN,GOL,Z3 ,Z8 ,BF ,XSB,YSB,SCR,SCS,CSV,SLK,DOC,SPL,RTF,WDG"
+Var ExtIcon(72):Int=[0,4,4,1,1,2,2,3,5,5,5,5,6,6,7,8,9,10,11,12,14,15,16,17,19,19,19,21,22,23,24,25,25,27,28,29,29,30,30,34,34,34,35,36,37,37,37,37,37,37,37,40,39,41,41,42,43,43,19,31,31,31,38,44,38,45]
+Var FileExt:String 				
+Var ReturnImageID:Int
+Var FileFilter:String
+Var folders:Int=1
+Var Form2Action:Int
+Var msgresult:Int
+Var invalidChars:String = "\/:*?""<>|^"
+Var IsValid:Int
+Var Invalidloop:Int
+Var Keypressed:Int
+Var blockkeys:Int
+Var PrintToFile:File
+Var printstring:String
+Var printing:Int
+Var Nothingselected:Int
+Var WarningTime:Int
+Var WarningOn:Int
+Var firsttime:Int
+Var commandline:String
+Var OpenInPath:Int=0
+
+Function Main:Void()
+	// Main loop
+	If updateform1=1 Then
+		If drive=0 Then
+			updateform1=0
+			resizeAddon = LastForm1SizeX- (sizeColumn0 + sizeColumn1 + sizeColumn2 + sizeColumn3)
+			resizeAddon = resizeAddon /4
+			FileList.Size.Set((LastForm1SizeX-1),(LastForm1SizeY-1))
+			FileList.Columns.Width.Set(0,((sizeColumn0-30)+resizeAddon))
+			FileList.Columns.Width.Set(1,((sizeColumn1+30)+resizeAddon))
+			FileList.Columns.Width.Set(2,((sizeColumn2+10)+resizeAddon))
+			FileList.Columns.Width.Set(3,(sizeColumn3+resizeAddon))
+			FileList.Title.Set (0,"Drives")
+			FileList.Title.Set (1," Size " )
+			FileList.Title.Set (2," Type ")
+			FileList.Title.Set (3," Driver Info" )
+			Form1.Control.Refresh
+			Form1.Tool.Refresh
+		Else
+			updateform1=0
+			resizeAddon = LastForm1SizeX- (sizeColumn0 + sizeColumn1 + sizeColumn2 + sizeColumn3)
+			resizeAddon = resizeAddon /4
+			FileList.Size.Set((LastForm1SizeX-1),(LastForm1SizeY-1))
+			FileList.Columns.Width.Set(0,(sizeColumn0+resizeAddon))
+			FileList.Columns.Width.Set(1,(sizeColumn1+resizeAddon))
+			FileList.Columns.Width.Set(2,(sizeColumn2+resizeAddon))
+			FileList.Columns.Width.Set(3,(sizeColumn3+resizeAddon))
+			FileList.Title.Set (0,"Name")
+			FileList.Title.Set (1," Size ")
+			FileList.Title.Set (2," Type ")
+			FileList.Title.Set (3," Date Modified ")
+			Form1.Control.Refresh
+			Form1.Tool.Refresh
+		EndIf
+	EndIf
+	KeyCheck
+	If wait=1 And CheckAutoRefresh.Ticked=1 Then
+		waitsometime=waitsometime+1
+		If waitsometime = 175 Then
+			If CheckAutoRefresh.Ticked = 1 Then
+				ReadDir
+			EndIf
+			waitsometime=0
+			wait=0
+		EndIf
+	EndIf
+	If Check64Items.Ticked=1 Then
+		If WarningOn=1 Then
+			WarningTime=WarningTime+1
+			If WarningTime=25 Then
+				ImageWarning.Tile.Set(smallIcons,15)
+				ImageWarning.Refresh
+			EndIf
+			If WarningTime=50 Then
+				WarningTime=1
+				ImageWarning.Tile.Set(smallIcons,14)
+				ImageWarning.Refresh
+			EndIf
+		ElseIf WarningOn=0 And WarningTime=>1 Then
+			WarningTime=0
+			ImageWarning.Tile.Set(smallIcons,14)
+			ImageWarning.Refresh
+		EndIf
+	EndIf
+EndF
+
+Function Form1.Open.Event:Void()
+	commandline=App.CommandLine
+	commandline=UCase(commandline)
+	commandline=Replace(commandline,UCase(App.Path)+"EXPLORER.EXE","")
+	commandline=Replace(commandline," ","")
+	commandline=Replace(commandline,"/","\")
+	
+	If File.Exist(App.Path + "explorer.ini") Then
+		MyloadFile.Open	(App.Path	+ "explorer.ini")
+		Check64Items.Tick.Set (CInt(MyloadFile.ReadString)
+		CheckAutoRefresh.Tick.Set(CInt(MyloadFile.ReadString)
+		CheckKByteview.Tick.Set(CInt(MyloadFile.ReadString)
+		ShowHiddenCheck.Tick.Set(CInt(MyloadFile.ReadString)
+		FilterExeCheck.Tick.Set(CInt(MyloadFile.ReadString)
+		MyloadFile.CloseReadFile
+	EndIf
+	If Screen.Colour()  > 4 Then
+		smallIcons.Load App.Path+"explore1.qs2"
+		smallfileicons.Load App.Path + "explore3.qs2"
+		Form1.Tool.Paper.Set (Colour.Grey)
+	Else
+		smallIcons.Load App.Path+"explore2.qs1"
+		Form1.Tool.Paper.Set (Colour.DarkRed)
+		smallfileicons.Load App.Path + "explore4.qs1"
+	EndIf
+	Ctrl.Image.Tile.Set ImageUp,smallIcons,0
+	Ctrl.Image.Tile.Set ImageRefresh,smallIcons,17
+	Ctrl.Image.Tile.Set ImageCut,smallIcons,3
+	Ctrl.Image.Tile.Set ImagePaste,smallIcons,4
+	Ctrl.Image.Tile.Set ImageMove,smallIcons,5
+	Ctrl.Image.Tile.Set ImageDelete,smallIcons,7
+	Ctrl.Image.Tile.Set ImageProp,smallIcons,8
+	Ctrl.Image.Tile.Set ImagePrint,smallIcons,13
+	Ctrl.Image.Tile.Set ImageViewICON,smallIcons,12
+	Ctrl.Image.Tile.Set ImageViewList,smallIcons,9
+	Ctrl.Image.Tile.Set ImageWarning,smallIcons,14
+	Form1.Menu.Text.Set(12,CtText.Graphic(smallfileicons,55)+" Cut")
+	Form1.Menu.Text.Set(13,CtText.Graphic(smallfileicons,46)+" Copy")
+	Form1.Menu.Text.Set(14,CtText.Graphic(smallfileicons,47)+" Paste")
+	Form1.Menu.Text.Set(15,CtText.Graphic(smallfileicons,54)+" Delete")
+	Form1.Menu.Text.Set(5,CtText.Graphic(smallfileicons,54)+" Delete")
+	Form1.Menu.Text.Set(6,CtText.Graphic(smallfileicons,52)+" Rename")
+	Form1.Menu.Text.Set(7,CtText.Graphic(smallfileicons,53)+" New folder")
+	Form1.Menu.Text.Set(8,CtText.Graphic(smallfileicons,21)+" Properties")
+	Form1.Menu.Icon.On(12,1)
+	Form1.Menu.Icon.On(13,1)
+	Form1.Menu.Icon.On(14,1)
+	Form1.Menu.Icon.On(15,1)
+	Form1.Menu.Icon.On(5,1)
+	Form1.Menu.Icon.On(6,1)
+	Form1.Menu.Icon.On(7,1)
+	Form1.Menu.Icon.On(8,1)
+	Context1.Menu.Text.Set(4,CtText.Graphic(smallfileicons,53)+" New folder")
+	Context1.Menu.Text.Set(5,CtText.Graphic(smallfileicons,52)+" Rename")
+	Context1.Menu.Text.Set(7,CtText.Graphic(smallfileicons,55)+" Cut")
+	Context1.Menu.Text.Set(8,CtText.Graphic(smallfileicons,46)+" Copy")
+	Context1.Menu.Text.Set(9,CtText.Graphic(smallfileicons,47)+" Paste")
+	Context1.Menu.Text.Set(10,CtText.Graphic(smallfileicons,54)+" Delete")
+	Context1.Menu.Text.Set(12,CtText.Graphic(smallfileicons,21)+" Properties")
+	Context1.Menu.Icon.On(4,1)
+	Context1.Menu.Icon.On(5,1)
+	Context1.Menu.Icon.On(7,1)
+	Context1.Menu.Icon.On(8,1)
+	Context1.Menu.Icon.On(9,1)
+	Context1.Menu.Icon.On(10,1)
+	Context1.Menu.Icon.On(12,1)
+	//Should read the setting
+	
+	If FilterExeCheck.Ticked = 1 Then
+		ViewEXE
+	Else
+		ViewAll
+	EndIf
+	ReadDir
+	Form1.Tool.Refresh
+	Form1.Focus.Set(FileList.Display)
+EndF
+
+Function Form1.Close.Event:Void()
+	smallfileicons.Free
+	smallIcons.Free
+	Form1.Close
+	App.Exit
+EndF
+
+Function ClearDir:Void
+	For IsMore=0 To FileList.Columns.Get-1
+		For Entry=0 To FileList.Rows.Max-1
+			FileList.Selected.Set(Entry,0)
+			FileList.Text.Set (IsMore,Entry,"")
+		Next
+	Next
+	FileList.Rows.Set (0)
+	FileList.TopRow.Set(0)
+EndF
+
+Function selectall.event:Void()
+	For Entry=0 To FileList.Rows.Get-1
+		If FileList.Text.Get(0,Entry) <> ".." Then
+			FileList.Selected.Set(Entry,1)
+		EndIf
+	Next
+	FileList.Refresh
+EndF
+
+Function KeyCheck:Void()
+	If Formopen=1 And blockkeys=0 Then
+		blockkeys=1
+		Keypressed=Key.Pressed
+		If Keypressed=1  Then
+			selectall.event
+		EndIf
+		If Keypressed = 3   Then
+			copy.Event
+		EndIf
+		If Keypressed = 22   Then
+			paste.Event
+		EndIf
+		If Keypressed = 24  Then
+			cut.Event
+		EndIf
+		//was 4 delete (ctrl-d)
+		If Keypressed = 127  Then
+			DeleteFiles.Event
+		EndIf
+		If Keypressed = 13  Then
+			If FolderRoot =>1 Then
+				FolderAction
+			Else
+				For Entry=0 To 16
+					If Mid(FileList.Text.Get(0,FileList.Index.Get),7,12) = CurrentPath(Entry) Then
+						drive=Entry
+						FolderRoot=1
+						MyComputer.Index.Set(Entry)
+					EndIf
+				Next
+				ReadDir
+			EndIf
+		EndIf
+		If Keypressed = 8 Then
+			GoUp
+		EndIf
+		If Keypressed = 145  Then
+			ImageRefresh.Event
+		EndIf
+		blockkeys=0
+	EndIf
+	
+	If Formopen=2 And blockkeys=0 Then
+		blockkeys=1
+		Keypressed=Key.Pressed
+		If Keypressed = 13  Then
+			NewFolder.Event
+		EndIf
+		blockkeys=0
+	EndIf
+EndF
+
+Function ReadDir:Void()
+	// Drive 0 is the main which shows "My Computer" and the drives
+	FileList.Columns.Width.Set(0,(sizeColumn0+resizeAddon))
+	FileList.Columns.Width.Set(1,(sizeColumn1+resizeAddon))
+	FileList.Columns.Width.Set(2,(sizeColumn2+resizeAddon))
+	FileList.Columns.Width.Set(3,(sizeColumn3+resizeAddon))
+	FileList.Title.Set (0,"Name")
+	FileList.Title.Set (1,"Size ")
+	FileList.Title.Set (2,"Type ")
+	FileList.Title.Set (3," Date Modified")
+	drivebefore=drive
+	ClearDir
+	If drive=>1 Then
+		FolderCount=0
+		FileCount=0
+		
+		If ShowHiddenCheck.Ticked = 0 Then
+			Dir.Read CurrentPath(drive),15
+		Else
+			Dir.Read CurrentPath(drive),8
+		EndIf
+		Entry = 0
+		If Level(drive)=>0 Then
+			FileList.Text.Set (0,Entry,"..")
+			If CheckKByteview.Ticked=1 Then
+				FileList.Text.Set (1,Entry,"0  B")
+			Else
+				FileList.Text.Set (1,Entry,"0 Kb")
+			EndIf
+			FileList.Text.Set (2,Entry,"Folder")
+			FileList.Rows.Set(Entry)
+			Entry=Entry+1
+		EndIf
+		If folders=1 Then
+			While Dir.Read.Entry
+				If (Dir.Read.Attr And Dir.Attr.Directory) = 0 Then
+				Else
+					If Entry < 64 Then
+						If Dir.Read.Name <> ".."  Then
+							If Right(Dir.Read.Name,1)  = "." Then
+								FileList.Text.Set (0,Entry,CtText.Graphic(smallfileicons,26) + " " +Left(Dir.Read.Name,Len(Dir.Read.Name)-1)
+							Else
+								FileList.Text.Set (0,Entry,CtText.Graphic(smallfileicons,26) + " " +Left(Dir.Read.Name,Len(Dir.Read.Name))
+							EndIf
+							If CheckKByteview.Ticked=1 Then
+								FileList.Text.Set (1,Entry,"0  B")
+							Else
+								FileList.Text.Set (1,Entry,"0 Kb")
+							EndIf
+							FileList.Text.Set (2,Entry,"Folder")
+							FileStamp
+							FileList.Text.Set (3,Entry," "+syear+"-"+smonth+"-"+sday+" "+shour+":"+sminute+":"+ssecond + " ")
+							Entry=Entry+1
+							FolderCount=FolderCount+1
+							FileList.Rows.Set(Entry)
+						EndIf
+					EndIf
+				EndIf
+				Dir.Read.Next
+			Wend
+		EndIf
+		If ShowHiddenCheck.Ticked = 0 Then
+			Dir.Read CurrentPath(drive)+FileFilter,47    //24
+		Else
+			Dir.Read CurrentPath(drive)+FileFilter,8
+		EndIf
+		While Dir.Read.Entry
+			If (Dir.Read.Attr And Dir.Attr.Directory) = 0 Then
+				If Entry < 64 Then
+					FileList.Text.Set (0,Entry,CtText.Graphic(smallfileicons,ExtIcon((FindStr(Ext,UCase(Right(Dir.Read.Name,3)),1)+3)/4))+ " " +LCase(Dir.Read.Name))
+					If CheckKByteview.Ticked=1 Then
+						FileList.Text.Set (1,Entry,String.FromLong(Dir.Read.Size)+ "  B")
+					Else
+						FileList.Text.Set (1,Entry,String.FromLong(Dir.Read.Size/%1024)+ " Kb")
+					EndIf
+					FileList.Text.Set (2,Entry,Right (Dir.Read.Name,3))
+					FileStamp
+					FileList.Text.Set (3,Entry," " + syear+"-"+smonth+"-"+sday+" "+shour+":"+sminute+":"+ssecond + " ")
+					Entry=Entry+1
+					FileList.Rows.Set(Entry)
+				EndIf
+				FileCount=FileCount+1
+			EndIf
+			Dir.Read.Next
+		Wend
+		If (FolderCount+FileCount)=>64 Then
+			WarningOn=1
+		Else
+			WarningOn=0
+		EndIf
+		If FileCount=0 And FolderCount= 0 Then
+			FileList.Text.Set (0,1,"..")
+			FileList.Text.Set (1,1,"0 Kb")
+			FileList.Text.Set (2,1,"Folder")
+			FileList.Rows.Set(1)
+		EndIf
+		DisplayPath
+		FileList.Refresh
+		MyComputer.Refresh
+		Form1.Status.Text.Set ("Max:64  Folder(s):" +Str(FolderCount) + "  File(s):" + Str(FileCount) + "  Total:" + Str(FolderCount+FileCount)+"  [" + CurrentPath(drive) +"]")
+		Form1.Status.Refresh
+	Else
+		showMyComputer
+	EndIf
+EndF
+
+Function showMyComputer:Void()
+	ClearDir
+	
+	FileList.Columns.Width.Set(0,((sizeColumn0-30)+resizeAddon))
+	FileList.Columns.Width.Set(1,((sizeColumn1+30)+resizeAddon))
+	FileList.Columns.Width.Set(2,((sizeColumn2+10)+resizeAddon))
+	FileList.Columns.Width.Set(3,(sizeColumn3+resizeAddon))
+	FileList.Title.Set (0,"Drives")
+	FileList.Title.Set (1,"Size ")
+	FileList.Title.Set (2,"Type ")
+	FileList.Title.Set (3," Driver Info")
+	
+	drive=0
+	FolderRoot=0
+	MyComputer.Index.Set(0)
+	MyComputer.List.Set(0,"My Computer")
+	Drive.GetList
+	For Entry=0 To Drive.Count
+		If Drive.GetInfo(Drive.Letter(Entry)) Then
+			If Drive.Medium =Drive.Medium.Fat12Floppy Or Drive.Medium =Drive.Medium.AmsdosFloppy Then
+				FileList.Text.Set(0,Entry,CtText.Graphic(smallfileicons,13) + " " + Drive.Letter(Entry) + ":\")
+			Else
+				FileList.Text.Set(0,Entry,CtText.Graphic(smallfileicons,18) + " " + Drive.Letter(Entry) + ":\")
+			EndIf
+			If (Drive.Clusters*Long.FromInt(Drive.SectorsPerCluster)/%2) > %1024 Then
+				FileList.Text.Set(1,Entry,String.FromLong(Drive.Clusters*Long.FromInt(Drive.SectorsPerCluster)/%2048)+ " Mb")
+			Else
+				FileList.Text.Set(1,Entry,String.FromLong(Drive.Clusters*Long.FromInt(Drive.SectorsPerCluster)/%2)+ " Kb")
+			EndIf
+			If Drive.FileSystem= Drive.FileSystem.Fat12 Then
+				FileList.Text.Set(2,Entry,"FAT12")
+			EndIf
+			If Drive.FileSystem= Drive.FileSystem.Fat16 Then
+				FileList.Text.Set(2,Entry,"FAT16")
+			EndIf
+			If Drive.FileSystem= Drive.FileSystem.Fat32 Then
+				FileList.Text.Set(2,Entry,"FAT32")
+			EndIf
+			If Drive.FileSystem= Drive.FileSystem.AmsdosData Then
+				FileList.Text.Set(2,Entry,"CP/M (D)")
+			EndIf
+			If Drive.FileSystem= Drive.FileSystem.AmsdosSystem Then
+				FileList.Text.Set(2,Entry,"CP/M (S)")
+			EndIf
+		Else
+			FileList.Text.Set(0,Entry,CtText.Graphic(smallfileicons,40) + " " + Drive.Letter(Entry) + ":\")
+			FileList.Text.Set(1,Entry,"0 Kb")
+			FileList.Text.Set(2,Entry,"OFFLINE")
+		EndIf
+		FileList.Text.Set(3,Entry, " " +Drive.Name(Entry))
+		FileList.Rows.Set (Entry)
+		CurrentPath(Entry+1)=Drive.Letter(Entry) + ":\"
+		LastAdded(Entry+1)=""
+		Level(Entry+1) = 0
+	Next
+	Drive.GetList
+	For Entry=0 To Drive.Count-1
+		MyComputer.List.Set(Entry+1,Drive.Letter(Entry)+ ":\")
+		If firsttime=0 Then
+			If commandline <> "" Then
+				If Drive.Letter(Entry) = Left (UCase(commandline),1) Then
+					CurrentPath(Entry+1) = commandline
+					drive=Entry+1
+					firsttime=1
+				EndIf
+			Else
+				firsttime=2
+			EndIf
+		EndIf
+	Next
+	If firsttime=1 Then
+		firsttime=2
+		Var b:Int
+		For b=1 To Len(CurrentPath(drive))
+			If Mid(CurrentPath(drive),b,1) = "\" Then
+				Level(drive)=Level(drive)+1
+			EndIf
+		Next
+		Level(drive)=Level(drive)-1
+		ReadDir
+		FolderRoot=1
+		MyComputer.Index.Set(drive)
+	EndIf
+	FileList.Refresh
+	MyComputer.Refresh
+EndF
+
+Function FileList.Event:Void()
+	r=Event.Reason
+	If r=Event.Reason.MouseRightClick Then
+		ContextMenu Context1.Menu
+	EndIf
+	If action=0 Then
+		action=1
+		If r = Event.Reason.MouseLeftDClick Then
+			If FolderRoot =>1 Then
+				FolderAction
+			Else
+				For Entry=0 To 16
+					If Mid(FileList.Text.Get(0,FileList.Index.Get),7,12) = CurrentPath(Entry) Then
+						drive=Entry
+						FolderRoot=1
+						MyComputer.Index.Set(Entry)
+					EndIf
+				Next
+				ReadDir
+			EndIf
+		EndIf
+		action=0
+	EndIf
+EndF
+
+Function FolderAction:Void()
+	If FileList.Text.Get(2,FileList.Index.Get) = "Folder" Then
+		If FileList.Text.Get(0,FileList.Index.Get) = ".." Then
+			GoUp
+		Else
+			LastAdded(drive)=Mid(FileList.Text.Get(0,FileList.Index.Get),7,12)
+			LastAdded(drive)= Replace(LastAdded(drive)," ","")
+			LastAdded(drive)= LastAdded(drive) + "\"
+			CurrentPath(drive) = CurrentPath(drive) + LastAdded(drive)
+			Level(drive)=Level(drive)+1
+			ReadDir
+		EndIf
+	Else
+		If x=Execute(CurrentPath(drive) +Mid(FileList.Text.Get(0,FileList.Index.Get),7,12)) > 0 Then
+			Form1.Status.Text.Set ("Execute: " + CurrentPath(drive) + Mid(FileList.Text.Get(0,FileList.Index.Get),7,12))
+			Form1.Status.Refresh
+		Else
+			Form1.Status.Text.Set ("Could not load: " + CurrentPath(drive) + Mid(FileList.Text.Get(0,FileList.Index.Get),7,12))
+			Form1.Status.Refresh
+			ErrorHandler
+		EndIf
+	EndIf
+EndF
+
+Function GoUp:Void()
+	If Level(drive) > 0 Then
+		Level(drive)=Level(drive)-1
+		a=Len(CurrentPath(drive))-1
+		q=0
+		While q=0
+			s=Mid(CurrentPath(drive),a,1)
+			If s="\" Then
+				q=1
+			EndIf
+			a=a-1
+		Wend
+		CurrentPath(drive) = Left(CurrentPath(drive),a) + "\"
+		ReadDir
+	Else
+		showMyComputer
+	EndIf
+EndF
+
+Function DisplayPath:Void()
+	MyComputer.List.Set(0, "My Computer")
+	For Entry=0 To Drive.Count -1
+		MyComputer.List.Set(Entry+1, CurrentPath(Entry+1))
+	Next
+EndF
+
+Function Form1.Resize.Event:Void()
+	If Form1.State = 2 Then
+		//Maximize
+		LastForm1SizeX=(Screen.Resolution.X -7)
+		LastForm1SizeY=(Screen.Resolution.Y -68)
+		updateform1=1
+	Else
+		If LastForm1SizeX <> Form1.Width.Get Or LastForm1SizeY <> Form1.Height.Get  Then
+			If updateform1=0 Then
+				LastForm1SizeX=Form1.Width.Get
+				LastForm1SizeY=Form1.Height.Get
+				updateform1=1
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function FileStamp:Void
+	sday = Right("00"+Str(DateCode.Day(Dir.Read.Date)),2)
+	smonth = Right("00"+Str(DateCode.Month(Dir.Read.Date)),2)
+	syear = Right("00"+Str(DateCode.Year(Dir.Read.Date)),4)
+	shour = Right("00"+Str(TimeCode.Hour(Dir.Read.Time)),2)
+	sminute = Right("00"+Str(TimeCode.Min(Dir.Read.Time)),2)
+	ssecond = Right("00"+Str(TimeCode.Sec(Dir.Read.Time)),2)
+EndF
+
+Function Selectdrive.Event:Void()
+	If selectaction = 0 Then
+		selectaction=1
+		If MyComputer.List.Get(MyComputer.Index.Get) ="My Computer" Then
+			drive=0
+			ReadDir
+		Else
+			For Entry=0 To 16
+				If MyComputer.List.Get(MyComputer.Index.Get) = CurrentPath(Entry) Then
+					drive=Entry
+					FolderRoot=1
+				EndIf
+			Next
+			ReadDir
+		EndIf
+		selectaction = 0
+	EndIf
+EndF
+
+Function copy.Event:Void()
+	ClipboardAction = 2
+	GetSelection
+EndF
+
+Function cut.Event:Void()
+	ClipboardAction = 3
+	GetSelection
+EndF
+
+Function DeleteFiles.Event:Void()
+	msgresult=MsgBox ("Are you sure?","Deleted selected files?","",2,2,0)
+	If msgresult=MsgBox.Result.Yes Then
+		//deletedir that contains files
+		ClipboardAction = 1
+		GetSelection
+		ExecuteAction
+	EndIf
+EndF
+
+Function delete.event:Void()
+	DeleteFiles.Event
+EndF
+
+Function paste.Event:Void()
+	ExecuteAction
+EndF
+
+Function GetSelection:Void()
+	If drive>0 Then
+		Nothingselected=0
+		ClipboardData=""
+		ClipboardData=CurrentPath(drive) +"|"
+		For Entry=0 To FileList.Rows.Max-1
+			If FileList.Selected.Get(Entry) =1 Then
+				//0=folder //1=directory
+				Nothingselected=1
+				If FileList.Text.Get(2,Entry)="Folder" Then
+					ClipboardData=ClipboardData + "1" +Mid(FileList.Text.Get(0,Entry),7,12) + "|"
+				Else
+					ClipboardData=ClipboardData + "0" +Mid(FileList.Text.Get(0,Entry),7,12) + "|"
+				EndIf
+			EndIf
+		Next
+		// There are no selected files, only select the in focus one.
+		If Nothingselected=0 Then
+			//0=folder //1=directory
+			If FileList.Text.Get(2,FileList.Index.Get)="Folder" Then
+				ClipboardData=ClipboardData + "1" +Mid(FileList.Text.Get(0,FileList.Index.Get),7,12) + "|"
+			Else
+				ClipboardData=ClipboardData + "0" +Mid(FileList.Text.Get(0,FileList.Index.Get),7,12) + "|"
+			EndIf
+		EndIf
+		If ClipboardAction=1 Then
+			Clipboard.Text.Set(Str(ClipboardAction)+ClipboardData)
+		ElseIf ClipboardAction=2 Or ClipboardAction=3  Then
+			//adding 2 to be sure no fail paste will be handeld by the copy exe
+			Clipboard.Text.Set(Str(ClipboardAction+2)+ClipboardData)
+		EndIf
+	Else
+		msgresult = MsgBox("This action is not allowed","","",MsgBox.Title.Error,1,0)
+	EndIf
+	
+EndF
+
+Function ExecuteAction:Void
+	//selected files to clipboard here:
+	If ClipboardAction=0 Then
+		ClipboardData = Clipboard.Text.Get
+		If Left(ClipboardData,1) = "4" Then
+			ClipboardAction=2
+		ElseIf Left(ClipboardData,1) = "5"  Then
+			ClipboardAction=3
+		EndIf
+		ClipboardData = Mid(ClipboardData,2,Len(ClipboardData)-2)
+		If ClipboardAction>0 Then
+			Clipboard.Text.Set(ClipboardData)
+		EndIf
+	EndIf
+	ExecuteString = Str(ClipboardAction) + CurrentPath(drive) + "|"
+	ExecuteString = ExecuteString + ClipboardData
+	Clipboard.Text.Set(ExecuteString)
+	If x=Execute(App.Path+ "explorer.bin") > 0 Then
+	Else
+		ErrorHandler
+	EndIf
+	wait=1
+	ClipboardAction=0
+EndF
+
+Function OpenFile.event:Void()
+	FolderAction
+EndF
+
+Function opennewwindow.event:Void()
+	OpenInPath=1
+	newwindow.event
+EndF
+
+Function newwindow.event:Void()
+	If OpenInPath=0 Then
+		If x=Execute(App.Path+ "explorer.exe") > 0 Then
+		Else
+			ErrorHandler
+		EndIf
+	Else
+		OpenInPath=0
+		If FileList.Text.Get(2,FileList.Index.Get)  = "Folder" Then
+			If x=Execute(App.Path+ "explorer.exe "+ CurrentPath(drive) + Mid(FileList.Text.Get(0,FileList.Index.Get),7,12) +"\") > 0 Then
+			Else
+				ErrorHandler
+			EndIf
+		ElseIf drive=0 Then
+			If x=Execute(App.Path+ "explorer.exe "+ Mid(FileList.Text.Get(0,FileList.Index.Get),7,12)) > 0 Then
+			Else
+				ErrorHandler
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function ViewList.Event:Void()
+	ReadDir
+EndF
+
+Function ImageRefresh.Event:Void()
+	ReadDir
+EndF
+
+Function UncheckMenu:Void()
+	Form1.Menu.Check.Set(21,0)
+	Form1.Menu.Check.Set(22,0)
+	Form1.Menu.Check.Set(23,0)
+	Form1.Menu.Text.Set(23,"* Own filter")
+	Form1.Menu.Check.Set(24,0)
+	Form1.Menu.Refresh
+EndF
+
+Function ViewAll:Void()
+	UncheckMenu
+	Form1.Menu.Check.Set(21,1)
+	Form1.Menu.Refresh
+	FileFilter=""
+	ReadDir
+EndF
+
+Function ViewEXE:Void()
+	UncheckMenu
+	Form1.Menu.Check.Set(22,1)
+	Form1.Menu.Refresh
+	FileFilter="*.EXE"
+	ReadDir
+EndF
+
+Function ViewTXT:Void()
+	UncheckMenu
+	Form1.Menu.Check.Set(23,1)
+	Form1.Menu.Refresh
+	Form2Action=2
+	TxtFolder.Text.Set ("*.*")
+	TxtFolder.Refresh
+	Form2.Text.Set ("Filter:")
+	Form2.Open
+EndF
+
+Function ViewHLP:Void()
+	UncheckMenu
+	Form1.Menu.Check.Set(24,1)
+	Form1.Menu.Refresh
+	FileFilter="*.HLP"
+	ReadDir
+EndF
+
+Function ViewFolders:Void()
+	If Form1.Menu.Check.Get(26)=0 Then
+		folders=1
+		Form1.Menu.Check.Set(26,1)
+	Else
+		folders=0
+		Form1.Menu.Check.Set(26,0)
+	EndIf
+	ReadDir
+	Form1.Menu.Refresh
+EndF
+Function folderform.event:Void()
+	Form2.Text.Set ("New folder:")
+	Form2Action=0
+	Form2.Open
+EndF
+
+Function rename.event:Void()
+	Form2.Text.Set ("Rename:")
+	TxtFolder.Text.Set(Mid(FileList.Text.Get(0,FileList.Index.Get),7,12))
+	TxtFolder.Refresh
+	Form2Action=1
+	Form2.Open
+EndF
+
+Function ValidCheck:Void()
+	IsValid =1
+	For Invalidloop = 1 To Len(invalidChars)
+		If FindStr(TxtFolder.Text.Get, Mid(invalidChars, Invalidloop,1),1) > 0 Then
+			IsValid = 0
+		EndIf
+	Next
+	If Form2Action=2 Then
+		IsValid=1
+	EndIf
+EndF
+
+Function NewFolder.Event:Void()
+	ValidCheck
+	If IsValid=1 Then
+		If Form2Action=0 Then
+			If drive>0 Then
+				Dir.New(CurrentPath(drive) + TxtFolder.Text.Get)
+				If Dir.Result >1  Then
+					//Error in file system
+					msgresult = MsgBox("Error file system:"+Str(Dir.Result),"","",MsgBox.Title.Error,1,0)
+				EndIf
+			EndIf
+		ElseIf Form2Action=1 Then
+			If drive>0 Then
+				If FileList.Text.Get(2,FileList.Index.Get) = "Folder" Then
+					Dir.Rename (CurrentPath(drive) + Mid(FileList.Text.Get(0,FileList.Index.Get),7,12), TxtFolder.Text.Get)
+				Else
+					File.Rename(CurrentPath(drive) + Mid(FileList.Text.Get(0,FileList.Index.Get),7,12), TxtFolder.Text.Get)
+				EndIf
+			EndIf
+		ElseIf Form2Action=2 Then
+			FileFilter=TxtFolder.Text.Get
+		EndIf
+		Formopen=1
+		Form2.Close.Event
+		ReadDir
+	Else
+		msgresult = MsgBox("Unvalid character in name","","",MsgBox.Title.Error,1,0)
+	EndIf
+EndF
+
+Function Formexit.event:Void()
+	Form1.Close.Event
+EndF
+
+Function Form2.Close.Event:Void()
+	Formopen=1
+	TxtFolder.Text.Set("")
+	TxtFolder.Refresh
+	Form2.Close
+	
+EndF
+
+Function Form2.Open.Event:Void()
+	Formopen=2
+	Form2.Modal(Form1)
+	Form2.Focus.Set(TxtFolder.Display)
+	TxtFolder.Refresh
+EndF
+
+Function Form1.Focus.Event:Void()
+	Formfocus=1
+EndF
+
+Function print.Event:Void()
+	If printing=0 And drive>0 Then
+		printing=1
+		PrintToFile.New (App.SystemPath +"printd\explorer.job")
+		If PrintToFile.Status = 1 Then
+			PrintToFile.WriteString ("PATH: "+CurrentPath(drive)+Chr(13)+Chr(10))
+			PrintToFile.WriteString (Chr(13)+Chr(10))
+			For Entry=0 To FileList.Rows.Get-1
+				If FileList.Text.Get(0,Entry) <> ".." Or FileList.Text.Get(0,Entry) <> "" Then
+					If FileList.Text.Get(2,Entry) = "Folder" Then
+						PrintToFile.WriteString (Mid(Mid(FileList.Text.Get(0,Entry),7,12) + "                 ",1,12) + " (Dir.)     Date: " + FileList.Text.Get(3,Entry) + "    Size: " +FileList.Text.Get (1,Entry)+Chr(13)+Chr(10))
+					Else
+						PrintToFile.WriteString (Mid(Mid(FileList.Text.Get(0,Entry),7,12) + "                 ",1,12) + " (File)     Date: " + FileList.Text.Get(3,Entry) + "    Size: " +FileList.Text.Get (1,Entry)+Chr(13)+Chr(10))
+					EndIf
+				EndIf
+			Next
+			PrintToFile.WriteString (Chr(13)+Chr(10))
+			PrintToFile.Close
+		Else
+			msgresult = MsgBox("Print Daemon not found!","Be sure it is installed","",MsgBox.Title.Error,1,0)
+		EndIf
+		printing=0
+	Else
+		msgresult = MsgBox("There is nothing to print","Please select a folder","",MsgBox.Title.Info,1,0)
+		printing=0
+	EndIf
+EndF
+
+Function SaveSettings.Event:Void()
+	MySaveFile.New (App.Path +"explorer.ini")
+	If MySaveFile.Status > 0 Then
+		MySaveFile.WriteString(Str(Check64Items.Ticked))
+		MySaveFile.WriteString(Str(CheckAutoRefresh.Ticked))
+		MySaveFile.WriteString(Str(CheckKByteview.Ticked))
+		MySaveFile.WriteString(Str(ShowHiddenCheck.Ticked))
+		MySaveFile.WriteString(Str(FilterExeCheck.Ticked))
+	EndIf
+	MySaveFile.Close
+EndF
+
+Function Form3.Close.Event:Void()
+	Formopen=1
+	Form3.Close
+EndF
+
+Function Form3.Open.Event:Void()
+	Formopen=3
+	Form3.Modal(Form1)
+EndF
+
+Function properties.Event:Void()
+	txtFileName.Text.Set("")
+	LblType.Text.RSet("")
+	LbLLocation.Text.RSet("")
+	LBLCreated.Text.RSet("")
+	LblSize.Text.RSet("")
+	LbLDiskFree.Text.RSet ("")
+	
+	Dir.Read CurrentPath(drive)+Mid(FileList.Text.Get(0,FileList.Index.Get),7,12),24
+	txtFileName.Text.Set (Mid(FileList.Text.Get(0,FileList.Index.Get),7,12))
+	LblType.Text.RSet	(" "+FileList.Text.Get(2,FileList.Index.Get))
+	LbLLocation.Text.RSet(" "+CurrentPath(drive))
+	LBLCreated.Text.RSet(""+FileList.Text.Get(3,FileList.Index.Get))
+	If drive=0 Or FileList.Text.Get(2,FileList.Index.Get)="Folder"  Then
+		LblSize.Text.RSet(" "+FileList.Text.Get(1,FileList.Index.Get))
+	Else
+		LblSize.Text.RSet(" "+FileList.Text.Get(1,FileList.Index.Get) + " (" + String.FromLong(Dir.Read.Size)+") Bytes")
+	EndIf
+	CheReadOnly.Tick.Set(0)
+	CheArchive.Tick.Set(0)
+	CheHidden.Tick.Set(0)
+	CheSystem.Tick.Set(0)
+	CheReadOnly.Refresh
+	CheArchive.Refresh
+	CheHidden.Refresh
+	CheSystem.Refresh
+	If Dir.Read.Attr = Dir.Attr.ReadOnly Then
+		CheReadOnly.Tick.Set(1)
+	ElseIf  Dir.Read.Attr = Dir.Attr.Archive Then
+		CheArchive.Tick.Set(1)
+	ElseIf Dir.Read.Attr = Dir.Attr.Hidden Then
+		CheHidden.Tick.Set(1)
+	ElseIf Dir.Read.Attr = Dir.Attr.System Then
+		CheSystem.Tick.Set(1)
+	EndIf
+	CheReadOnly.Refresh
+	CheArchive.Refresh
+	CheHidden.Refresh
+	CheSystem.Refresh
+	Form3.Open
+	Var test1:Int
+	Var test2:Int
+	Var test3:Long
+	If drive>0 Then
+		test2=Drive.GetInfo(drive-1)
+		test1=Drive.GetFreeSpace(Drive.Letter(drive-1))
+	Else
+		test2=Drive.GetInfo(FileList.Index.Get)
+		test1=Drive.GetFreeSpace(Drive.Letter(FileList.Index.Get))
+	EndIf
+	test3=Drive.FreeSectors/%2
+	LbLDiskFree.Text.RSet (" "+ String.FromLong(test3)+ " Kb")
+EndF
+
+Function ErrorHandler:Void()
+	msgresult = MsgBox("-No memory for action.","-Or executable not found.","-Or check systemvars.",MsgBox.Title.Error,1,0)
+	Clipboard.Text.Set("")
+EndF
+
+Function about.event:Void()
+	msgresult = MsgBox("Explorer by Edoz","Version 1.2 (Build 20250218)","Copyright <c> 2025 SymbiosiS",MsgBox.Title.Info,1,0)
+EndF
+
+Function seemem.event:Void()
+	msgresult = MsgBox("String memory: "+Str(String.Memory) + " B","String free: " +Str(String.Free) + " B","",MsgBox.Title.Info,1,0)
+EndF
+
+Function options.Event:Void()
+	Form4.Open
+EndF
+
+Function Form4.Close.Event:Void()
+	Formopen=1
+	Form4.Close
+	ReadDir
+EndF
+
+Function Form4.Open.Event:Void()
+	Formopen=4
+	Form4.Modal(Form1)
+EndF
+
+Function Form2.Focus.Event:Void()
+	
+EndF
+

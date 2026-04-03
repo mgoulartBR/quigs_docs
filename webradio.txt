@@ -1,0 +1,2091 @@
+
+// Quigs 1.01 Application for Symbos
+// Name:	Webradio
+// Coder:	Tmtlogic
+// Date / 	Version:	230522
+
+// Declare variables
+
+
+//------------------------------------------------------------------------------------------------------------
+// === var IO R/Sf3 ===
+
+
+Var ioAdr				:Int = 0
+Var ioData				:Int = 0
+
+Var ioOffset			:Int = 0
+
+Var strIn1				:String
+Var u8in1				:Int
+Var u8in2				:Int
+Var u8out1				:Int
+Var strOut1				:String
+
+//------------------------------------------------------------------------------------------------------------
+// === var system ===
+
+Var u8Startup			:Int = 0
+Var bMainActive			:Int = 0
+Var strHardware			:String  				// RSF3/SF3
+Var strCPU				:String 				// EP CPC MSX
+Var strFirmware			:String  = "20230715"		// ARM Firmware  needed
+Var strBuild			 	:String =  "25-07-2023"
+
+//------------------------------------------------------------------------------------------------------------
+// === var diverse ===
+
+Var resp				:Int =0					// response value of the SF3
+Var strText				:String
+Var tel				:Int = 0
+Var i					:Int = 0
+Var y					:Int = 0
+Var x					:Int = 0
+Var c			 		:Int = 0
+Var l					:Int = 0
+Var t					:Int = 0
+Var bSw				:Int = 0
+Var u16tel				:Int
+Var xx				:Int
+Var cc				:Int
+Var ll					:Int
+Var wacht				:Int =0
+//------------------------------------------------------------------------------------------------------------
+// === var Webradio ===
+
+Var bWifiErr			:Int
+
+Var StationSelect			:Int = 255
+
+Var bStreamActive		:Int = 0
+
+Var strUrlSend			:String
+Var strList1Mode			:String =  "STARTUP"		//  "Stations" "Files"
+//------------------------------------------------------------------------------------------------------------
+// === var Audio ===
+
+Var	u8vol				:Int
+Var 	u8Feeder			:Int
+Var 	bFeederOff			:Int = 0
+Var	bFeederOn			:Int = 0
+Var	u16FeederCount		:Int
+
+//------------------------------------------------------------------------------------------------------------
+// === var Socket  ===
+
+Var socketNumber		:Int = 0
+Var ipall				:String
+Var ip1				:Int = 0
+Var ip2				:Int
+Var ip3				:Int
+Var ip4				:Int
+Var portHigh			:Int
+Var portlow				:Int
+
+Var strListIp(20)			:String
+Var strListPort(20)		:String
+Var strListGet(20)		:String
+Var strListName(20)		:String
+Var u8ListMax			:Int  =0
+Var u8ListY				:Int = 0
+
+
+
+//------------------------------------------------------------------------------------------------------------
+// === var Files ===
+
+Var u32F10fileSize		:Int
+
+Var u8F48buffer(522)		:Int
+Var u16F48bufSize		:Int
+Var u16F48isRead		:Int
+Var bEof 				:Int
+Var u8F48data			:Int
+
+Var u8rowBuffer(100)		:Int
+Var u8rowPointer			:Int
+Var u8rowReadPointer		:Int
+
+Var u8data				:Int
+
+Var u8FilesListMax		:Int
+Var strFilesName			:String
+
+Var strFilesItem			:String
+
+//------------------------------------------------------------------------------------------------------------
+// === var Adc Ledbar ===
+
+Var u8adcLeft			:Int
+Var u8adcRight			:Int
+
+Var u8adcLeftOld			:Int
+Var u8adcRightOld		:Int
+Var u8updateCt			:Int = 0
+
+
+//------------------------------------------------------------------------------------------------------------
+// === var RC ===
+
+Var u8RcCt				:Int
+Var u8RcContent			:Int
+Var strRcCode			:String
+Var strRcCodeList(25)		:String
+Var bRcCodeReceived		:Int
+Var u8RcItems			:Int = 19
+
+//------------------------------------------------------------------------------------------------------------
+// === var Util ===
+
+Var strDebug			:String
+Var strHex				:String
+
+//------------------------------------------------------------------------------------------------------------
+// Import Form 2
+
+Var u8ImportUsbListMax 	:Int
+Var u8ImportSdListMax		:Int
+
+
+//------------------------------------------------------------------------------------------------------------
+// Try webstation  Form 3
+
+Var bDnsOke  			:Int
+
+
+// End declares
+
+
+Function Main:Void()
+	// Main loop
+	
+	If  ( Form2.State And 127) < 1111 Then  //// moet =0 zijn
+		If (bMainActive	= 1) Then
+			If  bStreamActive = 1  Then
+				F90_21
+				adcUpdate
+			EndIf
+			
+			
+			If (strHardware = "RSF3") Then
+				RC_GetCode
+				
+				If (bRcCodeReceived = 1) Then
+					RC_codeHandler
+					
+					bRcCodeReceived = 0
+					Form1.Status.Text.Set strRcCode
+					Form1.Status.Refresh
+					
+				EndIf
+			EndIf
+		EndIf
+		
+		
+		
+		FeederHandler
+	EndIf
+	
+EndF
+
+
+
+
+
+Function Form1.Open.Event:Void()
+	
+	bMainActive	= 0
+	u8Startup 		= 0
+	bRcCodeReceived = 0
+	
+	If  (Machine = 7)  Or  (Machine = 8)  Or  (Machine = 9) Or  (Machine = 10) Then
+		// MSX is selected
+		Asm
+		Ld hl,#40
+		Ld (var_wrd_ioOffset),hl
+		Quigs
+		strHardware = "MSX"
+	EndIf
+	
+	If  (Machine = 6)  Then
+		// Enterprise  is selected
+		Asm
+		Ld hl,#40
+		Ld (var_wrd_ioOffset),hl
+		Quigs
+		strHardware = "EP"
+	EndIf
+	
+	If  (Machine = 12)  Or  ( Machine = 13)   Then
+		// PCW is selected
+		Asm
+		Ld hl,#40
+		Ld (var_wrd_ioOffset),hl
+		Quigs
+		strHardware = "PCW"
+	EndIf
+	
+	
+	If  (Machine < 5)  Then
+		//CPC is selected
+		Asm
+		Ld hl,#FD40
+		Ld (var_wrd_ioOffset),hl
+		Quigs
+		strHardware = "CPC"
+	EndIf
+	
+	Form1.Status.Text.Set strHardware
+	Form1.Status.Refresh
+	
+	
+	
+	InitProg
+	
+	If (strHardware = "RSF3") Then
+		RC_Init
+	EndIf
+	
+	bMainActive = 1
+	
+	
+EndF
+
+Function Form1.Close.Event:Void()
+	
+	bMainActive = 0
+	
+	If (bStreamActive = 1) Then
+		F90_10			// close socket
+		bStreamActive = 0
+	EndIf
+	
+	u8in1 = 1				// Seone MP3A
+	F40
+	
+	Form1.Close
+EndF
+
+
+Function	InitProg:Void()
+	
+	strIn1 = strFirmware
+	F72_25
+	If u8out1 = 1  Then
+		// out of date
+		
+		c = MsgBox("Firmware  out of  date !","Needed: ",strFirmware ,MsgBox.Title.Error	,MsgBox.Buttons.Ok,MsgBox.Icon.Default	)
+		
+		Form1.Close
+	EndIf
+	
+	strFilesName= "WEBRADIO.WRC"
+	
+	u8in1 = 5
+	F40						//set  seone Webradio
+	
+	u8vol	 = 80
+	u8in1  = u8vol
+	F41_0
+	volume.Value.Set (u8vol)
+	volume.Refresh
+	
+	socketNumber = 0
+	
+	urlListLoad
+	
+	
+	Stop.Selected.Set
+	Stop.Refresh
+	Play.Refresh
+	
+	Stations.Selected.Set
+	Stations.Refresh
+	Files.Refresh
+	
+	F70
+	Form1.Status.Text.Set strHardware
+	Form1.Status.Refresh
+	
+	
+	
+EndF
+
+
+Function  ArmResponse:Int()
+	// wait  for ARM progress
+	//
+	// return 0 = ready
+	// return 2 = error
+	
+	
+	resp = 1
+	
+	//wacht = 1000
+	
+	While (resp = 1)
+		resp = ioRd	(1)
+		///If wacht > 0 Then
+		//wacht = wacht  - 1
+		//		EndIf
+		
+		
+		//		If  wacht = 0 Then
+		//			resp = 0
+		//		EndIf
+		
+		
+	Wend
+	
+	If  resp = 2 Then
+		F72_4
+	EndIf
+	
+	Return(resp)
+EndF
+
+Function  	WifiResponse:Int()
+	
+	// wait  for Wifi background progress
+	//
+	// return 0 = ready
+	// return 2 = error
+	
+	resp = 1
+	
+	While (resp = 1)
+		resp = ioRd	(14)
+	Wend
+	
+	Return(resp)
+EndF
+
+Function	ioWR:Void(ioAdr,ioData)
+	
+	Asm
+	Ld a,(var_wrd_ioData)
+	Ld hl,(Var_wrd_ioOffset)
+	Ld de,(Var_wrd_ioAdr)
+	
+	Add hl,de
+	push hl
+	pop bc
+	
+	Out (c),a
+	
+	Quigs
+	
+EndF
+
+Function	ioRd:Int(ioAdr)
+	
+	Asm
+	
+	Ld hl,(Var_wrd_ioOffset)
+	Ld de,(Var_wrd_ioAdr)
+	
+	Add hl,de
+	push hl
+	pop bc
+	
+	In a, (c)
+	Ld (var_wrd_ioData),a
+	Quigs
+	
+	Return ioData
+EndF
+
+
+
+
+Function List1.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	If (strList1Mode	= "STATIONS")  Then
+		If (u8ListMax = 0) Or  (u8ListMax < List1.Index.Get ) Then
+			StationSelect = 255
+		Else
+			StationSelect = List1.Index.Get
+		EndIf
+	EndIf
+	
+	If (strList1Mode  = "FILES" ) Then
+		strFilesName = List1.List.Get(List1.Index.Get)
+		TextActiveStation.Text.Set   strFilesName
+		TextActiveStation.Refresh
+	EndIf
+EndF
+
+
+
+Function urlListLoad:Void()
+	
+	// load  Stations from file
+	
+	strList1Mode = "STATIONS"
+	
+	
+	Garbage
+	
+	
+	u8in1	 = 0		//sd card
+	F47_1
+	
+	u8in1	 = 2		//both read and write path
+	strIn1 =  "APPDATA/WEBRADIO"
+	F47_5
+	
+	
+	u8in1 = 0		//sd card
+	strIn1 = strFilesName
+	F47_10
+	
+	bEof = 0
+	
+	
+	u8ListY = 0
+	
+	While bEof = 0
+		getRow
+		
+		If (u8rowPointer >2) And ( u8rowBuffer(0) <> Asc("*") ) Then
+			getIp
+			getPort
+			getGetStream
+			getStationName
+			u8ListY = u8ListY + 1
+		EndIf
+		
+	Wend
+	
+	u8ListMax = u8ListY
+	
+	List1.Rows.Set(u8ListMax -1)
+	///ist1.Refresh
+	
+	
+	For t = 0 To u8ListMax
+		List1.List.Set (t ,strListName(t))
+	Next
+	
+	StationSelect = 0
+	
+	List1.Selected.Reset List1.Index.Get
+	List1.Index.Set  (0)
+	List1.Selected.Set (0)
+	
+	List1.Rows.Set(u8ListMax -1)
+	
+	List1.Refresh
+	
+EndF
+
+
+Function getRow:Void()
+	//.. load row Sting for F48 buffers
+	
+	u8rowPointer = 0
+	u8rowReadPointer = 0
+	
+	bSw = 0
+	
+	While (bSw = 0)
+		u8data =  u8readF48buffer
+		
+		If (u8data <> 9)  And (u8data <> 10)  Then
+			
+			u8rowBuffer(u8rowPointer) = u8data
+			u8rowPointer = u8rowPointer + 1
+		EndIf
+		
+		
+		If (u8data = 10)  Or (u8rowPointer > 90)  Then
+			bSw = 1
+		EndIf
+		
+	Wend
+	
+EndF
+
+Function  u8readF48buffer:Int()
+	/// read one byte from F48  buffer
+	
+	If  u16F48isRead =  u16F48bufSize Then
+		F48
+	EndIf
+	
+	
+	
+	u8F48data	 = u8F48buffer(u16F48isRead)
+	u16F48isRead	= u16F48isRead	 + 1
+	
+	Return(u8F48data)
+	
+	
+EndF
+
+
+Function  getIp:Void()
+	strText = ""
+	
+	
+	bSw = 0
+	While bSw = 0
+		c = u8rowBuffer(u8rowReadPointer)
+		u8rowReadPointer = u8rowReadPointer +1
+		
+		If c = Asc("|") Then
+			bSw = 1
+		EndIf
+		
+		If (c  <> Asc("|")) And (c <>32) Then
+			strText = strText + Chr(c)
+		EndIf
+	Wend
+	
+	strListIp(u8ListY) = strText
+	
+EndF
+
+Function  getPort:Void()
+	strText = ""
+	
+	
+	bSw = 0
+	
+	While (bSw =0)
+		
+		c = u8rowBuffer(u8rowReadPointer)
+		u8rowReadPointer = u8rowReadPointer +1
+		
+		
+		If c = Asc("|") Then
+			bSw = 1
+		EndIf
+		
+		If (c  <> Asc("|"))  And (c <>32) Then
+			strText = strText + Chr(c)
+		EndIf
+	Wend
+	
+	strListPort(u8ListY) = strText
+	
+EndF
+
+Function  getGetStream:Void()
+	strText = ""
+	
+	bSw = 0
+	While (bSw = 0)
+		c = u8rowBuffer(u8rowReadPointer)
+		u8rowReadPointer = u8rowReadPointer +1
+		
+		If c = Asc("|") Then
+			bSw = 1
+		EndIf
+		
+		If (c  <> Asc("|")) And (c <>32) Then
+			strText = strText + Chr(c)
+		EndIf
+	Wend
+	
+	strListGet(u8ListY) = strText
+EndF
+
+Function  getStationName:Void()
+	strText = ""
+	
+	bSw = 0
+	While (bSw = 0)
+		c = u8rowBuffer(u8rowReadPointer)
+		u8rowReadPointer = u8rowReadPointer +1
+		
+		If c = Asc("|") Then
+			bSw = 1
+		EndIf
+		
+		If (c  <> Asc("|")) And (c <>32) Then
+			strText = strText + Chr(c)
+		EndIf
+	Wend
+	
+	strListName(u8ListY) = strText
+	
+EndF
+
+
+Function makeIp:Void()
+	// make from  IP String 123.123.123.123.  seperate IP numbers Ip[0] 1 2  3
+	ip1 = CInt(Mid(strListIp(StationSelect),  1 ,3))
+	ip2 = CInt(Mid(strListIp(StationSelect) , 5 ,3))
+	ip3 = CInt(Mid(strListIp(StationSelect) , 9 ,3))
+	ip4 = CInt(Mid(strListIp(StationSelect) ,13 ,3))
+EndF
+
+Function makePort:Void()
+	//.. make from Port String port high low
+	portHigh = CInt(strListPort(StationSelect)) / 256
+	portlow  = CInt(strListPort(StationSelect)) And 255
+EndF
+
+Function makeGetStream:Void()
+	
+	//	strUrlSend = strListGet(StationSelect)
+	strUrlSend  = "GET "+strListGet(StationSelect)+" HTTP/1.1"+Chr(13)+Chr(10)+Chr(13)+Chr(10)
+EndF
+
+Function filesListLoad:Void()
+	// load  Wrc Files from SD
+	
+	Garbage
+	
+	strList1Mode = "FILES"
+	
+	
+	
+	u8in1	 = 0			// sd card
+	F47_1			//  Reset
+	
+	u8in1	 = 2			//read and write path
+	strIn1 =  "APPDATA/WEBRADIO"
+	F47_5
+	
+	u8in1 = 0			// sd card
+	F47_20			// start Files
+	
+	
+	bEof = 0
+	
+	y = 0
+	
+	
+	While bEof = 0
+		
+		u8in1 = 2		 		// Layout 2
+		F47_21				// read files item
+		
+		FilesCheckExt
+		
+		If strFilesItem	= "END" Then
+			bEof = 1
+		Else
+			If (bSw = 1)  Then
+				List1.List.Set (y ,strFilesItem	)
+				y =y + 1
+			EndIf
+		EndIf
+	Wend
+	
+	
+	u8FilesListMax = y
+	
+	u8in1	 = 0
+	F47_1
+	
+	
+	//	List1.Rows.Set(u8FilesListMax )
+	//	List1.Refresh
+	
+	List1.Selected.Reset List1.Index.Get
+	List1.Index.Set  (0)
+	List1.Selected.Set (0)
+	
+	List1.Rows.Set(u8FilesListMax )
+	
+	List1.Refresh
+	
+	
+	
+EndF
+
+Function FilesCheckExt: Void
+	bSw = 0
+	For x = 1 To 12
+		
+		If Mid(strFilesItem,x,1) = "." Then
+			strText = Mid(strFilesItem,x+1,3)
+			
+			If strText  = "WRC" Then
+				bSw = 1
+			EndIf
+			
+			strDebug	 = strText
+			debug_str
+		EndIf
+	Next
+EndF
+
+//------------------------------------------------------------------------------------------------------------
+// === R/SF3 Functions ===
+
+Function F40:Void()
+	//SF3  F40,5
+	//Set  SEONE in Audiostream mode
+	Lock.On
+	
+	ioWR (1,0)
+	ioWR (2,u8in1 )	 // 5 =   webradio  // 1 = mp3a
+	ioWR (1,40)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function F41_0:Void()
+	//Set volume LR
+	Lock.On
+	
+	ioWR(1,0)
+	ioWR(2,0)
+	ioWR(2,u8in1)
+	ioWR(1,41)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+	
+EndF
+
+Function F42_2:Void()
+	//get vu adc
+	Lock.On
+	
+	ioWR	(1,0)
+	ioWR (2,2)
+	ioWR(1,42)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	u8adcLeft	= ioRd(2)
+	u8adcRight	= ioRd(2)
+	Lock.Off
+EndF
+
+Function F42_4:Void()
+	//clear seone audio buffer
+	
+	Lock.On
+	
+	ioWR(1,0)
+	ioWR(2,4)
+	ioWR(1,42)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function F47_1:Void()
+	//Reset All Status
+	Lock.On
+	ioWR(1,0)
+	ioWR(2,1)
+	ioWR(2,u8in1)		//sd card
+	ioWR(1,47)
+	
+	If ArmResponse	= 2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function	F47_2:Void()
+	//Set read / write Device
+	Lock.On
+	ioWR(1,0)
+	ioWR(2,2)
+	ioWR(2,u8in1)		//read device
+	ioWR(2,u8in2)		//write device
+	ioWR(1,47)
+	
+	If ArmResponse	= 2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+	
+EndF
+
+Function F47_5:Void()
+	//Set path for  Read / write
+	Lock.On
+	ioWR(1,0)
+	ioWR(2,5)
+	ioWR(2,u8in1)
+	
+	l = Len(strIn1)
+	
+	For t = 1 To l
+		c = Asc(Mid(strIn1,t,1))
+		ioWR (2,c)
+	Next
+	
+	ioWR	(1,47)
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	Lock.Off
+EndF
+
+Function F47_10:Void()
+	//Load  start Files
+	Lock.On
+	
+	ioWR(1,0)
+	ioWR(2,10)
+	ioWR(2,u8in1)
+	
+	l = Len(strIn1)
+	For t = 1 To l
+		c = Asc(Mid(strIn1,t,1))
+		ioWR (2,c)
+	Next
+	
+	ioWR(1,47)
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	x = ioRd(2)
+	x = ioRd(2)
+	u32F10fileSize  = ioRd(2)*256
+	u32F10fileSize  = u32F10fileSize + ioRd(2)
+	
+	
+	u16F48bufSize = 0
+	u16F48isRead  = 0
+	
+	bEof = 0
+	
+	Lock.Off
+EndF
+
+
+Function F47_20:Void()
+	//Start Cat directory read
+	Lock.On
+	
+	ioWR (1,0)
+	ioWR (2,20)
+	ioWR (2,u8in1)
+	ioWR (1,47)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function F47_21:Void()
+	//Read 1 directory Item
+	Lock.On
+	
+	ioWR (1,0)
+	ioWR (2,21)
+	ioWR (2,u8in1)
+	ioWR (1,47)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	If (u8in1 = 2) Then
+		c = ioRd(2)
+		//c  = f files
+		// c  = d  directy
+		
+		If c = 255 Then
+			strFilesItem =  "END"
+		Else
+			strFilesItem = ""
+			
+			For xx = 1 To  12
+				strFilesItem = strFilesItem	+ Chr(ioRd(2))
+			Next
+		EndIf
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function F47_24:Void
+	//Copy read path  to  write path          note  f47,5  path example    0:/test/test.bas
+	Lock.On
+	
+	ioWR (1,0)
+	ioWR (2,24)
+	
+	ioWR (1,47)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+	
+EndF
+
+
+Function F48:Void()
+	//Read Files  DATA
+	Lock.On
+	
+	ioWR(1,48)
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	u16F48bufSize = (ioRd(2)*256) + ioRd(2)
+	u16F48isRead = 0
+	
+	For u16tel = 0 To u16F48bufSize
+		u8F48buffer(u16tel) = ioRd(2)
+	Next
+	
+	If u16F48bufSize = 0 Then
+		bEof = 1
+	EndIf
+	
+	Lock.Off
+EndF
+
+
+
+Function	F70:Void()
+	// get  DFU
+	
+	//"SF3_EP_20231231.DFU"
+	//"SF3_CPC_20231231.DFU"
+	//"SF3_MSX_20231231.DFU"
+	//"SF3_PCW_20231231.DFU"
+	
+	
+	//"RSF3_EP_20231231"
+	//"RSF3_CPC_20231231"
+	
+	Lock.On
+	
+	ioWR (1,70)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	bSw =0
+	strOut1 =  ""
+	For  u16tel =  1 To 30
+		c = ioRd(2)
+		If c = 0 Then
+			bSw = 1
+		EndIf
+		
+		If  bSw=0 Then
+			strOut1 = strOut1 + Chr(c)
+		EndIf
+	Next
+	
+	
+	bSw = 0
+	strHardware = "NONE"
+	
+	If (Mid(strOut1,1,1)) =  "R" Then
+		//RSF3
+		strHardware = "RSF3"
+	EndIf
+	If (Mid(strOut1,1,1)) =  "S" Then
+		//SF3
+		strHardware = "SF3"
+	EndIf
+	
+	
+	
+	Lock.Off
+	
+EndF
+
+Function	F72_4:Void()
+	//Error
+	Lock.On
+	Form1.Status.Text.Set "SF3 ERROR"
+	Form1.Status.Refresh
+	Lock.Off
+EndF
+
+
+Function F72_25:Void()
+	// check firmware
+	
+	Lock.On
+	ioWR(1,0)
+	ioWR(2,25)
+	
+	For  x = 1 To  8
+		ioWR(2,Asc(Mid(strIn1,x,1)))
+	Next
+	
+	
+	ioWR (1,72)
+	
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	u8out1    = ioRd(2)
+	
+	Lock.Off
+EndF
+
+
+
+Function F72_26:Void()
+	
+	// Get seperate system  info
+	
+	Lock.On
+	ioWR(1,0)
+	ioWR(2,26)
+	ioWR(2,u8in1)
+	
+	ioWR (1,72)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	c = 1
+	strOut1 = ""
+	While (c  > 0)
+		c=  ioRd(2)
+		If  c > 0 Then
+			strOut1= strOut1	+ Chr(c)
+		EndIf
+	Wend
+	
+	Lock.Off
+	
+	
+EndF
+
+
+Function F90_4:Void
+	// get dns
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	ioWR	(1,7)
+	ioWR (9,4)
+	
+	
+	l = Len(strIn1)
+	
+	For t = 1 To l
+		c = Asc(Mid(strIn1,t,1))
+		ioWR (9,c)
+	Next
+	
+	ioWR (1,90)
+	
+	
+	If ArmResponse =2 Then
+		
+	EndIf
+	
+	
+	
+	Lock.Off
+	
+	If WifiResponse  < 2 Then
+		bDnsOke = 1
+		
+		ip1 = ioRd(9)
+		ip2 = ioRd(9)
+		ip3 = ioRd(9)
+		ip4 = ioRd(9)
+	Else
+		bDnsOke = 0
+		
+		ip1 = 0
+		ip2 = 0
+		ip3 = 0
+		ip4 = 0
+		
+		bWifiErr = 1
+	EndIf
+	
+	
+EndF
+
+Function	F90_5: Void()
+	//SF3 F90,5
+	//Open socket
+	//in:   socketNumber ,ip1,ip2,ip3,ip4,portHigh,portlow
+	//Return 0 oke 2 er
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	ioWR	(1,7)
+	ioWR (9,5)
+	
+	ioWR (9,ip1)
+	ioWR (9,ip2)
+	ioWR (9,ip3)
+	ioWR (9,ip4)
+	
+	ioWR (9,portHigh)
+	ioWR (9,portlow)
+	
+	ioWR (9,socketNumber	)
+	
+	ioWR (1,90)
+	
+	ioWR	(15,72)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	
+EndF
+
+
+Function F90_8:Void()
+	//SF3 F90,8
+	//Send  socket
+	//in urlSend
+	
+	
+	strDebug = strUrlSend
+	debug_str
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	ioWR	(1,7)
+	ioWR (9,8)
+	
+	ioWR (9,socketNumber	)
+	
+	l = Len(strUrlSend)
+	
+	For t = 1 To l
+		c = Asc(Mid(strUrlSend,t,1))
+		ioWR (9,c)
+	Next
+	
+	ioWR (1,90)
+	
+	If ArmResponse =2 Then
+		
+	EndIf
+	
+	Lock.Off
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	
+EndF
+
+Function 	F90_10:Void()
+	//SF3  F90,10	Close  socket
+	//in: socketnumber
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	ioWR	(1,7)
+	ioWR (9,10)
+	ioWR (9,socketNumber	)
+	ioWR (1,90)
+	
+	If ArmResponse =2 Then
+		// nop
+	EndIf
+	
+	Lock.Off
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	
+	
+	
+EndF
+
+Function  F90_21: Void()
+	
+	//SF3 F90,21
+	//Copy socket data to MP3  stream
+	//In:socketnumber
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	ioWR	(1,7)
+	ioWR (9,21)
+	
+	ioWR (9,socketNumber	)
+	
+	ioWR (1,90)
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	
+	
+EndF
+
+Function	F245_0:Void()
+	//  Read content of  the RC buffer
+	
+	Lock.On
+	
+	ioWR(1,0)
+	ioWR(2,0)
+	ioWR(1,245)
+	
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	u8RcContent   = ioRd(2)
+	
+	Lock.Off
+	
+EndF
+
+Function F245_1:Void()
+	//RC read	buffer
+	
+	Lock.On
+	
+	ioWR(1,0)
+	ioWR(2,1)
+	ioWR(1,245)
+	
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	strRcCode = ""
+	
+	strText = Hex(ioRd(2))
+	strRcCode = strRcCode + Mid(strText,3,2)
+	
+	strText = Hex(ioRd(2))
+	strRcCode = strRcCode + Mid(strText,3,2)
+	
+	strText = Hex(ioRd(2))
+	strRcCode = strRcCode + Mid(strText,3,2)
+	
+	strText = Hex(ioRd(2))
+	strRcCode = strRcCode + Mid(strText,3,2)
+	
+	Lock.Off
+EndF
+
+
+//Player.Selected.Set should just mark the radio as being the correct one
+//If StopRadio.Selected.Get=1 Then
+//If StopRadio.Selected.Get=1 Then
+
+
+Function Play.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	Form1.Status.Text.Set Str(Form2.State And 127)
+	Form1.Status.Refresh
+	
+	If (strList1Mode  = "STATIONS" ) And (u8ListMax  > 0)  And  (bStreamActive = 0) And (StationSelect < u8ListMax)  Then
+		TextActiveStation.Text.Set( strListName(StationSelect))
+		TextActiveStation.Refresh
+		
+		makeIp
+		makePort
+		makeGetStream
+		
+		F90_10	// close socket
+		F90_5	// open socket
+		F90_8	// send url get
+		
+		//		Stations.Hidden.Set 1
+		//		Stations.Refresh
+		//		Files.Hidden.Set	1
+		//		Files.Refresh
+		
+		bStreamActive = 1
+		
+		FeederOnStart
+	EndIf
+	
+	
+	
+EndF
+
+Function Stop.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	If u8Feeder > 10 Then
+		FeederOffStart
+	EndIf
+	
+	
+	//	F90_10
+	//	bStreamActive = 0
+	
+	
+	//	F42_4				// clear audio fifo
+	
+	
+	
+	
+EndF
+
+Function debug_str:Void()
+	ll = Len(strDebug)
+	For xx= 1 To ll
+		cc = Asc(Mid(strDebug	,xx,1))
+		ioWR (0,cc)
+	Next
+	ioWR(0,10)
+	ioWR(0,13)
+EndF
+
+//------------------------------------------------------------------------------------------------------------
+// ADC control
+
+Function adcLeft.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	
+EndF
+
+Function adcRight.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	
+EndF
+
+Function adcUpdate:Void()
+	
+	
+	u8updateCt	= u8updateCt +1
+	If (u8updateCt  > 3) Then
+		
+		u8updateCt = 0
+		
+		F42_2
+		
+		If (u8adcLeft <> u8adcLeftOld) Then
+			adcLeft.Value.Set( u8adcLeft)
+			adcLeft.Refresh
+			u8adcLeftOld =u8adcLeft
+			
+		EndIf
+		
+		If (u8adcRight  <> u8adcRightOld) Then
+			adcRight.Value.Set (u8adcRight)
+			adcRight.Refresh
+			u8adcRightOld	= u8adcRight
+		EndIf
+		
+		
+	EndIf
+	
+	
+	
+	
+EndF
+
+//------------------------------------------------------------------------------------------------------------
+// Audio control
+
+Function Volume.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	u8vol =  volume.Value.Get
+	u8in1 = u8vol
+	F41_0
+	
+EndF
+
+Function FeederOffStart:Void
+	bFeederOff	=1
+	u8Feeder = u8vol
+EndF
+
+Function FeederOnStart:Void
+	bFeederOn	=1
+	u8Feeder = 0
+EndF
+
+Function  FeederHandler:Void
+	If (bFeederOn = 1) Then
+		If (u8Feeder < u8vol) Then
+			u8Feeder  = u8Feeder + 3
+			
+			If (u8Feeder > u8vol) Then
+				u8Feeder = u8vol
+			EndIf
+			
+			
+			u8in1 = u8Feeder
+			F41_0
+			volume.Value.Set   u8Feeder
+			volume.Refresh
+			
+		Else
+			bFeederOn = 0
+			
+			u8in1 = u8vol
+			F41_0
+			
+			volume.Value.Set   u8vol
+			volume.Refresh
+		EndIf
+		
+	EndIf
+	
+	If (bFeederOff = 1) Then
+		If (u8Feeder  > 3) Then
+			u8Feeder  = u8Feeder  - 3
+			
+			u8in1 = u8Feeder
+			F41_0
+			volume.Value.Set   u8Feeder
+			volume.Refresh
+			
+		Else
+			bFeederOff = 0
+			F90_10
+			F42_4				// clear audio fifo
+			
+			bStreamActive = 0
+			
+			volume.Value.Set   0
+			volume.Refresh
+		EndIf
+	EndIf
+	
+	
+EndF
+
+
+
+//------------------------------------------------------------------------------------------------------------
+// Menu About
+
+
+Function About:Void()
+	c = MsgBox("TMTLOGIC 2023","Webradio for  RSF3 and SF3","Version:  "+strBuild,MsgBox.Title.Info,MsgBox.Buttons.Ok,MsgBox.Icon.Default	)
+EndF
+
+//------------------------------------------------------------------------------------------------------------
+// RC  remote  control
+
+
+Function RC_Init:Void()
+	// Init RC default values
+	For  x = 0  To u8RcItems
+		strRcCodeList(x) = "00000000"
+	Next
+	
+	RC_codeListLoad
+	
+EndF
+
+
+
+Function RC_GetCode:Void()
+	
+	u8RcCt = u8RcCt +1
+	If (u8RcCt  > 1) Then
+		u8RcCt = 0
+		F245_0
+		If   (u8RcContent > 0)  Then
+			F245_1
+			bRcCodeReceived = 1
+		EndIf
+		
+	EndIf
+	
+EndF
+
+Function RC_codeListLoad:Void()
+	// load Rc codes from SD card
+	
+	u8in1 = 0			//sd card
+	F47_1
+	
+	u8in1 = 2			//both read and write path
+	strIn1 = "APPDATA/RC"
+	F47_5
+	
+	
+	u8in1 = 0			//sd card
+	strIn1 = "RC_CODES.BIN"
+	F47_10
+	
+	F48
+	
+	u8in1 = 0			//sd card
+	F47_1
+	
+	t = 0
+	
+	If (u32F10fileSize > 0) Then
+		For x = 0 To  u8RcItems
+			strText =  ""
+			For y = 1 To 8
+				strText = strText + Chr(u8F48buffer(t))
+				t =t +1
+			Next
+			
+			strRcCodeList(x) = strText
+		Next
+	EndIf
+EndF
+
+
+
+
+Function RC_codeHandler:Void()
+	y  = 255
+	For x= 0 To u8RcItems
+		
+		If (strRcCode  = strRcCodeList(x)) Then
+			y = x
+		EndIf
+	Next
+	
+	
+	
+	
+	
+	If (y = 0) Then 					//move up
+		x =  List1.Index.Get
+		If x > 0  Then
+			List1.Index.Set  (x-1)
+			List1.Selected.Set x - 1
+			List1.Selected.Reset  x
+			List1.Refresh
+			
+			StationSelect = x -1
+			
+		EndIf
+	EndIf
+	
+	If (y = 1) Then 					//move down
+		x = List1.Index.Get
+		If x < 9  Then
+			List1.Index.Set  (x+1)
+			List1.Selected.Set x + 1
+			List1.Selected.Reset  x
+			List1.Refresh
+			
+			StationSelect = x + 1
+		EndIf
+	EndIf
+	
+	If (y = 2) Then 					//move left
+	EndIf
+	
+	If (y = 3) Then 					//move right
+	EndIf
+	
+	If (y = 4) Or  (y =5)  Then 			//Select / play
+		If (strList1Mode	=  "STATIONS") Then
+			Play.Event
+			Play.Selected.Set
+			Play.Refresh
+			Stop.Refresh
+		EndIf
+		
+		If (strList1Mode	=  "FILES") Then
+			strFilesName = List1.List.Get(List1.Index.Get)
+			TextActiveStation.Text.Set   strFilesName
+			TextActiveStation.Refresh
+		EndIf
+		
+	EndIf
+	
+	If (y = 6) Then 					//Stop
+		Stop.Event
+		Stop.Selected.Set
+		Stop.Refresh
+		Play.Refresh
+	EndIf
+	
+	
+	If (y = 7) Then 					//Pause
+	EndIf
+	
+	If (y = 8) And (strList1Mode	=  "FILES") And (bStreamActive = 0) Then		//Station
+		Stations.Event
+		Stations.Selected.Set
+		Stations.Refresh
+		Files.Refresh
+		
+	EndIf
+	
+	If (y = 9)  And (strList1Mode	=  "STATIONS") And (bStreamActive = 0)  Then	//Files
+		Files.Event
+		Files.Selected.Set
+		Files.Refresh
+		Stations.Refresh
+		
+		
+	EndIf
+	
+	If (y = 10) Then					//vol up
+		If (u8vol < 98) Then
+			u8vol = u8vol + 2
+			u8in1 = u8vol
+			F41_0
+			volume.Value.Set	 u8vol
+			volume.Refresh
+		EndIf
+	EndIf
+	
+	If (y = 11) Then 			//vol down
+		If (u8vol > 2) Then
+			u8vol = u8vol - 2
+			u8in1 = u8vol
+			F41_0
+			volume.Value.Set  u8vol
+			volume.Refresh
+			
+		EndIf
+	EndIf
+	
+	If (y = 12) Then			//Treble up
+	EndIf
+	
+	If (y = 13) Then			//Treble down
+	EndIf
+	
+	If (y = 14) Then			//Bass up
+	EndIf
+	
+	If (y = 15) Then			//Bass down
+	EndIf
+	
+	If (y = 16) Then			//Mute on
+	EndIf
+	
+	If (y = 17) Then			//Mute off
+	EndIf
+	
+EndF
+
+
+
+
+
+
+
+Function Stations.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	If (strList1Mode  = "FILES" ) Then
+		If (bStreamActive = 0) Then
+			bMainActive	= 0
+			
+			urlListLoad
+			
+			bMainActive	= 1
+		EndIf
+		
+	EndIf
+	
+	
+EndF
+
+
+
+Function Files.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	If (strList1Mode  = "STATIONS" ) Then
+		If (bStreamActive = 0 ) Then
+			bMainActive	= 0
+			
+			filesListLoad
+			
+			bMainActive	= 1
+		EndIf
+		
+	EndIf
+EndF
+
+
+//------------------------- FORM  2 -----------------------------------------------------------------------------------
+
+// Form 2   Import  WRC from  USB
+
+Function ImportWrc:Void
+	
+	Form2.Open
+	
+	
+	
+EndF
+
+
+
+
+
+Function Form2.Open.Event:Void()
+	// load USB and SD
+	
+	ImportShowUSB
+	ImportShowSD
+EndF
+
+Function ImportShowUSB:Void
+	// oad  Wrc Files from USB
+	
+	Garbage
+	
+	u8in1	 = 1			// sd card
+	F47_1			//  Reset
+	
+	u8in1	 = 2			//read and write path
+	strIn1 = ""
+	
+	F47_5
+	
+	u8in1 = 1			// usb stick
+	F47_20			// start Files
+	
+	
+	bEof = 0
+	
+	y = 0
+	
+	
+	While bEof = 0
+		
+		u8in1 = 2		 		// Layout 2
+		F47_21				// read files item
+		
+		FilesCheckExt
+		
+		If strFilesItem	= "END" Then
+			bEof = 1
+		Else
+			If (bSw = 1)  Then
+				List2.List.Set (y ,strFilesItem	)
+				y =y + 1
+			EndIf
+		EndIf
+	Wend
+	
+	
+	u8ImportUsbListMax = y
+	
+	u8in1	 = 1		//reset USB
+	F47_1
+	
+	
+	//	List1.Rows.Set(u8FilesListMax )
+	//	List1.Refresh
+	
+	List2.Selected.Reset List1.Index.Get
+	List2.Index.Set  (0)
+	List2.Selected.Set (0)
+	
+	List2.Rows.Set(u8ImportUsbListMax )
+	
+	List2.Refresh
+	
+	
+	
+EndF
+
+Function ImportShowSD:Void
+	// oad  Wrc Files from SD
+	
+	Garbage
+	
+	u8in1	 = 0			// sd card
+	F47_1			//  Reset
+	
+	u8in1	 = 2			//read and write path
+	
+	strIn1 =  "APPDATA/WEBRADIO"
+	
+	F47_5
+	
+	u8in1 = 0			// sd card
+	F47_20			// start Files
+	
+	
+	bEof = 0
+	
+	y = 0
+	
+	
+	While bEof = 0
+		
+		u8in1 = 2		 		// Layout 2
+		F47_21				// read files item
+		
+		FilesCheckExt
+		
+		If strFilesItem	= "END" Then
+			bEof = 1
+		Else
+			If (bSw = 1)  Then
+				List3.List.Set (y ,strFilesItem	)
+				y =y + 1
+			EndIf
+		EndIf
+	Wend
+	
+	Garbage
+	
+	u8ImportSdListMax = y
+	
+	u8in1	 = 0		//reset SD
+	F47_1
+	
+	
+	//	List1.Rows.Set(u8FilesListMax )
+	//	List1.Refresh
+	
+	//List3.Selected.Reset List1.Index.Get
+	//List3.Index.Set  (0)
+	//List3.Selected.Set (0)
+	
+	List3.Rows.Set(u8ImportSdListMax )
+	
+	List3.Refresh
+	
+EndF
+
+
+Function Button1.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	//  copy button
+	
+	strText = List2.List.Get(List2.Index.Get)
+	
+	Form2.Status.Text.Set	strText
+	Form2.Status.Refresh
+	
+	u8in1 = 0	// read  usb
+	strIn1 =  "1:"+strText
+	
+	F47_5
+	
+	
+	u8in1 = 1	// write to SD
+	strIn1 =  "0:APPDATA/WEBRADIO/"+strText
+	F47_5
+	
+	
+	F47_24
+	
+	
+	List3.Hidden.Set	0
+	List3.Refresh
+	
+	
+	ImportShowSD
+	
+	
+EndF
+Function List2.Event:Void()
+	// generated on entry:
+	//     = Event.Form()        ;Form number of resize event
+	//     = Event.Type()        ;Symbos event number should be 162
+	//     = Event.MouseX() & Event.MouseY()    ;Position of Mouse on event
+	//     =
+	
+	
+	
+EndF
+
+//------------------------- FORM  3 -----------------------------------------------------------------------------------
+
+Function  TryStation :Void
+	Form3.Open
+EndF
+
+
+Function Form3.Open.Event:Void()
+	If Form2.State > 0  Then
+		Form2.Close
+	EndIf
+	
+	If  bStreamActive	= 0 Then
+		
+		
+		
+		
+	EndIf
+	
+EndF
+
+Function Button2.Event:Void()
+	
+	//..  Get ip address
+	// url text   textline 2
+	
+	
+	strIn1 = TextLine2.Text.Get
+	F90_4
+	
+	TextLine5.Text.Set Str(ip1)
+	TextLine5.Refresh
+	
+	TextLine6.Text.Set Str(ip2)
+	TextLine6.Refresh
+	
+	TextLine7.Text.Set Str(ip3)
+	TextLine7.Refresh
+	
+	TextLine8.Text.Set Str(ip4)
+	TextLine8.Refresh
+	
+	
+	
+EndF
+
+
+
+
+Function Button3.Event:Void()
+	//..start  test  Webradio
+	
+	If  (bStreamActive = 1) Then
+		
+		x = CInt(TextLine4.Text.Get)
+		
+		
+		portHigh = 	x / 256
+		portlow = x And  255
+		
+		ip1 = CInt(TextLine5.Text.Get	)
+		ip2 = CInt(TextLine6.Text.Get	)
+		ip3 = CInt(TextLine7.Text.Get	)
+		ip4 = CInt(TextLine8.Text.Get	)
+		
+		
+		strUrlSend  = "GET "+TextLine3.Text.Get+" HTTP/1.1"+Chr(13)+Chr(10)+Chr(13)+Chr(10)
+		
+		
+		
+		F90_10	// close socket
+		
+		Form3.Status.Text.Set	 "OPEN HTTP URL"
+		Form3.Status.Refresh
+		
+		F90_5	// open socket
+		If (bWifiErr	= 1) Then
+			Form3.Status.Text.Set	"OPEN ERROR !"
+			Form3.Status.Refresh
+		Else
+			F90_8	// send url get
+		EndIf
+		
+		If (bWifiErr	= 0) Then
+			bStreamActive = 1
+			
+			FeederOnStart
+			
+			Form3.Status.Text.Set	"PLAYING..."
+			Form3.Status.Refresh
+		Else
+			Form3.Status.Text.Set	"HTTO GET ERROR..."
+			Form3.Status.Refresh
+			F90_10	// close socket
+		EndIf
+		
+	EndIf
+	
+EndF
+
+Function Button4.Event:Void()
+	//..  stop test webradio
+	
+	If  (u8Feeder > 10) And  (bStreamActive = 1) Then
+		FeederOffStart
+	EndIf
+	
+EndF
+

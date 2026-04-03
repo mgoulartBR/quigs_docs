@@ -1,0 +1,368 @@
+Var shTiles1:Sheet
+Var shTiles2:Sheet
+Var gIdx:Int = 0
+Var f:Int = 0
+Var g:Int = 0
+Var i:Int = 0
+Var j:Int = 0
+Var temp:Int = 0
+Var TileCtrlID(74):Int
+Var TileType(74):Int
+Var deck(74):Int
+Var gTileType:Int = 0
+Var useSheet:Int = 0
+Var useTile:Int = 0
+Var selTile:Int = -1
+Var tRemain:Int = 74
+Var mFound:Int = 0
+Var k:Int = 0
+Var gFree:Int = 0
+Var px1:Int = 0
+Var py1:Int = 0
+Var lay1:Int = 0
+Var px2:Int = 0
+Var py2:Int = 0
+Var lay2:Int = 0
+Var cIdx:Int = 0
+Var lBlk:Int = 0
+Var rBlk:Int = 0
+Var idx:Int = 0
+Var t:Int = 0
+Var done:Int = 0
+
+Function Main:Void()
+EndF
+
+Function GetSheetAndTile:Void
+	If gTileType < 0 Then
+		useSheet = 2
+		useTile = 8
+	Else
+		If gTileType <= 17 Then
+			useSheet = 1
+			useTile = gTileType
+		Else
+			useSheet = 2
+			useTile = gTileType - 18
+		EndIf
+	EndIf
+EndF
+
+Function RefreshTile:Void
+	gTileType = TileType(gIdx)
+	GetSheetAndTile
+	If useSheet = 1 Then
+		Ctrl.Image.Tile.Set TileCtrlID(gIdx), shTiles1, useTile
+	EndIf
+	If useSheet = 2 Then
+		Ctrl.Image.Tile.Set TileCtrlID(gIdx), shTiles2, useTile
+	EndIf
+	Ctrl.Refresh TileCtrlID(gIdx)
+EndF
+
+Function CreateDeck:Void
+	idx = 0
+	// 6 types with 8 copies = 48
+	For t = 0 To 5
+		deck(idx) = t
+		deck(idx+1) = t
+		deck(idx+2) = t
+		deck(idx+3) = t
+		deck(idx+4) = t
+		deck(idx+5) = t
+		deck(idx+6) = t
+		deck(idx+7) = t
+		idx = idx + 8
+	Next
+	// 3 types with 4 copies = 12
+	For t = 6 To 8
+		deck(idx) = t
+		deck(idx+1) = t
+		deck(idx+2) = t
+		deck(idx+3) = t
+		idx = idx + 4
+	Next
+	// 7 types with 2 copies = 14
+	For t = 9 To 15
+		deck(idx) = t
+		deck(idx+1) = t
+		idx = idx + 2
+	Next
+EndF
+
+Function ShuffleDeck:Void
+	For i = 73 To 1 Step -1
+		j = Rnd(i)
+		temp = deck(i)
+		deck(i) = deck(j)
+		deck(j) = temp
+	Next
+	// Extra passes to ensure good randomization
+	For i = 73 To 1 Step -1
+		j = Rnd(i)
+		temp = deck(i)
+		deck(i) = deck(j)
+		deck(j) = temp
+	Next
+EndF
+
+// CalcPos: real Form positions (step=19px)
+// L0: 8,10,10,8,4  L1: 7,7,7,3  L2: 4,4  L3: 2
+Function CalcPos:Void
+	If cIdx <= 7 Then
+		px2 = 38 + cIdx * 19
+		py2 = 27
+		lay2 = 0
+	Else
+		If cIdx <= 17 Then
+			px2 = 18 + (cIdx - 8) * 19
+			py2 = 55
+			lay2 = 0
+		Else
+			If cIdx <= 27 Then
+				px2 = 18 + (cIdx - 18) * 19
+				py2 = 83
+				lay2 = 0
+			Else
+				If cIdx <= 35 Then
+					px2 = 38 + (cIdx - 28) * 19
+					py2 = 111
+					lay2 = 0
+				Else
+					If cIdx <= 39 Then
+						px2 = 76 + (cIdx - 36) * 19
+						py2 = 139
+						lay2 = 0
+					Else
+						If cIdx <= 46 Then
+							px2 = 48 + (cIdx - 40) * 19
+							py2 = 41
+							lay2 = 1
+						Else
+							If cIdx <= 53 Then
+								px2 = 48 + (cIdx - 47) * 19
+								py2 = 68
+								lay2 = 1
+							Else
+								If cIdx <= 60 Then
+									px2 = 48 + (cIdx - 54) * 19
+									py2 = 95
+									lay2 = 1
+								Else
+									If cIdx <= 63 Then
+										px2 = 86 + (cIdx - 61) * 19
+										py2 = 122
+										lay2 = 1
+									Else
+										If cIdx <= 67 Then
+											px2 = 77 + (cIdx - 64) * 19
+											py2 = 55
+											lay2 = 2
+										Else
+											If cIdx <= 71 Then
+												px2 = 77 + (cIdx - 68) * 19
+												py2 = 83
+												lay2 = 2
+											Else
+												px2 = 87 + (cIdx - 72) * 38
+												py2 = 69
+												lay2 = 3
+											EndIf
+										EndIf
+									EndIf
+								EndIf
+							EndIf
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function ChkFree:Void
+	gFree = 1
+	cIdx = gIdx
+	CalcPos
+	px1 = px2
+	py1 = py2
+	lay1 = lay2
+	// Check coverage from layer above
+	For k = 0 To 73
+		If gFree = 1 Then
+			If TileType(k) >= 0 Then
+				cIdx = k
+				CalcPos
+				If lay2 = lay1 + 1 Then
+					If px2 + 20 > px1 Then
+						If px1 + 20 > px2 Then
+							If py2 + 28 > py1 Then
+								If py1 + 28 > py2 Then
+									gFree = 0
+								EndIf
+							EndIf
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	Next
+	// Check left/right adjacency (step=19)
+	If gFree = 1 Then
+		lBlk = 0
+		rBlk = 0
+		For k = 0 To 73
+			If TileType(k) >= 0 Then
+				If k <> gIdx Then
+					cIdx = k
+					CalcPos
+					If lay2 = lay1 Then
+						If py2 = py1 Then
+							If px2 = px1 - 19 Then
+								lBlk = 1
+							EndIf
+							If px2 = px1 + 19 Then
+								rBlk = 1
+							EndIf
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		Next
+		If lBlk = 1 Then
+			If rBlk = 1 Then
+				gFree = 0
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function Board.Event:Void()
+	gIdx = Event.Control - Image1.Display
+	If gIdx >= 0 Then
+		If gIdx < 74 Then
+			If TileType(gIdx) >= 0 Then
+				ChkFree
+				If gFree = 1 Then
+					If selTile < 0 Then
+						selTile = gIdx
+						LblStatus.Text.Set "Selected"
+						LblStatus.Refresh
+					Else
+						If selTile = gIdx Then
+							selTile = -1
+							LblStatus.Text.Set "Desel"
+							LblStatus.Refresh
+						Else
+							If TileType(selTile) = TileType(gIdx) Then
+								TileType(selTile) = -1
+								TileType(gIdx) = -1
+								Ctrl.Position.Set TileCtrlID(selTile), 400, 400
+								Ctrl.Position.Set TileCtrlID(gIdx), 400, 400
+								Form1.Control.Refresh
+								selTile = -1
+								tRemain = tRemain - 2
+								mFound = mFound + 1
+								LblTiles.Text.Set "Tiles: "+Str(tRemain)
+								LblTiles.Refresh
+								LblMatches.Text.Set "Matches: "+Str(mFound)
+								LblMatches.Refresh
+								If tRemain = 0 Then
+									LblStatus.Text.Set "YOU WIN!"
+									LblStatus.Refresh
+								Else
+									LblStatus.Text.Set "Match!"
+									LblStatus.Refresh
+								EndIf
+							Else
+								selTile = gIdx
+								LblStatus.Text.Set "Selected"
+								LblStatus.Refresh
+							EndIf
+						EndIf
+					EndIf
+				Else
+					LblStatus.Text.Set "Blocked"
+					LblStatus.Refresh
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function BtnNewGame.Event:Void()
+	// Move all tiles offscreen first
+	For i = 0 To 73
+		Ctrl.Position.Set TileCtrlID(i), 400, 400
+	Next
+	Form1.Control.Refresh
+	// Create new shuffled deck
+	CreateDeck
+	ShuffleDeck
+	For i = 0 To 73
+		TileType(i) = deck(i)
+	Next
+	selTile = -1
+	tRemain = 74
+	mFound = 0
+	// Reposition tiles and set new images
+	For i = 0 To 73
+		gIdx = i
+		cIdx = i
+		CalcPos
+		gTileType = TileType(gIdx)
+		GetSheetAndTile
+		If useSheet = 1 Then
+			Ctrl.Image.Tile.Set TileCtrlID(gIdx), shTiles1, useTile
+		EndIf
+		If useSheet = 2 Then
+			Ctrl.Image.Tile.Set TileCtrlID(gIdx), shTiles2, useTile
+		EndIf
+		Ctrl.Position.Set TileCtrlID(i), px2, py2
+	Next
+	Form1.Control.Refresh
+	LblTiles.Text.Set "Tiles: "+Str(tRemain)
+	LblTiles.Refresh
+	LblMatches.Text.Set "Matches: "+Str(mFound)
+	LblMatches.Refresh
+	LblStatus.Text.Set "Select pairs"
+	LblStatus.Refresh
+EndF
+
+Function Form1.Open.Event:Void()
+	Randomize Time.Second.Get * Time.Minute.Get
+	If Screen.Colour = 16 Then
+		shTiles1.Load(App.Path + "tiles1.qs2")
+		shTiles2.Load(App.Path + "tiles2.qs2")
+	Else
+		shTiles1.Load(App.Path + "tiles1.qs1")
+		shTiles2.Load(App.Path + "tiles2.qs1")
+	EndIf
+	g = 0
+	For f = Image1.Display To Image74.Display
+		TileCtrlID(g) = Ctrl.GetID(Form1, f)
+		g = g + 1
+	Next
+	CreateDeck
+	ShuffleDeck
+	For i = 0 To 73
+		TileType(i) = deck(i)
+	Next
+	For i = 0 To 73
+		gIdx = i
+		RefreshTile
+	Next
+	LblTiles.Text.Set Str(tRemain)
+	LblTiles.Refresh
+	LblMatches.Text.Set Str(mFound)
+	LblMatches.Refresh
+	LblStatus.Text.Set "Select pairs"
+	LblStatus.Refresh
+EndF
+
+Function Form1.Close.Event:Void()
+	shTiles1.Free
+	shTiles2.Free
+	Form1.Close
+EndF
+

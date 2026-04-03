@@ -1,0 +1,997 @@
+;-------------------------------------------------------------------------------------------------
+;
+; Quigs 1.01 Application for Symbos 3.1
+;
+; Name:		Tmtlogic	 software update program
+; Coder:	Tmtlogic
+; Date / 	Version:	15-02-2025
+;
+;		sText = App.path + "AAHOI/AATEST.BIN" 	// dir.new DIT WERKT niet
+;		sText = App.path + "AAHOI/HANS" // dir.new DIT WERKT NIET MET MERDERE DIRS
+;		sText = App.path + "ABHOI/"		// dir.new dit werkt niet
+;		sText = App.path + "/ACHOI"		// dir.new dit werkt niet
+;		sText = App.path + "ACHOI"		// dir.new dit werkt goed
+
+;-------------------------------------------------------------------------------------------------
+;
+;	:250215
+;	/LUDO/Ludo_sh1
+;	/LUDO/Ludo_sh2
+;	/LUDO/Ludo_sh3
+;	/LUDO/Ludo_sh4
+;	:250215
+;	/LUDO/HELLO.TXT
+;	>END<
+
+;test
+
+
+Var ar(4001):Byte
+
+; === var IO R/SF3 TNC-MSX
+
+Var ioA_0:Int
+Var ioA_1:Int
+Var ioA_2:Int
+Var ioA_3:Int
+Var ioA_4:Int
+Var ioA_5:Int
+Var ioA_6:Int
+Var ioA_7:Int
+Var ioA_8:Int
+Var ioA_9:Int
+Var ioA_A:Int
+Var ioA_B:Int
+Var ioA_C:Int
+Var ioA_D:Int
+Var ioA_E:Int
+Var ioA_F:Int
+
+Var iResp:Int =0						// response value of the SF3
+Var bWifiErr:int
+
+
+;-------------------------------------------------------------------------------------------------
+; === var system ===
+
+Var bMainActive:Int = 0
+Var sHardware:String 					// RSF3 SF3 TNC
+Var bSeoneType:int = 0	 				// 1 = real SEONE
+
+Var sCPU:String	 						// EP CPC MSX
+Var sFirmware:String = "20230715"		// ARM Firmware  needed
+
+Var sText:String
+
+Var iStpStart:Int=0
+
+Var iDelay:Int=10
+Var iDelayCt:Int=0
+
+Var sDb:String
+var dbStp:int
+var iDbL:int
+var iDbT:int
+var iDbC:int
+
+var iAppExit:int=0
+
+var iTimeOut:int = 0
+
+var fc:int
+var fn:int
+var fx:int
+var fy:int
+var fsw:int
+var fl:int
+var ft:int
+
+Var u8In1:Int
+Var u8In2:Int
+
+Var u8Out1:Int
+Var u8Out2:Int
+Var u8Out3:Int
+Var u8Out4:Int
+Var u8Out5:Int
+
+Var u16In1:Int
+
+Var u16Out1:Int
+Var u16Out2:Int
+Var u16Out3:Int
+Var u16Out4:Int
+Var u16Out5:Int
+Var u16Out6:Int
+Var u16Out7:Int
+Var u16Out8:Int
+
+Var sIn1:String
+
+Var sOut1:String
+Var sOut2:String
+Var sOut3:String
+Var sOut4:String
+
+;-------------------------------------------------------------------------------------------------
+; === var diverse ===
+
+var sTrim:string
+var sTrimOut:string
+
+
+
+;-------------------------------------------------------------------------------------------------
+var a:int
+var c:int
+var e:int
+var l:int
+var s:int
+var t:int
+var x:int
+var y:int
+
+var lCount:long
+var lSize:long
+
+;-------------------------------------------------------------------------------------------------
+//	=== Files system ===
+
+var fDisk:file
+
+var sDrive:string
+var sFileArray:string
+var sFileName:string
+
+
+;-------------------------------------------------------------------------------------------------
+//	=== Memory bank ===
+
+Var mMem:Memory
+
+;-------------------------------------------------------------------------------------------------
+// === var Socket  ===
+
+Var iSock:Int = 0
+
+Var iIp(5):int
+Var iPortHigh:Int
+Var iPortlow:Int
+Var sGet:String
+Var sStationName:string
+Var sUrlSend:string
+
+
+
+;-------------------------------------------------------------------------------------------------
+; === PROG varables
+
+Var sWebDiplayMode:string						// "FILES" "STATIONS"
+
+var sScript:string
+var iScriptLine:int
+
+var sUrl:string
+var iArrayPointer:int = 0
+var iArraySize:int = 0
+
+var sArrayRow(100):string
+var iArrayMax:int
+
+var iTr:int
+;-------------------------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------------------------------------------------
+; ---	FORM 1 field play field
+
+Function Form1.Open.Event:Void()
+	Initialize
+EndF
+
+Function Form1.Close.Event:Void()
+	iAppExit = 1
+EndF
+
+;---	FORM 1 buttons
+
+
+
+Function Button1.Event:Void()
+	;=== START
+	iStpStart = 10
+	endf
+	
+	Function Button2.Event:Void()
+	;=== mk
+	Dir.new app.path+"HOI1"
+	x = Dir.result
+	sDb = "result  "+str(x) :sysDebug
+	//  1 als oke aangemaakt
+	// 20 als het al bestaat
+	
+	
+	x= Dir.exist ("C:/HOI2")
+	sDb = "result exist "+str(x) :sysDebug
+	// 1 als oke
+	// 0 bestaat niet
+	endf
+	
+	
+	
+	
+	Function Button4.Event:Void()
+	;=== maak een directry
+	MakeDir
+	endf
+	
+	
+	Function Button5.Event:Void()
+	;=== save
+	iStpStart = 1000
+	endf
+	;-------------------------------------------------------------------------------------------------
+	
+	
+	Function symAppExit:void()
+	
+	sDb = "App Exit":sysDebug
+	
+	if iAppExit = 1 then
+	iAppExit = 2
+	
+	Form1.open
+	return
+	endif
+	
+	if iAppExit = 2 then
+	iAppExit = 3
+	
+	App.exit
+	endif
+	endf
+	
+	;-------------------------------------------------------------------------------------------------
+	Function Initialize:Void()
+	
+	sys_IO_init
+	
+	u8In1 = 0
+	F72_26
+	sHardware = sOut1
+	
+	
+	
+	If Sound.Init = 0 Then
+		a = Execute("c:\soundd.exe")			// Start netd local if not open
+		a = Sound.Init
+		
+		sDb="Sound.Init":sysDebug
+	EndIf
+	
+	iSock = 0
+	
+	GetDrive
+	
+	mMem.Create 4096,0
+	
+	endf
+	;-------------------------------------------------------------------------------------------------
+	; === MAIN
+	
+	Function Main:Void()
+	if iAppExit > 0 then
+	symAppExit
+	endif
+	
+	stpProg
+EndF
+
+
+Function  GetDrive:void()
+	sText = App.path
+	sDrive = left(sText,3)
+	
+	sDb = "Drive Root is:" + sDrive : sysDebug
+	endf
+	
+	
+	
+	
+	;-------------------------------------------------------------------------------------------------
+	Function  TrimSpc:void()
+	
+	;  input :   "hello   "
+	;  output:   "hello"
+	
+	sTrimOut = ""
+	
+	fn = 0
+	fy = len(sTrim)
+	
+	for fx = fy to 1 step -1
+	
+	fc = asc(mid(sTrim,fx,1))
+	
+	if (fc  > 32) then
+	fn = fx
+	fx = 0
+	endif
+	
+	next
+	
+	sTrimOut = left(sTrim,fn)
+	endf
+	
+	
+	;-------------------------------------------------------------------------------------------------
+	; === STP PROGRAMS ===
+	
+	Function   stpProg:Void()
+	
+	iDelayCt = iDelayCt + 1
+	If iDelayCt < iDelay Then
+		Return
+	EndIf
+	iDelayCt = 0
+	
+	
+	If iStpStart = 0 Then
+		return
+		endif
+		
+		// check wifi online
+		
+		If iStpStart = 10 Then		//.. start
+			
+			DownloadScript
+			
+			sDb = "-----------------": sysDebug
+			
+			iStpStart = 20	:return
+			endif
+			
+			If iStpStart = 20 Then
+				TextLine1.text.set "Crete all directorys " : TextLine1.Refresh
+				
+				
+				iTr=0
+				for iTr = 0 to  (iArrayMax - 1)
+				sDb = "-> " + sArrayRow(iTr) :sysDebug
+				
+				if (left(sArrayRow(iTr),1) = ":") then
+				sDb = "tijd gevonden" :sysDebug
+				else
+				sFileArray = sArrayRow(iTr) :MakeDir
+				DownloadFile
+				endif
+				next
+				
+				sDb = "END DOWNLOAD" :sysDebug
+				
+				iStpStart = 0
+				endif
+				
+				
+				
+				
+				
+				
+				If iStpStart = 100 Then		//.. save
+					
+					sText = App.path + "HOI/AATEST.BIN" // DIT WERKT
+					
+					fDisk.newBinary sText
+					
+					fDisk.OpenBinary sText
+					
+					fDisk.WriteByte 112
+					fDisk.WriteByte 212
+					fDisk.WriteByte 65
+					
+					fDisk.close
+					
+					iStpStart = 0
+					endif
+					
+					
+					
+					If iStpStart = 1000 Then		//.. save test memory
+						
+						
+						sText = App.Path + "20K.BIN"
+						
+						fDisk.NewBinary sText
+						fDisk.close
+						
+						
+						fDisk.OpenBinary sText
+						
+						for x = 1 to 50
+						for t = 1 to 1000
+						mMem.Byte.Set (t,x)
+						next
+						
+						fDisk.WriteMemory mMem.Bank ,mMem.Addr ,1000
+						next
+						
+						fDisk.Close
+						
+						iStpStart = 0
+					EndIf
+					
+					endf
+					
+					Function MakeDir:void()
+	
+	;  in: sFileArray = "/LUDO/MAP/HANS.BAS"
+	
+	sText = sDrive + "APPS_TMT" :Dir.New sText
+	
+	l = len(sFileArray)
+	
+	sText = ""
+	for t = 1 to l
+	c = asc(mid(sFileArray,t,1))
+	if (c = asc("/")) then
+	if (len(sText) > 0) then
+	
+	Dir.New sDrive + "APPS_TMT/" + sText
+	
+	sDb = "New path:  " + sDrive + "APPS_TMT/" + sText :sysDebug
+	
+	sText = ""
+	endif
+	else
+	sText = sText + chr(c)
+	endif
+	next
+	endf
+	
+	Function GetFileName:void()
+	
+	; in sFileArray
+	
+	l = len(sFileArray)
+	
+	sFileName = ""
+	for t = 1 to l
+	c = asc(mid(sFileArray,t,1))
+	
+	if (c = asc("/")) then
+	sFileName = ""
+	else
+	sFileName = sFileName + chr(c)
+	endif
+	next
+	endf
+	
+	
+	Function DownloadScript:void
+	sUrlSend = "www.tmtlogic.com/SF3/TMT_UPD.TXT"
+	
+	F62_8
+	sIn1 = sUrlSend :F90_22
+	
+	F62_16
+	//sDb = "Size is :"+str(lSize):sysDebug
+	
+	iArraySize = int.fromLong(lSize)
+	iArrayPointer = 0
+	
+	F62_9_Script
+	endf
+	
+	Function DownloadFile:void
+	
+	sUrlSend = "www.tmtlogic.com/SF3/1n/APPS_TMT" + sArrayRow(iTr)
+	sDb = "URL:" + sUrlSend :sysDebug
+	
+	F62_8
+	sIn1 = sUrlSend :F90_22
+	
+	F62_16
+	lCount = %0
+	
+	sText  = sDrive + "APPS_TMT" + sArrayRow(iTr)
+	
+	fDisk.NewBinary sText
+	sDb = "File new:" + sText : sysDebug
+	
+	While (lCount < lSize)
+		if ((lSize - lCount)  >= %2000 ) then
+		for x = 0 to 999
+		c = IO.In(ioA_0)
+		mMem.Byte.Set (x,c)
+		lCount = lCount + %1
+		next
+		fDisk.WriteMemory mMem.Bank ,mMem.Addr ,2000
+		else
+		y = int.fromLong(lSize - lCount)
+		
+		sDb = "y:"+str(y) :sysDebug
+		for x = 0 to y
+		c = IO.In(ioA_0)
+		mMem.Byte.Set (x,c)
+		lCount = lCount + %1
+		next
+		fDisk.WriteMemory mMem.Bank ,mMem.Addr ,y
+		endif
+		wend
+		
+		fDisk.close
+		
+		sDb = "START READY" : sysDebug
+		endf
+		
+		
+		;-------------------------------------------------------------------------------------------------
+		Function sys_IO_init:Void()
+	
+	If  (Machine = 7)  Or  (Machine = 8)  Or  (Machine = 9) Or  (Machine = 10) Then
+		ioA_0 = #40f0 : ioA_1 = #41f0 : ioA_2 = #42f0 : ioA_3 = #43f0
+		ioA_4 = #44f0 : ioA_5 = #45f0 : ioA_6 = #46f0 : ioA_7 = #47f0
+		ioA_8 = #48f0 : ioA_9 = #49f0 : ioA_A = #4af0 : ioA_B = #4bf0
+		ioA_C = #4cf0 : ioA_D = #4df0 : ioA_E = #4ef0 : ioA_F = #4ff0
+		
+		sCPU = "MSX"
+	EndIf
+	
+	If  (Machine = 6)  Then
+		ioA_0 = #40 : ioA_1 = #41 : ioA_2 = #42 : ioA_3 = #43
+		ioA_4 = #44 : ioA_5 = #45 : ioA_6 = #46 : ioA_7 = #47
+		ioA_8 = #48 : ioA_9 = #49 : ioA_A = #4a : ioA_B = #4b
+		ioA_C = #4c : ioA_D = #4d : ioA_E = #4e : ioA_F = #4f
+		
+		sCPU = "EP"
+	EndIf
+	
+	If  (Machine = Machine.Pcw8xxx)  or  (Machine = Machine.Pcw9xxx) or (Machine = Machine.Pcw16) Then
+		ioA_0 = #40B0 : ioA_1 = #41B0 : ioA_2 = #42B0 : ioA_3 = #43B0
+		ioA_4 = #44B0 : ioA_5 = #45B0 : ioA_6 = #46B0 : ioA_7 = #47B0
+		ioA_8 = #48B0 : ioA_9 = #49B0 : ioA_A = #4aB0 : ioA_B = #4bB0
+		ioA_C = #4cB0 : ioA_D = #4dB0 : ioA_E = #4eB0 : ioA_F = #4fB0
+		
+		sCPU = "PCW"
+	EndIf
+	
+	If  (Machine < 5)  Then
+		ioA_0 = #fd40 : ioA_1 = #fd41 : ioA_2 = #fd42 : ioA_3 = #fd43
+		ioA_4 = #fd44 : ioA_5 = #fd45 : ioA_6 = #fd46 : ioA_7 = #fd47
+		ioA_8 = #fd48 : ioA_9 = #fd49 : ioA_A = #fd4a : ioA_B = #fd4b
+		ioA_C = #fd4c : ioA_D = #fd4d : ioA_E = #fd4e : ioA_F = #fd4f
+		
+		sCPU = "CPC"
+	EndIf
+	
+	sDb = sCPU:sysDebug
+EndF
+
+;-------------------------------------------------------------------------------------------------
+Function sysDebug:void()
+	//	'------ debug tool  send to FTDI port in sDb
+	
+	iDbL = Len(sDb)
+	For iDbT = 1 To iDbL
+		iDbC = Asc(Mid(sDb,iDbT,1))
+		IO.Out ioA_0,iDbC
+	Next
+	IO.Out ioA_0,13
+	IO.Out ioA_0,10
+	
+EndF
+
+Function sysDebugLn:void()
+	//	'------ debug tool  send to FTDI port in sDb
+	
+	iDbL = Len(sDb)
+	For iDbT = 1 To iDbL
+		iDbC = Asc(Mid(sDb,iDbT,1))
+		IO.Out ioA_0,iDbC
+	Next
+	
+EndF
+;-------------------------------------------------------------------------------------------------
+; === SF3 functions
+
+Function ArmResponse:Int()
+	
+	;	------ wait for ARM progress
+	;
+	;	return 0 = ready
+	;	       2 = error
+	
+	iResp = 1
+	
+	While (iResp = 1)
+		iResp = IO.In(ioA_1)
+	Wend
+	
+	If  iResp = 2 Then
+		F72_4
+	EndIf
+	
+	Return(iResp)
+EndF
+
+Function WifiResponse:Int()
+	
+	;	------ wait for Wifi background progress
+	;
+	;	return 0 = ready
+	;	       2 = error
+	
+	iResp = 1
+	
+	While (iResp = 1)
+		iResp = IO.In(ioA_E)
+	Wend
+	
+	Return(iResp)
+EndF
+
+
+Function F62_8:Void()
+	
+	;	------ Clear array64k
+	
+	Lock.On
+	IO.Out ioA_1,0
+	IO.Out ioA_2,8
+	
+	IO.Out ioA_1,62
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+Function F62_9_Script:Void()
+	
+	;	------ Read array64k to z80
+	;
+	;	out: n x inp(2)
+	
+	Lock.On
+	
+	IO.Out ioA_1,0
+	IO.Out ioA_2,9
+	IO.Out ioA_2,0	// start high
+	IO.Out ioA_2,0	// start low
+	
+	IO.Out ioA_1,62
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	x = 0
+	sArrayRow(0) = ""
+	for y = 0 to iArraySize
+	
+	c = IO.In(ioA_2)
+	
+	if 	(c > 31) then
+	sArrayRow(x) = sArrayRow(x) + chr(c)
+	endif
+	
+	if (c = 60) then
+	y = (iArraySize + 1)
+	endif
+	
+	if ((c = 10) and (x < 99)) then
+	sDb = "Row: "+ sArrayRow(x) :sysDebug
+	x = x + 1
+	sArrayRow(x) = ""
+	endif
+	next
+	
+	iArrayMax  = x
+	
+	Lock.Off
+EndF
+
+Function F62_12:Void()
+	
+	;	------ copy array to MSD
+	;
+	;	out: size
+	
+	Lock.On
+	
+	IO.Out ioA_1,0
+	IO.Out ioA_2,12
+	IO.Out ioA_2,0  //sd
+	
+	sIn1 = "64K.BIN"
+	For  x = 1 To  7
+		IO.Out ioA_2,Asc(Mid(sIn1,x,1))
+	Next
+	
+	IO.Out ioA_1,62
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	Lock.Off
+EndF
+
+
+Function F62_16:Void()
+	
+	;	------ Get Size array64k
+	;
+	;	out: size
+	
+	Lock.On
+	
+	IO.Out ioA_1,0
+	IO.Out ioA_2,16
+	
+	IO.Out ioA_1,62
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	lSize = Long.FromInt(256 * IO.In(ioA_2)) + Long.FromInt(IO.In(ioA_2))
+	
+	Lock.Off
+EndF
+
+Function	F72_4:Void()
+	
+	;	------ Error handler
+	;
+	
+	Lock.On
+	
+	sDb = "ARM ERROR":sysDebug
+	
+	Lock.Off
+EndF
+
+Function F72_25:Void()
+	
+	;	------ Check Firmware version
+	
+	Lock.On
+	IO.Out ioA_1,0
+	IO.Out ioA_2,25
+	
+	For  x = 1 To  8
+		IO.Out ioA_2,Asc(Mid(sIn1,x,1))
+	Next
+	
+	IO.Out ioA_1,72
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	u8Out1    = IO.In(ioA_2)
+	
+	Lock.Off
+EndF
+
+Function F72_26:Void()
+	
+	;	------ Get seperate system  info
+	;
+	;	0 = Hardware	RSF3/ RSF3-LITE/ SF3/ TNC
+	;	1 = Version		1.0  /	v2d1 /2.0
+	;	2 = CPU			CPC / EP / PCW / MSX / SC3K /
+	;	3 = Firmware	202312310
+	
+	Lock.On
+	IO.Out ioA_1,0
+	IO.Out ioA_2,26
+	IO.Out ioA_2,u8in1
+	
+	IO.Out ioA_1,72
+	
+	If ArmResponse =2 Then
+		//nop
+	EndIf
+	
+	c = 1
+	sOut1 = ""
+	While (c  > 0)
+		c = IO.In(ioA_2)
+		If  c > 0 Then
+			sOut1= sOut1 + Chr(c)
+		EndIf
+	Wend
+	
+	Lock.Off
+	
+	
+EndF
+
+
+Function F90_5: Void()
+	
+	;	------ Open socket
+	;
+	;	in:   iSock ,ip1,ip2,ip3,ip4,portHigh,portlow
+	;
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	IO.Out ioA_1,7
+	IO.Out ioA_9,5
+	
+	IO.Out ioA_9,iIp(0)
+	IO.Out ioA_9,iIp(1)
+	IO.Out ioA_9,iIp(2)
+	IO.Out ioA_9,iIp(3)
+	
+	IO.Out ioA_9,iPortHigh
+	IO.Out ioA_9,iPortlow
+	
+	IO.Out ioA_9,iSock
+	
+	IO.Out ioA_1,90
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	Lock.Off
+EndF
+
+
+Function F90_8:Void()
+	
+	;	------ Send data to socket
+	;
+	;	in: sIn1 :urlSend
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	IO.Out ioA_1,7
+	
+	IO.Out ioA_9,8
+	IO.Out ioA_9,iSock
+	
+	l = Len(sIn1)
+	
+	For t = 1 To l
+		c = Asc(Mid(sIn1,t,1))
+		IO.Out ioA_9,c
+	Next
+	
+	IO.Out ioA_1,90
+	
+	If ArmResponse = 2 Then
+		//nop
+	EndIf
+	
+	
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	Lock.Off
+	
+EndF
+
+Function 	F90_10:Void()
+	
+	;	------ Close socket
+	;
+	;	in: sock nr
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	IO.Out ioA_1,7
+	
+	IO.Out ioA_9,10
+	IO.Out ioA_9,iSock
+	
+	IO.Out ioA_1,90
+	
+	If ArmResponse = 2 Then
+		// nop
+	EndIf
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	Lock.Off
+EndF
+
+
+Function 	F90_18:Void()
+	
+	;	------ read socket data buffer content
+	;
+	;	in:  sock nr
+	;   out: buffer content
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	IO.Out ioA_1,7
+	
+	IO.Out ioA_9,18
+	IO.Out ioA_9,iSock
+	
+	IO.Out ioA_1,90
+	
+	If ArmResponse = 2 Then
+		// nop
+	EndIf
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	Lock.Off
+	
+	u16Out1 = (256 * IO.In(ioA_9)) + IO.In(ioA_9)
+	
+EndF
+
+Function 	F90_22:Void()
+	
+	;	------ http request and read data max 64k
+	;
+	;	in:  sock nr
+	;   out: buffer content
+	
+	bWifiErr = 0
+	
+	Lock.On
+	
+	IO.Out ioA_1,7
+	
+	IO.Out ioA_9,22
+	IO.Out ioA_9,2		// destination 64k array
+	IO.Out ioA_9,1		// Metoth
+	
+	fl = len(sIn1)
+	For t = 1 To fl
+		c = Asc(Mid(sIn1,t,1))
+		IO.Out ioA_9,c
+	Next
+	IO.Out ioA_9,0
+	
+	
+	
+	IO.Out ioA_1,90
+	
+	If ArmResponse = 2 Then
+		// nop
+	EndIf
+	
+	If WifiResponse = 2 Then
+		bWifiErr = 1
+	EndIf
+	
+	Lock.Off
+	
+	u16Out1 = (256 * IO.In(ioA_9)) + IO.In(ioA_9)
+	
+EndF
+
+
+

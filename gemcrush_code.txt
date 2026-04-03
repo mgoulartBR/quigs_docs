@@ -1,0 +1,501 @@
+// Quigs Application for Symbos
+// Name: GemCrush - By BigFive
+// Version: 8.0
+//
+// Match-3 puzzle game for MSX/SymbOS
+// Grid: 8x8, 7 gem types
+// Tiles: 0-6 cyan bg, 7-13 blue bg (baked-in checkerboard)
+//
+// PROGRESSION:
+//   Level up: need level*300 points to advance
+//   Time: 120s max, resets on level up
+//   Time bonus: +(gems-1) seconds per match
+//   Speed: Level 1-3=1x, 4-6=2x, 7-9=3x, 10+=4x
+//
+// SOUND EFFECTS (SymbOS system SFX):
+//   Click1    - select gem
+//   Beep1     - invalid swap
+//   PopUp     - match of 3
+//   Explosion - match of 4+ or cascade
+//   RaiseUp   - level up
+//   Lose      - game over
+//   Win       - new game start
+//
+// FORM DESIGNER:
+//   All 64 ImageBox: Event = "ImgGem.Event"
+//   ImgPanel: Event = "ImgPanel.Event"
+//   BarTime: Progress control, Value=255
+
+// ============================================================
+// SHEET VARIABLES
+// ============================================================
+Var shGems:Sheet
+Var shBoardL:Sheet
+Var shBoardR:Sheet
+
+// ============================================================
+// CONTROL IDS
+// ============================================================
+Var cid(64):Int
+Var cidBoard:Int = 0
+Var cidPanel:Int = 0
+Var baseDisp:Int = 0
+
+// ============================================================
+// GAME BOARD
+// ============================================================
+Var board(64):Int
+Var mark(64):Int
+
+// ============================================================
+// GAME STATE
+// ============================================================
+Var score:Int = 0
+Var level:Int = 1
+Var selCell:Int = -1
+Var matchFound:Int = 0
+Var gameOver:Int = 0
+Var nextLevel:Int = 300
+Var gemsCleared:Int = 0
+Var timeSpeed:Int = 1
+Var cascadeNum:Int = 0
+
+// ============================================================
+// SOUND
+// ============================================================
+Var sndCh:Int = 0
+
+// ============================================================
+// TIME SYSTEM
+// ============================================================
+Var timeLeft:Int = 120
+Var lastSec:Int = 0
+Var timeMax:Int = 120
+Var barW:Int = 0
+
+// ============================================================
+// TEMP VARS
+// ============================================================
+Var i:Int = 0
+Var j:Int = 0
+Var f:Int = 0
+Var g:Int = 0
+Var r:Int = 0
+Var c:Int = 0
+Var temp:Int = 0
+Var mRow:Int = 0
+Var mCol:Int = 0
+Var idx:Int = 0
+Var cellClicked:Int = 0
+Var nowSec:Int = 0
+
+
+// ============================================================
+// SOUND FUNCTIONS - One per effect
+// Syntax: Sound.FX.Play 0,Sound.FX.Sys.XXX,volume
+// ============================================================
+Function SfxClick:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.Click1,200
+EndF
+
+Function SfxBeep:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.Beep1,200
+EndF
+
+Function SfxPopUp:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.PopUp,200
+EndF
+
+Function SfxExplosion:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.Explosion,255
+EndF
+
+Function SfxRaiseUp:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.RaiseUp,255
+EndF
+
+Function SfxLose:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.Lose,255
+EndF
+
+Function SfxWin:Void
+    // Sound.FX.Play 0,Sound.FX.Sys.Win,255
+EndF
+
+
+// ============================================================
+// MAIN LOOP - Timer with speed acceleration
+// ============================================================
+Function Main:Void()
+    If gameOver = 0 Then
+        nowSec = Time.Second.Get
+        If nowSec <> lastSec Then
+            lastSec = nowSec
+            timeLeft = timeLeft - timeSpeed
+            If timeLeft < 0 Then
+                timeLeft = 0
+            EndIf
+            barW = timeLeft * 255 / timeMax
+            BarTime.Value.Set barW
+            BarTime.Refresh
+            If timeLeft = 0 Then
+                gameOver = 1
+                LblLevel.Text.Set "Game Over"
+                LblLevel.Refresh
+                SfxLose
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// CALC SPEED
+// ============================================================
+Function CalcSpeed:Void
+    If level <= 3 Then
+        timeSpeed = 1
+    Else
+        If level <= 6 Then
+            timeSpeed = 2
+        Else
+            If level <= 9 Then
+                timeSpeed = 3
+            Else
+                timeSpeed = 4
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// CHECK LEVEL UP
+// ============================================================
+Function CheckLevelUp:Void
+    If score >= nextLevel Then
+        level = level + 1
+        nextLevel = nextLevel + level * 300
+        timeLeft = timeMax
+        barW = 255
+        BarTime.Value.Set barW
+        BarTime.Refresh
+        CalcSpeed
+        LblLevel.Text.Set Str(level)
+        LblLevel.Refresh
+        SfxRaiseUp
+    EndIf
+EndF
+
+
+// ============================================================
+// ADD TIME BONUS
+// ============================================================
+Function AddTimeBonus:Void
+    If gemsCleared >= 3 Then
+        timeLeft = timeLeft + gemsCleared - 1
+        If timeLeft > timeMax Then
+            timeLeft = timeMax
+        EndIf
+        barW = timeLeft * 255 / timeMax
+        BarTime.Value.Set barW
+        BarTime.Refresh
+    EndIf
+EndF
+
+
+// ============================================================
+// INIT BOARD
+// ============================================================
+Function InitBoard:Void
+    For i = 0 To 63
+        board(i) = Rnd(7)
+    Next
+    For r = 0 To 7
+        For c = 2 To 7
+            idx = r * 8 + c
+            While board(idx) = board(idx - 1) And board(idx - 1) = board(idx - 2)
+                board(idx) = Rnd(7)
+            Wend
+        Next
+    Next
+    For r = 2 To 7
+        For c = 0 To 7
+            idx = r * 8 + c
+            While board(idx) = board(idx - 8) And board(idx - 8) = board(idx - 16)
+                board(idx) = Rnd(7)
+            Wend
+        Next
+    Next
+EndF
+
+
+// ============================================================
+// RENDER BOARD
+// ============================================================
+Function RenderBoard:Void
+    For i = 0 To 63
+        r = i / 8
+        c = i Mod 8
+        If (r + c) Mod 2 = 0 Then
+            Ctrl.Image.Tile.Set cid(i), shGems, board(i)
+        Else
+            Ctrl.Image.Tile.Set cid(i), shGems, board(i) + 7
+        EndIf
+        Ctrl.Refresh cid(i)
+    Next
+EndF
+
+
+// ============================================================
+// CHECK MATCHES
+// ============================================================
+Function CheckMatches:Void
+    matchFound = 0
+    gemsCleared = 0
+    For i = 0 To 63
+        mark(i) = 0
+    Next
+    For r = 0 To 7
+        For c = 0 To 5
+            idx = r * 8 + c
+            If board(idx) >= 0 Then
+                If board(idx) = board(idx + 1) Then
+                    If board(idx) = board(idx + 2) Then
+                        mark(idx) = 1
+                        mark(idx + 1) = 1
+                        mark(idx + 2) = 1
+                    EndIf
+                EndIf
+            EndIf
+        Next
+    Next
+    For r = 0 To 5
+        For c = 0 To 7
+            idx = r * 8 + c
+            If board(idx) >= 0 Then
+                If board(idx) = board(idx + 8) Then
+                    If board(idx) = board(idx + 16) Then
+                        mark(idx) = 1
+                        mark(idx + 8) = 1
+                        mark(idx + 16) = 1
+                    EndIf
+                EndIf
+            EndIf
+        Next
+    Next
+    For i = 0 To 63
+        If mark(i) = 1 Then
+            board(i) = -1
+            score = score + 10
+            gemsCleared = gemsCleared + 1
+            matchFound = 1
+        EndIf
+    Next
+EndF
+
+
+// ============================================================
+// DROP GEMS
+// ============================================================
+Function DropGems:Void
+    For c = 0 To 7
+        j = 7
+        For r = 7 To 0 Step -1
+            If board(r * 8 + c) >= 0 Then
+                board(j * 8 + c) = board(r * 8 + c)
+                If j <> r Then
+                    board(r * 8 + c) = -1
+                EndIf
+                j = j - 1
+            EndIf
+        Next
+        For r = j To 0 Step -1
+            board(r * 8 + c) = Rnd(7)
+        Next
+    Next
+EndF
+
+
+// ============================================================
+// UPDATE DISPLAY
+// ============================================================
+Function UpdateDisplay:Void
+    LblScore.Text.Set Str(score)
+    LblScore.Refresh
+    If gameOver = 0 Then
+        LblLevel.Text.Set Str(level)
+        LblLevel.Refresh
+    EndIf
+EndF
+
+
+// ============================================================
+// START NEW GAME
+// ============================================================
+Function StartNewGame:Void
+    score = 0
+    level = 1
+    nextLevel = 300
+    selCell = -1
+    gameOver = 0
+    timeLeft = timeMax
+    timeSpeed = 1
+    lastSec = Time.Second.Get
+    InitBoard
+    RenderBoard
+    LblScore.Text.Set "0"
+    LblScore.Refresh
+    LblLevel.Text.Set "1"
+    LblLevel.Refresh
+    BarTime.Value.Set 255
+    BarTime.Refresh
+    SfxWin
+EndF
+
+
+// ============================================================
+// GEM CLICK EVENT
+// ============================================================
+Function ImgGem.Event:Void()
+    If gameOver = 0 Then
+        cellClicked = Event.Control - baseDisp
+        If cellClicked >= 0 Then
+            If cellClicked <= 63 Then
+                If selCell < 0 Then
+                    selCell = cellClicked
+                    SfxClick
+                Else
+                    If selCell = cellClicked Then
+                        selCell = -1
+                    Else
+                        mRow = selCell / 8 - cellClicked / 8
+                        If mRow < 0 Then
+                            mRow = 0 - mRow
+                        EndIf
+                        mCol = selCell Mod 8 - cellClicked Mod 8
+                        If mCol < 0 Then
+                            mCol = 0 - mCol
+                        EndIf
+                        If mRow + mCol = 1 Then
+                            temp = board(cellClicked)
+                            board(cellClicked) = board(selCell)
+                            board(selCell) = temp
+                            CheckMatches
+                            If matchFound = 0 Then
+                                temp = board(cellClicked)
+                                board(cellClicked) = board(selCell)
+                                board(selCell) = temp
+                                SfxBeep
+                            Else
+                                cascadeNum = 0
+                                If gemsCleared >= 4 Then
+                                    SfxExplosion
+                                Else
+                                    SfxPopUp
+                                EndIf
+                                AddTimeBonus
+                                RenderBoard
+                                DropGems
+                                CheckMatches
+                                While matchFound = 1
+                                    cascadeNum = cascadeNum + 1
+                                    SfxExplosion
+                                    AddTimeBonus
+                                    RenderBoard
+                                    DropGems
+                                    CheckMatches
+                                Wend
+                                RenderBoard
+                                UpdateDisplay
+                                CheckLevelUp
+                            EndIf
+                        EndIf
+                        selCell = -1
+                    EndIf
+                EndIf
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// PANEL CLICK - NEW GAME button
+// ============================================================
+Function ImgPanel.Event:Void()
+    i = Event.MouseX
+    j = Event.MouseY
+    If i >= 170 Then
+        If i <= 310 Then
+            If j >= 130 Then
+                If j <= 165 Then
+                    StartNewGame
+                EndIf
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// FORM OPEN
+// ============================================================
+Function Form1.Open.Event:Void()
+    Randomize Time.Second.Get * Time.Minute.Get
+
+    // Init sound system - required before Sound.FX.Play
+    // sndCh = Sound.Init
+
+    If Screen.Colour = 16 Then
+        shGems.Load(App.Path + "gems.qs2")
+        shBoardL.Load(App.Path + "boardL.qs2")
+        shBoardR.Load(App.Path + "boardR.qs2")
+    Else
+        shGems.Load(App.Path + "gems.qs1")
+        shBoardL.Load(App.Path + "boardL.qs1")
+        shBoardR.Load(App.Path + "boardR.qs1")
+    EndIf
+
+    cidBoard = Ctrl.GetID(Form1, ImgBoard.Display)
+    cidPanel = Ctrl.GetID(Form1, ImgPanel.Display)
+    Ctrl.Image.Tile.Set cidBoard, shBoardL, 0
+    Ctrl.Refresh cidBoard
+    Ctrl.Image.Tile.Set cidPanel, shBoardR, 0
+    Ctrl.Refresh cidPanel
+
+    baseDisp = Image3.Display
+
+    g = 0
+    For f = Image3.Display To Image66.Display
+        cid(g) = Ctrl.GetID(Form1, f)
+        g = g + 1
+    Next
+
+    timeSpeed = 1
+    nextLevel = 300
+    lastSec = Time.Second.Get
+    timeLeft = timeMax
+
+    InitBoard
+    RenderBoard
+
+    LblScore.Text.Set "0"
+    LblScore.Refresh
+    LblLevel.Text.Set "1"
+    LblLevel.Refresh
+    BarTime.Value.Set 255
+    BarTime.Refresh
+    SfxWin
+EndF
+
+
+// ============================================================
+// FORM CLOSE
+// ============================================================
+Function Form1.Close.Event:Void()
+    shGems.Free
+    shBoardL.Free
+    shBoardR.Free
+    Form1.Close
+EndF

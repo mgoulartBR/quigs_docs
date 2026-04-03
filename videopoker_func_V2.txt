@@ -1,0 +1,495 @@
+// Quigs Application for Symbos
+// Name: Video Poker - By BigFive
+// Version: 8.0
+//
+// 52-card sheet at 16x36 = 14976 bytes (under 16KB limit)
+// HOLD via buttons instead of ImageBox
+// Based on tiles.txt/chess.txt working patterns
+
+// Sheet variable (like tiles.txt)
+Var shCards:Sheet
+Var shBacks:Sheet
+Var shLogo:Sheet
+Var shPayTbl:Sheet
+
+// Control IDs for card images
+Var cidCard(5):Int
+
+// Current back design (0-5)
+Var backDesign:Int=0
+
+// Deck
+Var deck(52):Int
+Var hand(5):Int
+Var deckPos:Int=0
+
+// Game state
+Var credits:Int=100
+Var bet:Int=1
+Var gamePhase:Int=0
+Var winAmount:Int=0
+Var holdFlag(5):Int
+
+// Pay table
+Var payTable(10):Int=[0,1,2,3,4,6,9,25,50,250]
+Var handName(10):String=["No Win","Jacks+","Two Pair","Three Kind","Straight","Flush","Full House","Four Kind","Str Flush","ROYAL FLUSH"]
+
+// Temp vars
+Var rankCount(13):Int
+Var suitCount(4):Int
+Var i:Int=0
+Var j:Int=0
+Var temp:Int=0
+Var result:Int=0
+Var f:Int=0
+Var g:Int=0
+
+// Communication vars
+Var gSlot:Int=0
+Var gTile:Int=0
+Var gCardVal:Int=0
+Var cRank:Int=0
+Var cSuit:Int=0
+Var cardRank:Int=0
+Var cardSuit:Int=0
+Var isFlush:Int=0
+Var isStraight:Int=0
+Var pairs:Int=0
+Var threes:Int=0
+Var fours:Int=0
+Var pairRank:Int=0
+
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+Function Main:Void()
+EndF
+
+
+// ============================================================
+// CARD TO TILE: 13 cols x 4 rows layout
+// tile = suit * 13 + rank
+// ============================================================
+Function CardToTile:Int
+	cRank = gCardVal Mod 13
+	cSuit = gCardVal / 13
+	Return cSuit * 13 + cRank
+EndF
+
+
+// ============================================================
+// SHUFFLE DECK
+// ============================================================
+Function ShuffleDeck:Void
+	For i=0 To 51
+		deck(i)=i
+	Next
+	For i=51 To 1 Step -1
+		j=Rnd(i)
+		temp=deck(i)
+		deck(i)=deck(j)
+		deck(j)=temp
+	Next
+	deckPos=0
+EndF
+
+
+// ============================================================
+// SHOW CARD
+// ============================================================
+Function ShowCard:Void
+	Ctrl.Image.Tile.Set cidCard(gSlot),shCards,gTile
+	Ctrl.Refresh cidCard(gSlot)
+EndF
+
+
+// ============================================================
+// SHOW BACKS - display card backs on all 5 slots
+// ============================================================
+Function ShowBacks:Void
+	For g=0 To 4
+		Ctrl.Image.Tile.Set cidCard(g),shBacks,backDesign
+		Ctrl.Refresh cidCard(g)
+	Next
+EndF
+
+
+// ============================================================
+// DISPLAY HAND
+// ============================================================
+Function DisplayHand:Void
+	For i=0 To 4
+		gCardVal=hand(i)
+		gTile=CardToTile
+		gSlot=i
+		ShowCard
+	Next
+EndF
+
+
+// ============================================================
+// UPDATE DISPLAY
+// ============================================================
+Function UpdateDisplay:Void
+	LblCredits.Text.Set "Credits: " + Str(credits)
+	LblCredits.Refresh
+	LblBet.Text.Set "Bet: " + Str(bet)
+	LblBet.Refresh
+EndF
+
+
+// ============================================================
+// UPDATE HOLD BUTTONS
+// ============================================================
+Function UpdateHoldButtons:Void
+	If holdFlag(0)=1 Then
+		BtnHold1.Text.Set "H"
+	Else
+		BtnHold1.Text.Set ""
+	EndIf
+	BtnHold1.Refresh
+	If holdFlag(1)=1 Then
+		BtnHold2.Text.Set "H"
+	Else
+		BtnHold2.Text.Set ""
+	EndIf
+	BtnHold2.Refresh
+	If holdFlag(2)=1 Then
+		BtnHold3.Text.Set "H"
+	Else
+		BtnHold3.Text.Set ""
+	EndIf
+	BtnHold3.Refresh
+	If holdFlag(3)=1 Then
+		BtnHold4.Text.Set "H"
+	Else
+		BtnHold4.Text.Set ""
+	EndIf
+	BtnHold4.Refresh
+	If holdFlag(4)=1 Then
+		BtnHold5.Text.Set "H"
+	Else
+		BtnHold5.Text.Set ""
+	EndIf
+	BtnHold5.Refresh
+EndF
+
+
+// ============================================================
+// TOGGLE HOLD
+// ============================================================
+Function ToggleHold:Void
+	If gamePhase=1 Then
+		If holdFlag(gSlot)=0 Then
+			holdFlag(gSlot)=1
+		Else
+			holdFlag(gSlot)=0
+		EndIf
+		UpdateHoldButtons
+	EndIf
+EndF
+
+
+// ============================================================
+// EVALUATE HAND
+// ============================================================
+Function EvaluateHand:Int
+	For i=0 To 12
+		rankCount(i)=0
+	Next
+	For i=0 To 3
+		suitCount(i)=0
+	Next
+	For i=0 To 4
+		cardRank=hand(i) Mod 13
+		cardSuit=hand(i) / 13
+		rankCount(cardRank)=rankCount(cardRank)+1
+		suitCount(cardSuit)=suitCount(cardSuit)+1
+	Next
+	
+	isFlush=0
+	For i=0 To 3
+		If suitCount(i)=5 Then
+			isFlush=1
+		EndIf
+	Next
+	
+	isStraight=0
+	For i=0 To 8
+		If rankCount(i)=1 Then
+			If rankCount(i+1)=1 Then
+				If rankCount(i+2)=1 Then
+					If rankCount(i+3)=1 Then
+						If rankCount(i+4)=1 Then
+							isStraight=1
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	Next
+	If rankCount(12)=1 Then
+		If rankCount(0)=1 Then
+			If rankCount(1)=1 Then
+				If rankCount(2)=1 Then
+					If rankCount(3)=1 Then
+						isStraight=1
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	
+	If isFlush=1 Then
+		If isStraight=1 Then
+			If rankCount(8)=1 Then
+				If rankCount(9)=1 Then
+					If rankCount(10)=1 Then
+						If rankCount(11)=1 Then
+							If rankCount(12)=1 Then
+								Return 9
+							EndIf
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+			Return 8
+		EndIf
+	EndIf
+	
+	pairs=0
+	threes=0
+	fours=0
+	pairRank=0
+	For i=0 To 12
+		If rankCount(i)=2 Then
+			pairs=pairs+1
+			pairRank=i
+		EndIf
+		If rankCount(i)=3 Then
+			threes=1
+		EndIf
+		If rankCount(i)=4 Then
+			fours=1
+		EndIf
+	Next
+	
+	If fours=1 Then
+		Return 7
+	EndIf
+	If threes=1 Then
+		If pairs=1 Then
+			Return 6
+		EndIf
+	EndIf
+	If isFlush=1 Then
+		Return 5
+	EndIf
+	If isStraight=1 Then
+		Return 4
+	EndIf
+	If threes=1 Then
+		Return 3
+	EndIf
+	If pairs=2 Then
+		Return 2
+	EndIf
+	If pairs=1 Then
+		If pairRank>=9 Then
+			Return 1
+		EndIf
+	EndIf
+	Return 0
+EndF
+
+
+// ============================================================
+// DEAL / DRAW
+// ============================================================
+Function DoDeal:Void
+	If gamePhase=0 Then
+		If credits>=bet Then
+			credits=credits-bet
+			UpdateDisplay
+			ShuffleDeck
+			For i=0 To 4
+				hand(i)=deck(deckPos)
+				deckPos=deckPos+1
+				holdFlag(i)=0
+			Next
+			DisplayHand
+			UpdateHoldButtons
+			LblResult.Text.Set "HOLD then DRAW"
+			LblResult.Refresh
+			BtnDeal.Text.Set "DRAW"
+			BtnDeal.Refresh
+			gamePhase=1
+		Else
+			LblResult.Text.Set "Not enough credits"
+			LblResult.Refresh
+		EndIf
+	Else
+		If gamePhase=1 Then
+			For i=0 To 4
+				If holdFlag(i)=0 Then
+					hand(i)=deck(deckPos)
+					deckPos=deckPos+1
+				EndIf
+			Next
+			DisplayHand
+			For i=0 To 4
+				holdFlag(i)=0
+			Next
+			UpdateHoldButtons
+			result=EvaluateHand
+			winAmount=payTable(result)*bet
+			If winAmount>0 Then
+				credits=credits+winAmount
+				LblResult.Text.Set handName(result) + " +" + Str(winAmount)
+			Else
+				LblResult.Text.Set handName(result)
+			EndIf
+			LblResult.Refresh
+			UpdateDisplay
+			BtnDeal.Text.Set "DEAL"
+			BtnDeal.Refresh
+			gamePhase=2
+		Else
+			If gamePhase=2 Then
+				If credits<=0 Then
+					credits=100
+					LblResult.Text.Set "Refilled credits"
+					LblResult.Refresh
+					UpdateDisplay
+				EndIf
+				ShowBacks
+				gamePhase=0
+				DoDeal
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// BET CONTROLS
+// ============================================================
+Function DoBetUp:Void
+	If gamePhase=0 Or gamePhase=2 Then
+		bet=bet+1
+		If bet>5 Then
+			bet=5
+		EndIf
+		UpdateDisplay
+	EndIf
+EndF
+
+Function DoBetDn:Void
+	If gamePhase=0 Or gamePhase=2 Then
+		bet=bet-1
+		If bet<1 Then
+			bet=1
+		EndIf
+		UpdateDisplay
+	EndIf
+EndF
+
+
+// ============================================================
+// EVENTS - Configure ALL in Form Designer
+// ============================================================
+Function BtnDeal.Event:Void()
+	DoDeal
+EndF
+
+Function BtnBetUp.Event:Void()
+	DoBetUp
+EndF
+
+Function BtnBetDn.Event:Void()
+	DoBetDn
+EndF
+
+Function BtnHold1.Event:Void()
+	gSlot=0
+	ToggleHold
+EndF
+
+Function BtnHold2.Event:Void()
+	gSlot=1
+	ToggleHold
+EndF
+
+Function BtnHold3.Event:Void()
+	gSlot=2
+	ToggleHold
+EndF
+
+Function BtnHold4.Event:Void()
+	gSlot=3
+	ToggleHold
+EndF
+
+Function BtnHold5.Event:Void()
+	gSlot=4
+	ToggleHold
+EndF
+
+
+// ============================================================
+// FORM OPEN - Exactly like tiles.txt
+// ============================================================
+Function Form1.Open.Event:Void()
+
+	shLogo.Load(App.Path+"logo.qs2")
+	 Logo.Tile.Set shLogo,0
+	 Logo.Refresh
+
+	shPayTbl.Load(App.Path+"paytbl.qs2")
+	PayTbl.Tile.Set shPayTbl,0
+	PayTbl.Refresh
+	
+	Randomize Time.Second.Get * Time.Minute.Get
+	
+	; Load card faces sheet
+	If Screen.Colour = 16 Then
+		shCards.Load(App.Path+"cards.qs2")
+		shBacks.Load(App.Path+"backs.qs2")
+	Else
+		shCards.Load(App.Path+"cards.qs1")
+		shBacks.Load(App.Path+"backs.qs1")
+	EndIf
+	
+	; Get card image control IDs via Display position loop
+	g=0
+	For f=CardImg1.Display To CardImg5.Display
+		cidCard(g)=Ctrl.GetID(Form1,f)
+		g=g+1
+	Next
+	
+	; Show card backs initially
+	For g=0 To 4
+		Ctrl.Image.Tile.Set cidCard(g),shBacks,backDesign
+		Ctrl.Refresh cidCard(g)
+	Next
+	
+	LblResult.Text.Set "Video Poker - Ready"
+	LblResult.Refresh
+	UpdateDisplay
+	gamePhase=0
+EndF
+
+
+// ============================================================
+// FORM CLOSE
+// ============================================================
+Function Form1.Close.Event:Void()
+	shCards.Free
+	shBacks.Free
+	shLogo.Free
+	shPayTbl.Free
+	Form1.Close
+EndF
+	
+

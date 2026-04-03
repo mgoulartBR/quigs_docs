@@ -1,0 +1,385 @@
+// Quigs Application for Symbos
+// Name: GemCrush - By BigFive
+// Version: 6.0
+//
+// Match-3 puzzle game for MSX/SymbOS
+// Grid: 8x8, 7 gem types
+// Tiles: 0-6 cyan bg, 7-13 blue bg (baked-in checkerboard)
+//
+// Sheets:
+//   Sheet 1 = boardL (Single) - grid background
+//   Sheet 2 = boardR (Single) - right panel background
+//   Sheet 3 = gems (Grid 20x20) - 14 tiles
+//
+// Form controls:
+//   ImgBoard (Display 1) - left board background
+//   ImgPanel (Display 2) - right panel with NEW GAME button
+//   Image3..Image66 (Display 3..66) - 64 gem ImageBoxes
+//   LblScore - score value
+//   LblTime  - time bar (filled black label, width shrinks)
+//   LblLevel - level / game over
+//
+// FORM DESIGNER SETUP:
+//   All 64 ImageBox: Event = "ImgGem.Event"
+//   ImgPanel: Event = "ImgPanel.Event"
+//   LblTime: Filled Paper=black, Width=140, Height=8
+
+// ============================================================
+// SHEET VARIABLES
+// ============================================================
+Var shGems:Sheet
+Var shBoardL:Sheet
+Var shBoardR:Sheet
+
+// ============================================================
+// CONTROL IDS
+// ============================================================
+Var cid(64):Int
+Var cidBoard:Int = 0
+Var cidPanel:Int = 0
+Var baseDisp:Int = 0
+
+// ============================================================
+// GAME BOARD
+// ============================================================
+Var board(64):Int
+
+// ============================================================
+// GAME STATE
+// ============================================================
+Var score:Int = 0
+Var level:Int = 1
+Var selCell:Int = -1
+Var matchFound:Int = 0
+Var gameOver:Int = 0
+
+// ============================================================
+// TIME SYSTEM
+// timeBarMax = initial width of LblTime in pixels (140)
+// ============================================================
+Var timeLeft:Int = 60
+Var lastSec:Int = 0
+Var timeMax:Int = 60
+Var timeBarMax:Int = 140
+Var barW:Int = 0
+
+// ============================================================
+// TEMP VARS
+// ============================================================
+Var i:Int = 0
+Var j:Int = 0
+Var f:Int = 0
+Var g:Int = 0
+Var r:Int = 0
+Var c:Int = 0
+Var temp:Int = 0
+Var mRow:Int = 0
+Var mCol:Int = 0
+Var idx:Int = 0
+Var cellClicked:Int = 0
+Var nowSec:Int = 0
+
+
+// ============================================================
+// MAIN LOOP - Timer countdown with visual bar
+// ============================================================
+Function Main:Void()
+    If gameOver = 0 Then
+        nowSec = Time.Second.Get
+        If nowSec <> lastSec Then
+            lastSec = nowSec
+            timeLeft = timeLeft - 1
+            If timeLeft < 0 Then
+                timeLeft = 0
+            EndIf
+            // Shrink time bar proportionally
+            barW = timeLeft * timeBarMax / timeMax
+            LblTime.Size.Set barW, 8
+            LblTime.Refresh
+            // Check time up
+            If timeLeft = 0 Then
+                gameOver = 1
+                LblLevel.Text.Set "Game Over"
+                LblLevel.Refresh
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// INIT BOARD
+// ============================================================
+Function InitBoard:Void
+    For i = 0 To 63
+        board(i) = Rnd(7)
+    Next
+    For r = 0 To 7
+        For c = 2 To 7
+            idx = r * 8 + c
+            While board(idx) = board(idx - 1) And board(idx - 1) = board(idx - 2)
+                board(idx) = Rnd(7)
+            Wend
+        Next
+    Next
+    For r = 2 To 7
+        For c = 0 To 7
+            idx = r * 8 + c
+            While board(idx) = board(idx - 8) And board(idx - 8) = board(idx - 16)
+                board(idx) = Rnd(7)
+            Wend
+        Next
+    Next
+EndF
+
+
+// ============================================================
+// RENDER BOARD
+// ============================================================
+Function RenderBoard:Void
+    For i = 0 To 63
+        r = i / 8
+        c = i Mod 8
+        If (r + c) Mod 2 = 0 Then
+            Ctrl.Image.Tile.Set cid(i), shGems, board(i)
+        Else
+            Ctrl.Image.Tile.Set cid(i), shGems, board(i) + 7
+        EndIf
+        Ctrl.Refresh cid(i)
+    Next
+EndF
+
+
+// ============================================================
+// CHECK MATCHES
+// ============================================================
+Function CheckMatches:Void
+    matchFound = 0
+    For r = 0 To 7
+        For c = 0 To 5
+            idx = r * 8 + c
+            If board(idx) >= 0 Then
+                If board(idx) = board(idx + 1) Then
+                    If board(idx) = board(idx + 2) Then
+                        board(idx) = -1
+                        board(idx + 1) = -1
+                        board(idx + 2) = -1
+                        score = score + 30
+                        matchFound = 1
+                    EndIf
+                EndIf
+            EndIf
+        Next
+    Next
+    For r = 0 To 5
+        For c = 0 To 7
+            idx = r * 8 + c
+            If board(idx) >= 0 Then
+                If board(idx) = board(idx + 8) Then
+                    If board(idx) = board(idx + 16) Then
+                        board(idx) = -1
+                        board(idx + 8) = -1
+                        board(idx + 16) = -1
+                        score = score + 30
+                        matchFound = 1
+                    EndIf
+                EndIf
+            EndIf
+        Next
+    Next
+EndF
+
+
+// ============================================================
+// DROP GEMS
+// ============================================================
+Function DropGems:Void
+    For c = 0 To 7
+        j = 7
+        For r = 7 To 0 Step -1
+            If board(r * 8 + c) >= 0 Then
+                board(j * 8 + c) = board(r * 8 + c)
+                If j <> r Then
+                    board(r * 8 + c) = -1
+                EndIf
+                j = j - 1
+            EndIf
+        Next
+        For r = j To 0 Step -1
+            board(r * 8 + c) = Rnd(7)
+        Next
+    Next
+EndF
+
+
+// ============================================================
+// UPDATE DISPLAY
+// ============================================================
+Function UpdateDisplay:Void
+    LblScore.Text.Set Str(score)
+    LblScore.Refresh
+    If gameOver = 0 Then
+        LblLevel.Text.Set Str(level)
+        LblLevel.Refresh
+    EndIf
+EndF
+
+
+// ============================================================
+// START NEW GAME
+// ============================================================
+Function StartNewGame:Void
+    score = 0
+    level = 1
+    selCell = -1
+    gameOver = 0
+    timeLeft = timeMax
+    lastSec = Time.Second.Get
+    InitBoard
+    RenderBoard
+    LblScore.Text.Set "0"
+    LblScore.Refresh
+    LblLevel.Text.Set "1"
+    LblLevel.Refresh
+    // Reset time bar to full width
+    LblTime.Size.Set timeBarMax, 8
+    LblTime.Refresh
+EndF
+
+
+// ============================================================
+// GEM CLICK EVENT
+// All 64 ImageBox point to ImgGem.Event
+// Event.Control returns control number of clicked ImageBox
+// cellClicked = Event.Control - baseDisp gives index 0..63
+// ============================================================
+Function ImgGem.Event:Void()
+    If gameOver = 0 Then
+        cellClicked = Event.Control - baseDisp
+        If cellClicked >= 0 Then
+            If cellClicked <= 63 Then
+                If selCell < 0 Then
+                    selCell = cellClicked
+                Else
+                    If selCell = cellClicked Then
+                        selCell = -1
+                    Else
+                        mRow = selCell / 8 - cellClicked / 8
+                        If mRow < 0 Then
+                            mRow = 0 - mRow
+                        EndIf
+                        mCol = selCell Mod 8 - cellClicked Mod 8
+                        If mCol < 0 Then
+                            mCol = 0 - mCol
+                        EndIf
+                        If mRow + mCol = 1 Then
+                            temp = board(cellClicked)
+                            board(cellClicked) = board(selCell)
+                            board(selCell) = temp
+                            CheckMatches
+                            If matchFound = 0 Then
+                                temp = board(cellClicked)
+                                board(cellClicked) = board(selCell)
+                                board(selCell) = temp
+                            Else
+                                RenderBoard
+                                DropGems
+                                CheckMatches
+                                While matchFound = 1
+                                    RenderBoard
+                                    DropGems
+                                    CheckMatches
+                                Wend
+                                RenderBoard
+                                UpdateDisplay
+                            EndIf
+                        EndIf
+                        selCell = -1
+                    EndIf
+                EndIf
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// PANEL CLICK - NEW GAME button
+// Event.MouseX/Y returns Form-absolute coordinates
+// NEW GAME button at approx x=170..310, y=130..165
+// ============================================================
+Function ImgPanel.Event:Void()
+    i = Event.MouseX
+    j = Event.MouseY
+    If i >= 170 Then
+        If i <= 310 Then
+            If j >= 130 Then
+                If j <= 165 Then
+                    StartNewGame
+                EndIf
+            EndIf
+        EndIf
+    EndIf
+EndF
+
+
+// ============================================================
+// FORM OPEN
+// ============================================================
+Function Form1.Open.Event:Void()
+    Randomize Time.Second.Get * Time.Minute.Get
+
+    If Screen.Colour = 16 Then
+        shGems.Load(App.Path + "gems.qs2")
+        shBoardL.Load(App.Path + "boardL.qs2")
+        shBoardR.Load(App.Path + "boardR.qs2")
+    Else
+        shGems.Load(App.Path + "gems.qs1")
+        shBoardL.Load(App.Path + "boardL.qs1")
+        shBoardR.Load(App.Path + "boardR.qs1")
+    EndIf
+
+    // Set board backgrounds
+    cidBoard = Ctrl.GetID(Form1, ImgBoard.Display)
+    cidPanel = Ctrl.GetID(Form1, ImgPanel.Display)
+    Ctrl.Image.Tile.Set cidBoard, shBoardL, 0
+    Ctrl.Refresh cidBoard
+    Ctrl.Image.Tile.Set cidPanel, shBoardR, 0
+    Ctrl.Refresh cidPanel
+
+    // Save base display for gem click calc
+    baseDisp = Image3.Display
+
+    // Map display positions to control IDs
+    g = 0
+    For f = Image3.Display To Image66.Display
+        cid(g) = Ctrl.GetID(Form1, f)
+        g = g + 1
+    Next
+
+    lastSec = Time.Second.Get
+    timeLeft = timeMax
+
+    InitBoard
+    RenderBoard
+
+    LblScore.Text.Set "0"
+    LblScore.Refresh
+    LblLevel.Text.Set "1"
+    LblLevel.Refresh
+    // Set time bar to full width
+    LblTime.Size.Set timeBarMax, 8
+    LblTime.Refresh
+EndF
+
+
+// ============================================================
+// FORM CLOSE
+// ============================================================
+Function Form1.Close.Event:Void()
+    shGems.Free
+    shBoardL.Free
+    shBoardR.Free
+    Form1.Close
+EndF
+
