@@ -1,0 +1,7 @@
+;*****
+;***** Quigs Settings
+;*****
+;Can use settings [DestDir],[ResWidth],[ResHeight]
+[DestDir] f:\symbos\
+[ResWidth] 1920
+[ResHeight] 1080

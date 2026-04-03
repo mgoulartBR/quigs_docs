@@ -1,0 +1,43 @@
+Revision notes for Quigs GUI Editor/G9K & Language by Rob Buckley
+
+Revision 0.3.030823
+1. Added App.Bank which returns Application current bank
+2. Added compile Warning/Error if the Data or Trans size settings are too low
+3. Added .StartAddr / .ArrSize1 functions for arrays.
+4. Changed all Directory functions so start Dir. rather than Directory. for brevity & readability.
+5. Add Dir.Read and additional Dir.Read. functions for reading the contents of a file directory.
+6. Added Printer.String & Printer.Byte which send data to a connected printer.
+7. Fixed key bug where the buffer fills .if you held key down
+8. Fixed Open/Close form issue with Systray. Note that shutting down an application now requires
+an 'App.Exit' rather than automatically shutting down on a X click/AltF5. This can be done from in
+   the 'form.close.event'
+9. Fixed Return issue where you could 'Return' from a void function.
+10. Fixed Network issue with multiple connections & wrote nettest.qpf
+
+
+Revision 0.3.080623
+1. Altered List & MList scrollbars in Form editor to more accurately represent look in Symbos.
+2. Rounded Button in Form editor to be consistant with Symbos
+3. Added functions '.TopRow.Set value' & '.TopRow.Get' for MList & List controls to set/get the value
+	the first line displayed in List.
+4. Added App Revision to compiled apps from 3.1. This is the OS version or above required to run app.
+5. 'App.Coder' / 'App.Date' / 'App.Version' strings added to language.
+6. Added 'Dialog.Icon.Empty' so that Dialog Message Box doesnt have to show an 24x24 icon.
+7. Updated Optimizer
+8. Removed 4 colour Icon, saving 144 bytes
+9. Fixed Broken VSpinner compiler issue.
+10. Modified editor of VScroll/HScroll/VSpinner/HSpinner controls to accurately represent lookin Symbos.
+11. Added 'ElseIf condition Then' command. We can now do things like:
+	If a>b Then
+		Button1.Text.RSet "Greater"
+	ElseIf a<b Then
+		Button1.Text.RSet "Lesser"
+	ElseIf a=b Then
+		Button1.Text.RSet "Same"
+	Else
+		Button1.Text.RSet "whatever"
+	EndIf
+
+ 
+
+

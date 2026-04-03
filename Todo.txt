@@ -1,0 +1,18 @@
+Quigs todo:
+
+24-05-23
+	Build Date Sting
+	
+	List1  set scroll 		
+
+	MsbBox select add "no icon  "
+
+	color of the Hscroll Controll
+
+	Auto Text  	- better
+			- highlight other color
+			
+
+	symbos audio ouput.. cpc sounds
+
+	Radio Button text length / background color 

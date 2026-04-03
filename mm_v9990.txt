@@ -1,0 +1,2955 @@
+// Quigs Symbos G9K Application
+// Name: MMM Menu for MMM Game
+
+// -------------------------------------------------------------------------------------------------------------------------------------
+// Used to monitor the current Patterns when loading them into video memory
+Var pattCount:Int
+
+// Mouse X and Y and key variables
+// Mouse will be ONLY displayed in the Menu after the last ESC to exit.
+Var MouseX:Int				// X position of the mouse
+Var MouseY:Int				// Y position of the mouse
+Var MouseKey:Int				// Was the mouse button clicked?
+Var MouseCount:Int			// The mouse will hide after a while wen not moved
+Var MouseOk:Byte			// To check if there was something changed on the mouse move or click
+
+// Used for Fading in and out
+Var fade:Byte = 0				// Q Logo fade routine variable
+Var fadevalue:Int				// Q Logo fade routine variable
+Var fadeset:Byte 				// Q Logo fade routine variable
+Var Pal1:Int					// Q Logo fade routine variable
+Var Pal2:Int					// Q Logo fade routine variable
+Var Pal3:Int					// Q Logo fade routine variable
+Var Lev:Int 					// Q Logo fade routine variable
+Var Loop:Int 				// Q Logo fade routine variable
+Var red:Int 			 		// Q Logo fade routine variable
+Var green:Int 				// Q Logo fade routine variable
+Var blue:Int 				// Q Logo fade routine variable
+Var palletset:Int 				// Q Logo fade routine variable
+
+// X and Y for Fore and Back MAP
+Var fX:Int=0				//X position of the Fore MAP
+Var fY:Int=0					//Y position of the Fore MAP
+Var bX:Int=0 				//X position of the BACK MAP
+Var bY:Int=0 				//YYposition of the BACK MAP
+
+// General X,Y used for camera and MAP view
+Var x1:Int=0 				// General X,Y view map
+Var y1:Int=0 				// General X,Y view map
+Var x2:Int=0 				// General X,Y view map
+Var y2:Int=0 				// General X,Y view map
+
+// VARS for the Menu structure
+Var menuactive:Int=0			// Enable or disable the menu
+Var menustatus:Int=0			// The menustatus is the current screen in the menu
+Var swapit:Int=0				// Menu back scroll swap the loop of scrolling on the screen
+Var timercount:Int=0			// Counter for the menu
+Var count:Int=0				// Couter for in the menu
+Var scrolldirection:Int=0			// Direction to scroll in the menu
+Var blinktext:Int=0			// Blinking text in the menu
+Var glass:Int=8				// Waiting glass for loading
+Var character(7):Int 			// Characters 0=ray 1=sara 2=bruno 3=spider 4=joline 5=edina 6=cherry 7=emile
+Var player(3):Int 				// 0=user 1=computer 2=computer 3=computer
+Var cartype:Int				// 0=sportcar  1=turbo(beach)wheels 2=fourbyfour 3=formula1 4=boats 5=choppers
+Var numbers:String="01234567" 	// String to RND the computer players
+Var playeranimation:Int 			// Animation for the characters in the menu
+Var anitimer:Int 				// Timer for the Animation for the characters in the menu
+// Vars for SPrites in the Menu
+Var SpritePattern:Int=0 			//Nuber of a pattern used for the sprites in the menu
+Var x:Int=0 					// General X,Y for menu spites
+Var y:Int=0 					// General X,Y for menu spites
+Var xTarget:Int=0 			// The Target to scroll to X pos. used in the Menu
+Var yTarget:Int=0 			// The Target to scroll to Y pos. used in the Menu
+
+// Keys
+Var SpaceKey:Int=0 			// Spacekey 	0=Not pressed 1=Pressed once 2=Continue pressed
+Var ESCKey:Int=0 			// ESCkey		0=Not pressed 1=Pressed once 2=Continue pressed
+Var arrowLeftKey:Int=0 			// ArrowLeft 	0=Not pressed 1=Pressed once 2=Continue pressed
+Var arrowRightKey:Int=0  		// ArrowRight 	0=Not pressed 1=Pressed once 2=Continue pressed
+
+//  sound
+Var soundhardware:Int=0 		//Which hardware for sound is set in the daemon 0=none 1=psg 2=OPL4
+Var SongHandle:Int=0 			//The handle of the song(s)
+Var EffectHandle:Int=0 			//The handle of the effect(s) see play effect for all effect numbers
+Var song:Int=0 				//The song which you want to play
+Var effect:Int=0 				//The effect which you want to play
+;Var soundinit:Int 				//To initialize the sound daemon
+
+// -------------------------------------------------------------------------------------------------------------------------------------
+// End declares
+
+// Application First Start is Here, set and load all defaults
+Function Initialize:Void()
+	Var f:Int
+	KeyMul.Set Key.Code.Space,Key.Code.CursorLeft,Key.Code.CursorRight,Key.Code.ESC,0,0
+	
+	// Initialize THIS is  G9K App for SymbOS and use the default MapEngine for the G9k
+	MapEngine 1
+	Set.Sprites 0,112
+	Disable.G9KInterrupt
+	// Set the border collor to 0
+	// Border Color can be 0-63
+	BackColour 0
+	
+	// There are 16 color sets (or called ink) 0.. 16. 32 .. etc.
+	// During load you give the offset of you color set
+	// A set can be set to the hardware pallets 0-3
+	// Make the screen Black
+	// Set the Ink RGB all to 0,0,0
+	For f=240 To 255
+		Ink f,0,0,0
+	Next
+	
+	// G9K can have 4 pallets of 16 colors (0-3)
+	// Set the 4 palletes to black so during load it stays black
+	Ink.Palette 0,240
+	Ink.Palette 1,240
+	Ink.Palette 2,240
+	Ink.Palette 3,240
+	;
+	// By default all sprites are enabled and visiable.
+	// G9k can have 124 sprites (16x16) in total
+	// We set all sprites to pallette 0 as this is black now
+	// We are moving all the sprites to location 0,190 to avoid flickering
+	// We set the display for all sprites to 1
+	// 0=Visable in front of ForeLayer
+	// 1=Not Visable
+	// 2=Visable Behind ForeLayer
+	// 3=Visable in front of BackLayer
+	
+	For f=0 To 124
+		Palette.Sprite f,0
+		Draw.Sprite f,0,0
+		Display.Sprite f,1
+	Next
+	Update.Display
+	
+	// Loading bitmap pixel sheet data in
+	// First we will load the sprite sheet starting at memory block 0 using palleteOffset 48
+	pattCount=Load.Pattern.A(App.Path+"mmm001.qpt",0,48) // Sprite Sheet Bitmap
+	// We used pallet 2 for the sprite bitmap sheet
+	Ink.Palette 2,48
+	
+	// Sprite 0 is the mouse pointer sprite. This is common to do as this sprite is on top of the other sprites
+	// For every sprite we set the pallet, Position and Pattern (Bitmap) data.
+	// Sprite 0  = Mouse
+	// Spite 99 = Exit button to Exit
+	
+	// We use the waiting glass for loading
+	Draw.Sprite 0,128,106
+	Pattern.Sprite 0,glass
+	Palette.Sprite 0,2
+	Display.Sprite 0,0
+	
+	Draw.Sprite 99,245,1
+	Pattern.Sprite 99,0
+	Palette.Sprite 99,2
+	
+	//Waiting picture in the center
+	Draw.Sprite 116,120,130
+	Draw.Sprite 117,136,130
+	Pattern.Sprite 116,16
+	Pattern.Sprite 117,17
+	Palette.Sprite 116,2
+	Palette.Sprite 117,2
+	Display.Sprite 116,0
+	Display.Sprite 117,0
+	
+	Update.Display
+	
+	WaitingGlassLoadingAnimation
+	
+	//sound daemon is active load sounds
+	
+	If Sound.Hardware =0 Then
+		//No sound hardware to play
+		soundhardware=0
+	ElseIf Sound.Hardware=1 Then
+		//PSG is prefered
+		soundhardware=1
+		SongHandle=Sound.Music.LoadPSG(App.Path +"mmmusic.spm")
+		WaitingGlassLoadingAnimation
+		EffectHandle=Sound.FX.LoadPSG(App.Path +"mmmfx.spx")
+	ElseIf Sound.Hardware=3 Then
+		//OPL is preferd
+		soundhardware=2
+		SongHandle=Sound.Music.LoadOPL4(App.Path +"mmmusic.swm")
+		WaitingGlassLoadingAnimation
+		EffectHandle=Sound.FX.LoadOPL4(App.Path +"mmmfx.swx")
+	EndIf
+	
+	//Now we need to load the sheet bitmap pattern data in for the Fore Layer and Back Layer
+	pattCount=Load.Pattern.B(App.Path+"mmm002.qpt",1024,128)				;was 0 Palette at 128
+	WaitingGlassLoadingAnimation
+	pattCount=Load.Pattern.A(App.Path+"mmm003.qpt",4096,144)				;was 1024Palette at 144
+	WaitingGlassLoadingAnimation
+	
+	// Load the MAP structure in which is desgined in Quigs.
+	// MAP contains the structure and is build out of patterns from the sheets
+	// There is also a META file which contains the properties for each pattern.
+	
+	WaitingGlassLoadingAnimation
+	If Meta.Load(App.Path+"map1.qmt")=0 Then
+		ShutdownApp
+	EndIf
+	WaitingGlassLoadingAnimation
+	If Load.MapB(App.Path+"map1.qmb")=0 Then
+		ShutdownApp
+	EndIf
+	WaitingGlassLoadingAnimation
+	If Load.MapA(App.Path+"map1.qma")=0 Then
+		ShutdownApp
+	EndIf
+	
+	// Create a new pallet white in RGB color
+	For f=224 To 239
+		Ink f,31,31,31
+	Next
+	
+	
+	
+	// The Drawmap function will draw the visable screen to the location on the MAP you set
+	// We set both layers to top left but because we use still a black pallet nothing is seen
+	DrawBackMap (0,0)
+	DrawForeMap (0,0)
+	
+	// Do not show the mouse anymore but set the normal mouse icon and show it again after the small intro
+	Display.Sprite 0,1
+	Pattern.Sprite 0,2
+	
+	// Some General Functions to initialize some sprites
+	LoadMenuSprites
+	LoadMenuSprites_PressFire
+	LoadMenuSprites_Select
+	LoadMenuSprites_Cursor
+	LoadMenuSprites_GetReady
+	
+	// The load of the program is complet
+	// Now the MAIN is called and called everytime when it gets CPU time from SymbOS
+	
+	Display.Sprite 116,1
+	Display.Sprite 117,1
+	
+	//Set some Meta Tile Data for the characters
+	character(0) = 896  	//Bruno
+	character(1) = 906  	//Spider
+	character(2) = 916  	//Joline
+	character(3) = 926  	//Edina
+	character(4) = 936  	//Cherry
+	character(5) = 946  	//Emile
+	character(6) = 768  	//Ray
+	character(7) = 778  	//Sara
+	Enable.G9KInterrupt
+	
+	
+	
+	//Set the Ink  for the Fore Layer  and Back Layer
+	Ink.Palette 0,240					//This is the Ink 0 we're going To use For Background
+	Ink.Palette 1,240					//This is the Ink 1 we're using For foreground
+	
+	// Now set the pallete to both Layers (We set it to 240 because we want a Fade)
+	Palette.LayerB 0					//As above set back as 0, fore as 1
+	Palette.LayerA 1
+	Update.Display
+	
+	
+	fade=0
+	menustatus=1
+	menuactive=1
+EndF
+
+// MAIN LOOP
+// -------------------------------------------------------------------------------------------------------------------------------------
+Function Main:Void()
+	// Main loop called everytime when it gets CPU time from the SymbOS kernal.
+	// Every loop do a sprite refresh
+	
+	// The Menu Structure
+	// If the menu is on and above 0 then it will check for Menu actions
+	
+	If menuactive=1 Then
+		CheckKeys
+		menu
+	Else
+		GameLoop
+	EndIf
+EndF
+// -------------------------------------------------------------------------------------------------------------------------------------
+
+Function CheckKeys:Void()
+	//KeyMul.Set Key.Code.Space,Key.Code.CursorLeft,Key.Code.CursorRight,Key.Code.ESC,0,0
+	KeyMul.Read
+	If KeyMul.Get(KeyMul.Scan1) Then
+		SpaceKey=Min(SpaceKey+1,2)
+	Else
+		SpaceKey=0
+	EndIf
+	If KeyMul.Get(KeyMul.Scan4) Then
+		ESCKey=Min(ESCKey+1,2)
+	Else
+		ESCKey=0
+	EndIf
+	If KeyMul.Get(KeyMul.Scan2)  Then
+		If arrowLeftKey=0 Then
+			arrowLeftKey=1
+		EndIf
+	Else
+		arrowLeftKey=0
+	EndIf
+	If KeyMul.Get(KeyMul.Scan3)  Then
+		If arrowRightKey=0 Then
+			arrowRightKey=1
+		EndIf
+	Else
+		arrowRightKey=0
+	EndIf
+EndF
+
+Function PlayMusic:Void(song)
+	If soundhardware=0 Then
+		//no sound
+	ElseIf soundhardware=1 Then
+		Sound.Music.Play SongHandle,0
+	ElseIf soundhardware=2 Then
+		Sound.Music.Play SongHandle,0
+	EndIf
+EndF
+
+
+Function PlayEffect:Void(effect,Vol)
+	// SoundFX OPL4 File
+	//0=Select (move  in menu)
+	//1=Selected item or Powerup
+	//2= Signal for start (play it 3 times and than 1x longer
+	//3=Horn/Claxon1
+	//4=Horn/Claxon2
+	//5=Fail of the board
+	//6=Jump
+	//7=Menu not an option or in game not an option sound
+	//8=User player overtakes the computer and goes one place up
+	//9=Computer player takesover player  and foes one place down
+	//10=Level complete (going over the finisch line sound) (car goes over the line and start jumping faster on the same position.)
+	//11=stearing sound / slipping sound
+	//12=Bump into hard object
+	//13=Bump into softer object
+	//14 You are slipping 360 over water of oli)
+	//15=driving over a small object
+	//16=driving into other car  sound1 (harder)
+	//17=the crash sound after you are on the ground
+	//18=dirving into other car sound2 (softer)
+	//19= Motor sound1 (more soft)
+	//20=Motor sound2 (more hard)
+	//21=Motor sound3 (more middle hard)
+	//22=Powerup
+	
+	If soundhardware=0 Then
+		//no sound
+	ElseIf soundhardware=1 Then
+		Sound.FX.Play EffectHandle,effect,Vol
+	ElseIf soundhardware=2 Then
+		Sound.FX.PlayOPL4 EffectHandle,effect,Vol,0
+	EndIf
+EndF
+
+
+// ALL MENU FUNCTONS CALLED FROM THE MAIN
+Function menu:Void
+	Var f:Int
+	If menustatus > 0 Then
+		// The menu is in status 6 that means we can show a mouse if the user moves it.
+		If  menustatus >6 Then
+			//mouseloop
+			// The animations are running and background is moving
+			If menustatus=7 Then
+				// Status 7 is the first interactive Menu Screen
+				menu7
+			ElseIf menustatus=8 Then
+				// User pressed Fire and the Car Selector is loaded
+				menu8
+			ElseIf menustatus=9 Then
+				// Second stage,  after Car select, user select player to play
+				menu9
+			ElseIf menustatus=10 Then
+				// Car and Players are Selected and showed before loading the real game MAP
+				menu10
+			ElseIf menustatus=11 Then
+				// Results of playing
+				menu11
+			ElseIf menustatus=99 Then
+				// Results of playing
+				menu99
+			EndIf
+		Else
+			// If there is a fade request to fade the screen in or out the routine is called to do
+			If fade>0 Then
+				fadeLoop
+			EndIf
+			// The first status of the boot of the game.  It will activate the FADE in
+			If menustatus=1 Then
+				If fade=0 Then
+					// The logo is already on the correct position in Display set in the initialize
+					menu1
+				EndIf
+			ElseIf menustatus=2 Then
+				If fade=0 Then
+					// Status 2 and 5 are used to wait for a while after the logo is diplayed
+					menu2
+				EndIf
+			ElseIf menustatus=3 Then
+				If fade=0 Then
+					// Fade everthing back to black again
+					menu3
+				EndIf
+			ElseIf menustatus=4 Then
+				If  fade=0 Then
+					// Show the Second Quigs Logo on the screen
+					menu4
+				EndIf
+			ElseIf menustatus=5 Then
+				If fade=0 Then
+					// Status 2 and 5 are used to wait for a while after the logo is diplayed
+					menu2
+				EndIf
+			ElseIf menustatus=6 Then
+				If fade=0 Then
+					// Move to the first MMM intro screen and set everyting correct
+					PlayMusic(0)
+					menu6
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	
+	//	When ESC is pressed by the user it will go to to the MENU
+	//	Second press will Exit the Application and go back to the SymbOS desktop
+	If ESCKey=1  And menustatus < 90 Then
+		PlayEffect(7,255)
+		//clear all sprites and set them
+		For f=0 To 124
+			Display.Sprite f,1
+		Next
+		Update.Display
+		If menustatus=7 Then
+			menustatus=99
+			EnableExit
+		Else
+			menustatus=7
+		EndIf
+		menu6
+		HidePressFire
+		hideGetReady
+		hideSelect
+		ShowMMLogo
+		Update.Display
+		Ink.Palette 0,128					//This is the Ink 0
+		Ink.Palette 1,144					//This is the Ink 1
+		
+	EndIf
+EndF
+
+// Menu 99 is the last for exit back to the symbos desktop (it enabled the mouse)
+Function menu99:Void()
+	mouseloop
+	menu7
+	If ESCKey=1 Then
+		PlayEffect(7,255)
+		ShutdownApp
+	EndIf
+	If SpaceKey=1  Then
+		PlayEffect(1,255)
+		menustatus=7
+		HideCursor
+		LoadMenuSprites
+	EndIf
+EndF
+
+// Routine to shutdown App
+Function ShutdownApp:Void()
+	If soundhardware > 0 Then
+		If  soundhardware > 0 Then
+			Sound.Music.Release SongHandle
+			Sound.FX.Release EffectHandle
+		EndIf
+	EndIf
+	App.Exit
+EndF
+
+Function menu1:Void
+	// Activate FADE to show the First Quigs Logo (1= Fade IN, 2=Fade OUT)
+	fade=1
+	fadeset=240
+	menustatus	=2
+EndF
+
+Function menu2:Void
+	// Wait for 50 counter loops and then set the Next menu status.
+	timercount=timercount+1
+	If timercount => 50 Then
+		If menustatus=2 Then
+			menustatus=3
+		EndIf
+		If menustatus=5 Then
+			fade=2
+			fadeset=240
+			menustatus=6
+		EndIf
+		timercount=0
+	EndIf
+EndF
+
+Function menu3:Void
+	// Fade out the Quigs logo
+	fade=2
+	fadeset=240
+	menustatus	=4
+EndF
+
+Function menu4:Void
+	//Set the camera to 256 on the map. It will draw this on the visable screen
+	
+	Ink.Palette 0,240
+	Ink.Palette 1,240
+	Update.Display
+	DrawBackMap(256,0)
+	DrawForeMap(256,0)
+	Update.Display
+	Ink.Palette 0,128
+	Ink.Palette 1,144
+	
+	
+	menustatus=5
+EndF
+
+Function menu6:Void
+	// Move the screen (BACK AND FORE) to the first interactive MMM Menu screen.
+	bX=512
+	fX=512
+	Ink.Palette 0,240
+	Ink.Palette 1,240
+	Update.Display
+	DrawBackMap(bX,0)
+	DrawForeMap(fX,0)
+	// Set pallete 0 and 1 for Fore and Back Layer
+	
+	// Enable the LOGO spites
+	ShowMMLogo
+	// Show Helms and set the correct pallete and position
+	Display.Sprite 97,0
+	Palette.Sprite 97,2
+	Draw.Sprite 97,200,112
+	Display.Sprite 98,0
+	Palette.Sprite 98,2
+	Draw.Sprite 98,40,112
+	Update.Display
+	Ink.Palette 0,128
+	Ink.Palette 1,144
+	If menustatus=99 Then
+	Else
+		menustatus=7
+	EndIf
+EndF
+
+Function menu7:Void
+	// Activate the Backscroll and Helmet Animation
+	MenuBackScroll
+	LoadMenuSprites_AnimateHemlet
+	// Wait for the user to press space to go to the next phase
+	If menustatus=99 Then
+	Else
+		If SpaceKey=1  Then
+			PlayEffect(1,255)
+			Ink.Palette 0,240
+			Ink.Palette 1,240
+			Update.Display
+			// Remove text press fire
+			HidePressFire
+			// Hide the Helms
+			Display.Sprite 97,1
+			Display.Sprite 98,1
+			// Show  cursor sprites
+			ShowCursor
+			// Go to the Next Screen (CAR Select)
+			DrawForeMap(795,0)
+			fX=795
+			xTarget=795
+			menustatus=8
+			cartype=0
+			player(0)=0
+			Update.Display
+			Ink.Palette 0,128
+			Ink.Palette 1,144
+		EndIf
+	EndIf
+	// Blink some Text sprites
+	BlinkTimer	(1)
+EndF
+
+Function menu8:Void
+	// Car Select
+	MenuBackScroll
+	BlinkTimer	(2)
+	// Scroll the cars step by step, scroll to the target
+	If fX=xTarget Then
+		If arrowRightKey=1 Then
+			cartype=cartype+1
+			If cartype=>5 Then
+				cartype=5
+			EndIf
+			xTarget=xTarget+102
+			If xTarget>1305  Then
+				xTarget=1305
+			EndIf
+			scrolldirection=1
+			PlayEffect(0,255)
+		EndIf
+		If arrowLeftKey=1  Then
+			cartype=cartype-1
+			If cartype=<0 Then
+				cartype=0
+			EndIf
+			
+			xTarget=xTarget-102
+			If xTarget<795 Then
+				xTarget=795
+			EndIf
+			scrolldirection=2
+			PlayEffect(0,255)
+		EndIf
+		If SpaceKey=1 Then
+			Ink.Palette 0,240
+			Ink.Palette 1,240
+			Update.Display
+			PlayEffect(1,255)
+			menustatus=9
+			DrawForeMap(784,180)
+			Update.Display
+			Ink.Palette 0,128
+			Ink.Palette 1,144
+			fX=784
+			xTarget=784
+		EndIf
+	Else
+		If scrolldirection=1 Then
+			fX=Min(fX+6,xTarget)
+		ElseIf scrolldirection=2 Then
+			fX=Max(fX-6,xTarget)
+		EndIf
+		Scroll.LayerA fX,Scroll.LayerA.Y()
+		//Car is slected go to the next stage (Choose character/player)
+	EndIf
+	//Arrow animation
+	Draw.Sprite 96,120,190-Shr4(IntSin(Shl2(count) And 127))
+EndF
+
+Function menu9:Void
+	// Player Select
+	MenuBackScroll
+	BlinkTimer	(2)
+	// Scroll the Player characters  step by step, scroll to the target
+	If fX=xTarget Then
+		If arrowRightKey =1 Then
+			player(0)=player(0)+1
+			If player(0)=>7 Then
+				player(0)=7
+			EndIf
+			xTarget=xTarget+64
+			If xTarget>1232  Then
+				xTarget=1232
+			EndIf
+			scrolldirection=1
+			PlayEffect(0,255)
+		EndIf
+		If arrowLeftKey =1 Then
+			player(0)=player(0)-1
+			If player(0)=<0 Then
+				player(0)=0
+			EndIf
+			
+			xTarget=xTarget-64
+			If xTarget<784 Then
+				xTarget=784
+			EndIf
+			scrolldirection=2
+			PlayEffect(0,255)
+		EndIf
+		//Go to the Next Menu (SHOW GET READY SCREEN, before load game state)
+		If SpaceKey=1 Then
+			PlayEffect(1,255)
+			Ink.Palette 0,240
+			Ink.Palette 1,240
+			Update.Display
+			DrawForeMap(1792,0)
+			hideMMLogo
+			HideCursor
+			hideSelect
+			menustatus=10
+			Var tempnumber:Int
+			Randomize Time.Second.Get
+			numbers ="01234567"
+			numbers =Replace (numbers,Str(player(0)),"")
+			While Len(numbers)=3
+				tempnumber=Rnd(8)
+				numbers =Replace (numbers,Str(tempnumber),"")
+			Wend
+			
+			player(1) = CInt(Mid(numbers,1,1))
+			player(2) = CInt(Mid(numbers,2,1))
+			player(3) = CInt(Mid(numbers,3,1))
+			anitimer=20
+			// Remove Arrow sprite
+			Display.Sprite	 96,1
+			Update.Display
+			Ink.Palette 0,128
+			Ink.Palette 1,144
+		EndIf
+	Else
+		If scrolldirection=1 Then
+			fX=Min(fX+6,xTarget)
+		EndIf
+		
+		If scrolldirection=2 Then
+			fX=Max(fX-6,xTarget)
+		EndIf
+		Scroll.LayerA fX,Scroll.LayerA.Y()
+	EndIf
+	//Arrow Animation
+	Draw.Sprite 96,120,190-Shr4(IntSin(Shl2(count) And 127))
+EndF
+
+Function menu10:Void
+	// Show the selected characters on the screen to begin.
+	MenuBackScroll
+	BlinkTimer(3)
+	anitimer=anitimer+1
+	If anitimer=>20 Then
+		If anitimer=>20  Then
+			anitimer=0
+		EndIf
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+playeranimation),228,4
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+1+playeranimation),232,4
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+64+playeranimation),228,8
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+65+playeranimation),232,8
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+playeranimation),244,4
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+1+playeranimation),248,4
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+64+playeranimation),244,8
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+65+playeranimation),248,8
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+playeranimation),228,16
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+1+playeranimation),232,16
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+64+playeranimation),228,20
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+65+playeranimation),232,20
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+playeranimation),244,16
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+1+playeranimation),248,16
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+64+playeranimation),244,20
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+65+playeranimation),248,20
+		
+		playeranimation=playeranimation+2
+		If playeranimation=>4  Then
+			playeranimation=0
+		EndIf
+	EndIf
+	If SpaceKey=1 Then
+		Ink.Palette 0,240
+		Ink.Palette 1,240
+		Update.Display
+		PlayEffect(1,255)
+		hideGetReady
+		DrawForeMap(1776,240)
+		menustatus=11
+		playeranimation=2
+		Sound.Music.Stop SongHandle
+		InitGame
+		menuactive=0
+		// Normally here you wil start the LEVEL of playing now
+		// Selected Car is known
+	EndIf
+	
+EndF
+
+Function menu11:Void
+	MenuBackScroll
+	
+	anitimer=anitimer+1
+	If anitimer=>10 Then
+		If anitimer=>10  Then
+			anitimer=0
+		EndIf
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+playeranimation),223,34
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+1+playeranimation),227,34
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+64+playeranimation),223,38
+		Copy.Meta.LayerA Meta.MapA(character(player(0))+65+playeranimation),227,38
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+playeranimation+4),230,36
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+1+playeranimation+4),234,36
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+64+playeranimation+4),230,40
+		Copy.Meta.LayerA Meta.MapA(character(player(1))+65+playeranimation+4),234,40
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+playeranimation+4),237,38
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+1+playeranimation+4),241,38
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+64+playeranimation+4),237,42
+		Copy.Meta.LayerA Meta.MapA(character(player(2))+65+playeranimation+4),241 ,42
+		
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+playeranimation+4),244,40
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+1+playeranimation+4),248,40
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+64+playeranimation+4),244,44
+		Copy.Meta.LayerA Meta.MapA(character(player(3))+65+playeranimation+4),248,44
+		
+		
+		playeranimation=playeranimation+2
+		If playeranimation=>6  Then
+			playeranimation=2
+			
+		EndIf
+		
+	EndIf
+	
+	
+EndF
+
+
+// General Functions
+// -------------------------------------------------------------------------------------------------------------------------------------
+Function fadeLoop:Void
+	If fade=1 Then				;Fading up
+		fadevalue=Min(fadevalue+4,255)
+		PalFade(128,fadeset,0,fadevalue)		//(128)Back palette,(240)Black palette,(0)destination palette
+		PalFade(144,fadeset,16,fadevalue)		//(128)Fore palette,(240) Black palette,(16)destination palette
+		Ink.Palette 0,0
+		Ink.Palette 1,16
+		If fadevalue=255 Then
+			fade=0					//Okay we've reached top palette set fade too off
+		EndIf
+		Else					;Fading Down
+		fadevalue=Max(fadevalue-4,0)
+		PalFade(128,fadeset,0,fadevalue)		//(128)Back palette,(240)Black palette,(0)destination palette
+		PalFade(144,fadeset,16,fadevalue)		//(128)Fore palette,(240) Black palette,(16)destination palette
+		Ink.Palette 0,0
+		Ink.Palette 1,16
+		If fadevalue=0 Then
+			fade=0					//Okay we've reached top palette set fade too off
+		EndIf
+	EndIf
+EndF
+
+Function mouseloop:Void
+	// Mouse Routine, Only called when exit the game
+	Mouse.XYKey
+	MouseOk=0
+	If MouseX<>Mouse.Result.X Then
+		MouseOk=1
+	ElseIf Mouse.Result.Key>0 Then
+		MouseOk=1
+	ElseIf  MouseY<>Mouse.Result.Y Then
+		MouseOk=1
+	EndIf
+	If MouseOk=1 Then
+		// mouse should not go out of the window
+		MouseX = Max(3,Min(Mouse.Result.X,250))
+		MouseY = Max(3,Min(Mouse.Result.Y,203))
+		If Mouse.Result.Key=1 Then
+			ShutdownApp
+		EndIf
+		If Mouse.Result.Key=2 Then
+			LoadMenuSprites
+		EndIf
+		Draw.Sprite 0,MouseX,MouseY
+		MouseCount=0
+		Display.Sprite 0,0
+		Display.Sprite 99,0
+	Else
+		MouseCount=MouseCount+1
+		If MouseCount=50 Then
+			Display.Sprite 0,1
+			Display.Sprite 99,1
+		EndIf
+	EndIf
+	
+EndF
+
+// Function to Scroll the background Layer
+Function MenuBackScroll:Void
+	If swapit=0 Then
+		bX=Min(bX,1792)
+		If bX=>1292 Then
+			swapit=1
+		EndIf
+	EndIf
+	If swapit=1 Then
+		bX=Max(bX,512)
+		If bX=<512 Then
+			swapit=0
+		EndIf
+	EndIf
+	count=count+1
+	Scroll.LayerB(bX+Shr3(IntSin(Shl1(count)))+32, 32+(Shr1(count) And 63))
+EndF
+
+// Function to have some blinking text or other blinking items in the menu
+Function BlinkTimer:Void(blinktext)
+	timercount = timercount +1
+	If timercount = 25 Then
+		If blinktext=1 Then
+			ShowPressFire
+		EndIf
+		If blinktext=2 Then
+			ShowSelect
+		EndIf
+		If blinktext=3 Then
+			ShowGetReady
+		EndIf
+	EndIf
+	If timercount =50 Then
+		If blinktext=1 Then
+			HidePressFire
+		EndIf
+		If blinktext=2 Then
+			hideSelect
+		EndIf
+		If blinktext=3 Then
+			hideGetReady
+		EndIf
+		timercount=0
+	EndIf
+EndF
+
+// Function to draw the ForeMAP
+Function DrawForeMap:Void(x1,y1)
+	Scroll.LayerA x1,y1
+	Draw.LayerA
+EndF
+
+// Function to dram the BackMAP
+Function DrawBackMap:Void(x1,y1)
+	Scroll.LayerB x1,y1
+	Draw.LayerB
+EndF
+
+// Function for the Fade in/out
+Function PalFade:Void(Pal1,Pal2,Pal3,Lev)
+	For Loop=0 To 3
+		Ink Pal3,Fade.Ink(Ink.Red(Pal1),Ink.Red(Pal2),Lev),Fade.Ink(Ink.Green(Pal1),Ink.Green(Pal2),Lev),Fade.Ink(Ink.Blue(Pal1),Ink.Blue(Pal2),Lev)
+		Pal1=Pal1+1
+		Pal2=Pal2+1
+		Pal3=Pal3+1
+		Ink Pal3,Fade.Ink(Ink.Red(Pal1),Ink.Red(Pal2),Lev),Fade.Ink(Ink.Green(Pal1),Ink.Green(Pal2),Lev),Fade.Ink(Ink.Blue(Pal1),Ink.Blue(Pal2),Lev)
+		Pal1=Pal1+1
+		Pal2=Pal2+1
+		Pal3=Pal3+1
+		Ink Pal3,Fade.Ink(Ink.Red(Pal1),Ink.Red(Pal2),Lev),Fade.Ink(Ink.Green(Pal1),Ink.Green(Pal2),Lev),Fade.Ink(Ink.Blue(Pal1),Ink.Blue(Pal2),Lev)
+		Pal1=Pal1+1
+		Pal2=Pal2+1
+		Pal3=Pal3+1
+		Ink Pal3,Fade.Ink(Ink.Red(Pal1),Ink.Red(Pal2),Lev),Fade.Ink(Ink.Green(Pal1),Ink.Green(Pal2),Lev),Fade.Ink(Ink.Blue(Pal1),Ink.Blue(Pal2),Lev)
+		Pal1=Pal1+1
+		Pal2=Pal2+1
+		Pal3=Pal3+1
+	Next
+EndF
+
+// Fuctions for Loading and Setting Sprites
+Function LoadMenuSprites:Void
+	// Set the BIG MM logo
+	Var f:Int
+	SpritePattern=64
+	x=8
+	y=8
+	
+	For f=1 To 84
+		Palette.Sprite f,2
+		Pattern.Sprite	f,SpritePattern
+		Draw.Sprite f,x,y
+		x=x+16
+		If x=248 Then
+			x=8
+			y=y+16
+		EndIf
+		SpritePattern=SpritePattern+1
+	Next
+EndF
+
+Function ShowMMLogo:Void
+	// Show the BIG MM logo
+	Var f:Int
+	For f=1 To 84
+		Display.Sprite  f,0
+	Next
+EndF
+
+Function hideMMLogo:Void
+	// Hide the BIG MM logo
+	Var f:Int
+	For f=1 To 84
+		Display.Sprite  f,1
+	Next
+EndF
+
+Function LoadMenuSprites_PressFire:Void
+	Var f:Int
+	// SET press fire TEXT
+	SpritePattern=50
+	x=96
+	For f=85 To 88
+		Palette.Sprite f,2
+		Pattern.Sprite	f,SpritePattern
+		Draw.Sprite f,x,128
+		x=x+16
+		SpritePattern=SpritePattern+1
+	Next
+EndF
+
+Function ShowPressFire:Void
+	// Show press fire TEXT
+	Var f:Int
+	For f=85 To 88
+		Display.Sprite f,0
+	Next
+EndF
+
+Function HidePressFire:Void
+	// HIDE press fire TEXT
+	Var f:Int
+	For f=85 To 88
+		Display.Sprite f,1
+	Next
+EndF
+
+Function LoadMenuSprites_Select:Void
+	Var f:Int
+	// Text SELECT
+	SpritePattern=54
+	x=108
+	For f=89 To 91
+		Palette.Sprite f,2
+		Pattern.Sprite	f,SpritePattern
+		Draw.Sprite f,x,132
+		x=x+16
+		SpritePattern=SpritePattern+1
+	Next
+EndF
+
+Function LoadMenuSprites_Cursor:Void
+	//Set  the Cursor which is showed so the user understand what to do
+	SpritePattern=3
+	Var f:Int
+	x=32
+	y=112
+	For f=92 To 96
+		Palette.Sprite f,2
+		Pattern.Sprite	f,SpritePattern
+		SpritePattern=SpritePattern+1
+	Next
+	Draw.Sprite 92,x,y
+	Draw.Sprite 93,x+16,y+16
+	Draw.Sprite 94,x,y+32
+	Draw.Sprite 95,x-16,y+16
+	Draw.Sprite 96,120,180
+EndF
+
+Function ShowCursor:Void
+	Var f:Int
+	//Showed the Cursor which is showed so the user understand what to do
+	For f=92 To 96
+		Display.Sprite f,0
+	Next
+EndF
+
+Function HideCursor:Void
+	// Hide the Cursor
+	Var f:Int
+	For f=92 To 96
+		Display.Sprite f,1
+	Next
+EndF
+
+Function LoadMenuSprites_AnimateHemlet:Void
+	// Animation for Helms
+	SpritePattern=SpritePattern+1
+	Pattern.Sprite 97,8+Shr3(SpritePattern And 56)
+	Pattern.Sprite 98,8+Shr3(SpritePattern And 56)
+EndF
+
+Function LoadMenuSprites_GetReady:Void
+	//Get Ready Text Sprites
+	SpritePattern=57
+	x=96
+	Var f:Int
+	For f=100 To 103
+		Palette.Sprite f,2
+		Pattern.Sprite	f,SpritePattern
+		Draw.Sprite f,x,128
+		x=x+16
+		SpritePattern=SpritePattern+1
+	Next
+EndF
+
+Function ShowGetReady:Void
+	// Show TEXT Get Ready
+	Var f:Int
+	For f=100 To 103
+		Display.Sprite f,0
+	Next
+EndF
+
+Function hideGetReady:Void
+	// Hide TEXT Get Ready
+	Var f:Int
+	For f=100 To 103
+		Display.Sprite f,1
+	Next
+EndF
+
+Function hideSelect:Void
+	// Hide TEXT SELECT
+	Var f:Int
+	For f=89 To 91
+		Display.Sprite f,1
+	Next
+EndF
+
+Function ShowSelect:Void
+	// Show TEXT SELECT
+	Var f:Int
+	For f=89 To 91
+		Display.Sprite f,0
+	Next
+EndF
+
+Function EnableExit:Void
+	// Shows the Exit Menu
+	SpritePattern=18
+	Var k:Int=20
+	Var g:Int=0
+	Var f:Int=0
+	k=20
+	For g=1 To 4
+		For f=1 To 8
+			Pattern.Sprite	k,SpritePattern
+			SpritePattern=SpritePattern+1
+			k=k+1
+		Next
+		k=k+7
+	Next
+EndF
+
+Function WaitingGlassLoadingAnimation:Void
+	glass=glass+1
+	Pattern.Sprite 0,glass
+	Update.Sprites
+EndF
+
+Var RotGroup(64):Byte = [0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,0]
+Var RotGroup2(64):Byte = [0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27,28,28,29,29,30,30,31,31,0]
+
+// AngleX and AngleY - This is the Distance you travel in angles (0..31) in X/Y direction at Speed (0..31)
+Var AngleX(32,32):Int = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,11,22,31,40,47,52,55,56,55,52,47,40,31,22,11,0,-11,-22,-31,-40,-47,-52,-55,-56,-55,-52,-47,-40,-31,-22,-11,
+0,22,43,63,80,94,104,110,112,110,104,94,80,63,43,22,0,-22,-43,-63,-80,-94,-104,-110,-112,-110,-104,-94,-80,-63,-43,-22,
+0,33,65,94,119,140,156,166,169,166,156,140,119,94,65,33,0,-33,-65,-94,-119,-140,-156,-166,-169,-166,-156,-140,-119,-94,-65,-33,
+0,44,86,125,159,187,208,221,225,221,208,187,159,125,86,44,0,-44,-86,-125,-159,-187,-208,-221,-225,-221,-208,-187,-159,-125,-86,-44,
+0,55,108,156,199,234,260,276,281,276,260,234,199,156,108,55,0,-55,-108,-156,-199,-234,-260,-276,-281,-276,-260,-234,-199,-156,-108,-55,
+0,66,129,188,239,281,312,331,338,331,312,281,239,188,129,66,0,-66,-129,-188,-239,-281,-312,-331,-338,-331,-312,-281,-239,-188,-129,-66,
+0,77,151,219,278,327,364,386,394,386,364,327,278,219,151,77,0,-77,-151,-219,-278,-327,-364,-386,-394,-386,-364,-327,-278,-219,-151,-77,
+0,88,172,250,318,374,416,441,450,441,416,374,318,250,172,88,0,-88,-172,-250,-318,-374,-416,-441,-450,-441,-416,-374,-318,-250,-172,-88,
+0,99,194,281,358,421,468,497,506,497,468,421,358,281,194,99,0,-99,-194,-281,-358,-421,-468,-497,-506,-497,-468,-421,-358,-281,-194,-99,
+0,110,215,313,398,468,520,552,562,552,520,468,398,313,215,110,0,-110,-215,-313,-398,-468,-520,-552,-562,-552,-520,-468,-398,-313,-215,-110,
+0,121,237,344,438,514,572,607,619,607,572,514,438,344,237,121,0,-121,-237,-344,-438,-514,-572,-607,-619,-607,-572,-514,-438,-344,-237,-121,
+0,132,258,375,477,561,624,662,675,662,624,561,477,375,258,132,0,-132,-258,-375,-477,-561,-624,-662,-675,-662,-624,-561,-477,-375,-258,-132,
+0,143,280,406,517,608,676,717,731,717,676,608,517,406,280,143,0,-143,-280,-406,-517,-608,-676,-717,-731,-717,-676,-608,-517,-406,-280,-143,
+0,154,301,438,557,655,728,772,788,772,728,655,557,438,301,154,0,-154,-301,-438,-557,-655,-728,-772,-788,-772,-728,-655,-557,-438,-301,-154,
+0,165,323,469,597,702,780,828,844,828,780,702,597,469,323,165,0,-165,-323,-469,-597,-702,-780,-828,-844,-828,-780,-702,-597,-469,-323,-165,
+0,176,344,500,636,748,831,883,900,883,831,748,636,500,344,176,0,-176,-344,-500,-636,-748,-831,-883,-900,-883,-831,-748,-636,-500,-344,-176,
+0,187,366,531,676,795,883,938,956,938,883,795,676,531,366,187,0,-187,-366,-531,-676,-795,-883,-938,-956,-938,-883,-795,-676,-531,-366,-187,
+0,198,387,563,716,842,935,993,1012,993,935,842,716,563,387,198,0,-198,-387,-563,-716,-842,-935,-993,-1012,-993,-935,-842,-716,-563,-387,-198,
+0,209,409,594,756,889,987,1048,1069,1048,987,889,756,594,409,209,0,-209,-409,-594,-756,-889,-987,-1048,-1069,-1048,-987,-889,-756,-594,-409,-209,
+0,219,431,625,795,935,1039,1103,1125,1103,1039,935,795,625,431,219,0,-219,-431,-625,-795,-935,-1039,-1103,-1125,-1103,-1039,-935,-795,-625,-431,-219,
+0,230,452,656,835,982,1091,1159,1181,1159,1091,982,835,656,452,230,0,-230,-452,-656,-835,-982,-1091,-1159,-1181,-1159,-1091,-982,-835,-656,-452,-230,
+0,241,474,688,875,1029,1143,1214,1238,1214,1143,1029,875,688,474,241,0,-241,-474,-688,-875,-1029,-1143,-1214,-1238,-1214,-1143,-1029,-875,-688,-474,-241,
+0,252,495,719,915,1076,1195,1269,1294,1269,1195,1076,915,719,495,252,0,-252,-495,-719,-915,-1076,-1195,-1269,-1294,-1269,-1195,-1076,-915,-719,-495,-252,
+0,263,517,750,955,1122,1247,1324,1350,1324,1247,1122,955,750,517,263,0,-263,-517,-750,-955,-1122,-1247,-1324,-1350,-1324,-1247,-1122,-955,-750,-517,-263,
+0,274,538,781,994,1169,1299,1379,1406,1379,1299,1169,994,781,538,274,0,-274,-538,-781,-994,-1169,-1299,-1379,-1406,-1379,-1299,-1169,-994,-781,-538,-274,
+0,285,560,813,1034,1216,1351,1434,1462,1434,1351,1216,1034,813,560,285,0,-285,-560,-813,-1034,-1216,-1351,-1434,-1462,-1434,-1351,-1216,-1034,-813,-560,-285,
+0,296,581,844,1074,1263,1403,1490,1519,1490,1403,1263,1074,844,581,296,0,-296,-581,-844,-1074,-1263,-1403,-1490,-1519,-1490,-1403,-1263,-1074,-844,-581,-296,
+0,307,603,875,1114,1310,1455,1545,1575,1545,1455,1310,1114,875,603,307,0,-307,-603,-875,-1114,-1310,-1455,-1545,-1575,-1545,-1455,-1310,-1114,-875,-603,-307,
+0,318,624,906,1153,1356,1507,1600,1631,1600,1507,1356,1153,906,624,318,0,-318,-624,-906,-1153,-1356,-1507,-1600,-1631,-1600,-1507,-1356,-1153,-906,-624,-318,
+0,329,646,938,1193,1403,1559,1655,1688,1655,1559,1403,1193,938,646,329,0,-329,-646,-938,-1193,-1403,-1559,-1655,-1688,-1655,-1559,-1403,-1193,-938,-646,-329,
+0,340,667,969,1233,1450,1611,1710,1744,1710,1611,1450,1233,969,667,340,0,-340,-667,-969,-1233,-1450,-1611,-1710,-1744,-1710,-1611,-1450,-1233,-969,-667,-340,
+0,351,689,1000,1273,1497,1663,1765,1800,1765,1663,1497,1273,1000,689,351,0,-351,-689,-1000,-1273,-1497,-1663,-1765,-1800,-1765,-1663,-1497,-1273,-1000,-689,-351]
+
+Var AngleY(32,32):Int=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+-56,-55,-52,-47,-40,-31,-22,-11,0,11,22,31,40,47,52,55,56,55,52,47,40,31,22,11,0,-11,-22,-31,-40,-47,-52,-55,
+-112,-110,-104,-94,-80,-63,-43,-22,0,22,43,63,80,94,104,110,112,110,104,94,80,63,43,22,0,-22,-43,-63,-80,-94,-104,-110,
+-169,-166,-156,-140,-119,-94,-65,-33,0,33,65,94,119,140,156,166,169,166,156,140,119,94,65,33,0,-33,-65,-94,-119,-140,-156,-166,
+-225,-221,-208,-187,-159,-125,-86,-44,0,44,86,125,159,187,208,221,225,221,208,187,159,125,86,44,0,-44,-86,-125,-159,-187,-208,-221,
+-281,-276,-260,-234,-199,-156,-108,-55,0,55,108,156,199,234,260,276,281,276,260,234,199,156,108,55,0,-55,-108,-156,-199,-234,-260,-276,
+-338,-331,-312,-281,-239,-188,-129,-66,0,66,129,188,239,281,312,331,338,331,312,281,239,188,129,66,0,-66,-129,-188,-239,-281,-312,-331,
+-394,-386,-364,-327,-278,-219,-151,-77,0,77,151,219,278,327,364,386,394,386,364,327,278,219,151,77,0,-77,-151,-219,-278,-327,-364,-386,
+-450,-441,-416,-374,-318,-250,-172,-88,0,88,172,250,318,374,416,441,450,441,416,374,318,250,172,88,0,-88,-172,-250,-318,-374,-416,-441,
+-506,-497,-468,-421,-358,-281,-194,-99,0,99,194,281,358,421,468,497,506,497,468,421,358,281,194,99,0,-99,-194,-281,-358,-421,-468,-497,
+-562,-552,-520,-468,-398,-313,-215,-110,0,110,215,313,398,468,520,552,562,552,520,468,398,313,215,110,0,-110,-215,-313,-398,-468,-520,-552,
+-619,-607,-572,-514,-438,-344,-237,-121,0,121,237,344,438,514,572,607,619,607,572,514,438,344,237,121,0,-121,-237,-344,-438,-514,-572,-607,
+-675,-662,-624,-561,-477,-375,-258,-132,0,132,258,375,477,561,624,662,675,662,624,561,477,375,258,132,0,-132,-258,-375,-477,-561,-624,-662,
+-731,-717,-676,-608,-517,-406,-280,-143,0,143,280,406,517,608,676,717,731,717,676,608,517,406,280,143,0,-143,-280,-406,-517,-608,-676,-717,
+-788,-772,-728,-655,-557,-438,-301,-154,0,154,301,438,557,655,728,772,788,772,728,655,557,438,301,154,0,-154,-301,-438,-557,-655,-728,-772,
+-844,-828,-780,-702,-597,-469,-323,-165,0,165,323,469,597,702,780,828,844,828,780,702,597,469,323,165,0,-165,-323,-469,-597,-702,-780,-828,
+-900,-883,-831,-748,-636,-500,-344,-176,0,176,344,500,636,748,831,883,900,883,831,748,636,500,344,176,0,-176,-344,-500,-636,-748,-831,-883,
+-956,-938,-883,-795,-676,-531,-366,-187,0,187,366,531,676,795,883,938,956,938,883,795,676,531,366,187,0,-187,-366,-531,-676,-795,-883,-938,
+-1012,-993,-935,-842,-716,-563,-387,-198,0,198,387,563,716,842,935,993,1012,993,935,842,716,563,387,198,0,-198,-387,-563,-716,-842,-935,-993,
+-1069,-1048,-987,-889,-756,-594,-409,-209,0,209,409,594,756,889,987,1048,1069,1048,987,889,756,594,409,209,0,-209,-409,-594,-756,-889,-987,-1048,
+-1125,-1103,-1039,-935,-795,-625,-431,-219,0,219,431,625,795,935,1039,1103,1125,1103,1039,935,795,625,431,219,0,-219,-431,-625,-795,-935,-1039,-1103,
+-1181,-1159,-1091,-982,-835,-656,-452,-230,0,230,452,656,835,982,1091,1159,1181,1159,1091,982,835,656,452,230,0,-230,-452,-656,-835,-982,-1091,-1159,
+-1238,-1214,-1143,-1029,-875,-688,-474,-241,0,241,474,688,875,1029,1143,1214,1238,1214,1143,1029,875,688,474,241,0,-241,-474,-688,-875,-1029,-1143,-1214,
+-1294,-1269,-1195,-1076,-915,-719,-495,-252,0,252,495,719,915,1076,1195,1269,1294,1269,1195,1076,915,719,495,252,0,-252,-495,-719,-915,-1076,-1195,-1269,
+-1350,-1324,-1247,-1122,-955,-750,-517,-263,0,263,517,750,955,1122,1247,1324,1350,1324,1247,1122,955,750,517,263,0,-263,-517,-750,-955,-1122,-1247,-1324,
+-1406,-1379,-1299,-1169,-994,-781,-538,-274,0,274,538,781,994,1169,1299,1379,1406,1379,1299,1169,994,781,538,274,0,-274,-538,-781,-994,-1169,-1299,-1379,
+-1462,-1434,-1351,-1216,-1034,-813,-560,-285,0,285,560,813,1034,1216,1351,1434,1462,1434,1351,1216,1034,813,560,285,0,-285,-560,-813,-1034,-1216,-1351,-1434,
+-1519,-1490,-1403,-1263,-1074,-844,-581,-296,0,296,581,844,1074,1263,1403,1490,1519,1490,1403,1263,1074,844,581,296,0,-296,-581,-844,-1074,-1263,-1403,-1490,
+-1575,-1545,-1455,-1310,-1114,-875,-603,-307,0,307,603,875,1114,1310,1455,1545,1575,1545,1455,1310,1114,875,603,307,0,-307,-603,-875,-1114,-1310,-1455,-1545,
+-1631,-1600,-1507,-1356,-1153,-906,-624,-318,0,318,624,906,1153,1356,1507,1600,1631,1600,1507,1356,1153,906,624,318,0,-318,-624,-906,-1153,-1356,-1507,-1600,
+-1688,-1655,-1559,-1403,-1193,-938,-646,-329,0,329,646,938,1193,1403,1559,1655,1688,1655,1559,1403,1193,938,646,329,0,-329,-646,-938,-1193,-1403,-1559,-1655,
+-1744,-1710,-1611,-1450,-1233,-969,-667,-340,0,340,667,969,1233,1450,1611,1710,1744,1710,1611,1450,1233,969,667,340,0,-340,-667,-969,-1233,-1450,-1611,-1710,
+-1800,-1765,-1663,-1497,-1273,-1000,-689,-351,0,351,689,1000,1273,1497,1663,1765,1800,1765,1663,1497,1273,1000,689,351,0,-351,-689,-1000,-1273,-1497,-1663,-1765]
+
+
+Var OrigSprayX(16):Int = [-8,-14,-18,-21,-22,-20,-18,-14,-9,-4,0,3,6,2,0,-3]
+Var OrigSprayY(16):Int = [6,5,3,-3,-8,-14,-18,-19,-21,-19,-17,-13,-8,-3,0,2]
+Var OrigSpraySpr(16):Byte = [146,149,149,149,155,152,152,152,146,149,149,149,155,152,152,152]
+
+Var SprayStatus(16):Byte
+Var SprayX(16):Int
+Var SprayY(16):Int
+Var SpraySpr(16):Byte
+
+Var Pos(4):Int
+Var PosTrigger:Byte=0
+Var PosNx(4):Byte
+
+Var IntCount:Byte
+
+Var Vol:Int=255
+
+// Player Info
+Var Player_X:IntFrac
+Var Player_Y:IntFrac
+Var Player_Rotated:Int			;Car 1 Angle
+Var Player_DesRot:Int			;Car 1 Desired Angle to rotate too
+Var Player_Facing:Byte
+Var Player_Speed:Int=0
+Var Player_TopSpeed:Int=0
+Var Player_CornerSpeed:Int=0
+Var Player_AccelSpeed:Int=0
+Var Player_DecelSpeed:Int = 0
+Var Player_DesSpeed:Int =0
+Var Player_Hit:Byte = 0
+Var Player_Turn:Int
+Var Player_TurnInc:Byte
+Var Player_TurnMax:Int
+Var Player_Doing:Byte
+Var Player_InAirInc:Int
+Var Player_InAirVal:Int
+Var Player_AirCount:Byte=0
+Var Player_SpawnX:Int
+Var Player_SpawnY:Int
+Var Player_SpawnRotate:Int
+Var Player_Lap:Byte=0
+Var Player_WayPoint:Byte=0
+Var Player_WasTurning:Byte=0
+Var Player_Count:Byte=0
+Var Player_NextWayPoint:Byte=0
+
+Var Level_WayPoints:Byte
+
+Var SlowDown:Byte=0
+
+Var Skreech:Byte:=0
+Var OilSkid:Int=0
+Var collideNoise:Int=0
+Var flasNoise:Int =0
+
+// Car 1 Info
+Var Car1_X:IntFrac
+Var Car1_Y:IntFrac
+Var Car1_Rotated:Int			;Car 1 Angle
+Var Car1_DesRot:Int			;Car 1 Desired Angle to rotate too
+Var Car1_Facing:Byte
+Var Car1_Speed:Int=0
+Var Car1_TopSpeed:Int=0
+Var Car1_CornerSpeed:Int=0
+Var Car1_AccelSpeed:Int=0
+Var Car1_DecelSpeed:Int = 0
+Var Car1_DesSpeed:Int =0
+Var Car1_Turn:Int
+Var Car1_TurnInc:Byte
+Var Car1_TurnMax:Int
+Var Car1_Shift:Byte
+Var Car1_Doing:Byte
+Var Car1_InAirInc:Int
+Var Car1_InAirVal:Int
+Var Car1_AirCount:Byte=0
+Var Car1_SpawnX:Int
+Var Car1_SpawnY:Int
+Var Car1_SpawnRotate:Int
+Var Car1_Lap:Byte=0
+Var Car1_WayPoint:Byte=0
+Var Car1_NextWayPoint:Byte=0
+Var Car1_Count:Byte=0
+Var Car1_Collidable:Byte =0
+
+// Car 2 Info
+Var Car2_X:IntFrac
+Var Car2_Y:IntFrac
+Var Car2_Rotated:Int			;Car 1 Angle
+Var Car2_DesRot:Int			;Car 1 Desired Angle to rotate too
+Var Car2_Facing:Byte
+Var Car2_Speed:Int=0
+Var Car2_TopSpeed:Int=0
+Var Car2_CornerSpeed:Int=0
+Var Car2_AccelSpeed:Int=0
+Var Car2_DecelSpeed:Int = 0
+Var Car2_DesSpeed:Int =0
+Var Car2_Turn:Int
+Var Car2_TurnInc:Byte
+Var Car2_TurnMax:Int
+Var Car2_Shift:Byte
+Var Car2_Doing:Byte
+Var Car2_InAirInc:Int
+Var Car2_InAirVal:Int
+Var Car2_AirCount:Byte=0
+Var Car2_SpawnX:Int
+Var Car2_SpawnY:Int
+Var Car2_SpawnRotate:Int
+Var Car2_Lap:Byte=0
+Var Car2_WayPoint:Byte=0
+Var Car2_NextWayPoint:Byte=0
+Var Car2_Count:Byte=0
+Var Car2_Collidable:Byte =0
+
+// Car 3 Info
+Var Car3_X:IntFrac
+Var Car3_Y:IntFrac
+Var Car3_Rotated:Int			;Car 1 Angle
+Var Car3_DesRot:Int			;Car 1 Desired Angle to rotate too
+Var Car3_Facing:Byte
+Var Car3_Speed:Int=0
+Var Car3_TopSpeed:Int=0
+Var Car3_CornerSpeed:Int=0
+Var Car3_AccelSpeed:Int=0
+Var Car3_DecelSpeed:Int = 0
+Var Car3_DesSpeed:Int =0
+Var Car3_Turn:Int
+Var Car3_TurnInc:Byte
+Var Car3_TurnMax:Int
+Var Car3_Shift:Byte
+Var Car3_Doing:Byte
+Var Car3_InAirInc:Int
+Var Car3_InAirVal:Int
+Var Car3_AirCount:Byte=0
+Var Car3_SpawnX:Int
+Var Car3_SpawnY:Int
+Var Car3_SpawnRotate:Int
+Var Car3_Lap:Byte=0
+Var Car3_WayPoint:Byte=0
+Var Car3_NextWayPoint:Byte=0
+Var Car3_Count:Byte=0
+Var Car3_Collidable:Byte =0
+
+
+Var TimeSecs1:Byte
+Var TimeSecs2:Byte
+Var TimeMin1:Byte
+Var frameCount:Byte=0
+
+Var ForeName:String=""
+Var MapName:String=""
+Var Backname:String=""
+Var ForeTileStart:Int = 0
+Var BackTileStart:Int = 0
+Var jjf:String=""
+
+Var mySheet:Sheet
+Var data:Memory
+Var f:Byte
+Var g:Byte
+Var h:Byte
+Var a:Int
+Var b:Int
+Var c:Int
+Var d:Int
+Var e:Byte
+Var n:Int
+Var n1:Byte
+Var Hit:Byte
+
+Var c1:Int
+Var r1:Int
+
+Var MapXMin:Int
+Var MapXMax:Int
+Var MapXPMax:Int
+Var MapYMin:Int
+Var MapYMax:Int
+Var MapYPMax:Int
+
+Var ValDisplay:Int
+Var OldValDisplay:Int
+Var loadedtwice:Int=0
+
+//Var gameFXHandle:Int
+
+Var intercount :Int=0
+
+// End declares
+
+
+Function EverythingBlack:Void()
+	For f=0 To 15
+		Ink f,0,0,0
+	Next
+	Ink.Palette 0,0
+	Palette.LayerB 0
+	Palette.LayerA 0
+	;Clear those Spites
+	For f=0 To 120
+		Display.Sprite f,1
+		Draw.Sprite f,256,228
+	Next
+EndF
+
+Function InitGame:Void()
+	// Set Everything to Black
+	
+	EverythingBlack
+	Update.Display
+	Disable.Sprites
+	Disable.G9KInterrupt
+	
+	;Load_Level(1,0)					//Map m5, vehicle 4x4
+	;PosAngle_Vehicles(392,776,0)		// Location of cars & angle
+	
+	Load_Level(2,1)					//Map m4, vehicle 4x4
+	PosAngle_Vehicles(176,1080,0)		// Location of cars & angle
+	
+	
+	e=0
+	a=0
+	c=0
+	b=0
+	d=0
+	a=Range(MapXMin,MapXMax,Player_X-128)
+	b=Range(MapYMin,MapYMax,Player_Y-100)
+	
+	Scroll.LayerA a-1,b-1
+	Draw.LayerA
+	a=Shr2(a):b=Shr2(b)
+	Scroll.LayerB a-1,b-1
+	Draw.LayerB
+	
+	// Helmet positions
+	For f=0 To 3
+		Pos(f)=0
+	Next
+	PosNx(0)=57:PosNx(1)=12:PosNx(2)=27:PosNx(3)=42
+	PosTrigger=0
+	DrawOddSprites								// Draw Helmet / Lap / Timer / Result Sprites on screen
+	
+	// Level Palette
+	Ink.Palette 0,32://Palette.LayerA 0					// Palette for Layer A = 0
+	Ink.Palette 1,80:Palette.LayerB 1					// Palette for Layer B = 1
+	Ink.Palette 2,48
+	// Setup the Sprite Palette 3 - Is same as 2 but alters inks 68,69,73,78 for green/yellow cars
+	For f=48 To 63
+		Ink f+16,Ink.Red(f),Ink.Green(f),Ink.Blue(f)
+	Next
+	// Alter the Red & Blue for Green & Yellow for Palette 3
+	Ink 66,21,31,21:Ink 68,10,31,10:Ink 69,0,27,1 :Ink 70,2,21,4
+	Ink 72,31,31,21:Ink 74,31,30,12:Ink 77,29,27,0:Ink 78,19,18,0
+	Ink.Palette 3,64
+	BackColour 1
+	Enable.Sprites
+	// Last Thing to Set
+	KeyMul.Set Key.Code.Space,Key.Code.CursorLeft,Key.Code.CursorRight,Key.Code.ESC,Key.Code.F1,0
+	Set.Sprites 30,50								// Gameplay Sprites are 50 sprites starting at Sprite 30
+	Enable.G9KInterrupt
+	
+	frameCount=1
+EndF
+
+
+Function GameLoop:Void()
+	BackColour 1
+	// Main Game Loop
+	// Get Input & Move Player
+	Update.Objects
+	
+	// Cars Changed Position Place
+	If PosTrigger=1 Then
+		PositionOrderChange
+	EndIf
+	// Game Time
+	frameCount=frameCount+1
+	If frameCount>49 Then
+		frameCount=0
+		TimeUpdate
+	EndIf
+	If KeyMul.Get(KeyMul.Scan5)Then
+		Asm
+		Ld 		hl,32
+		Ld		c,l
+		Ld		b,h
+		Add		hl,hl		;*2
+		Add		hl,bc		;*3
+		Ld		bc,Quig_g9k_Ink_Data
+		Add		hl,bc
+		Di:halt
+		Quigs
+	EndIf
+	// Quit Game
+	If KeyMul.Get(KeyMul.Scan4) Then
+		EverythingBlack
+		Disable.Sprites
+		Disable.G9KInterrupt
+		pattCount=Load.Pattern.A(App.Path+"mmm001.qpt",0,48)
+		pattCount= Meta.Load(App.Path+"map1.qmt")
+		pattCount= Load.MapB(App.Path+"map1.qmb")
+		pattCount= Load.MapA(App.Path+"map1.qma")
+		LoadMenuSprites
+		LoadMenuSprites_PressFire
+		LoadMenuSprites_Select
+		LoadMenuSprites_Cursor
+		LoadMenuSprites_GetReady
+		
+		menustatus=6
+		menuactive=1
+		ShowMMLogo
+		Set.Sprites 0,112
+		Enable.G9KInterrupt
+		Enable.Sprites
+		Ink.Palette 2,48
+		Ink.Palette 1,144:Palette.LayerA 1
+		Ink.Palette 0,128:Palette.LayerB 0
+	EndIf
+EndF
+
+Function SprayObject:Void()
+	g=SprayStatus(Reference.Object)
+	If OnScreen(SprayX(Reference.Object),SprayY(Reference.Object)) Then
+		If g=6 Then
+			Clear.MGroup Reference.Object+70,1
+			Kill.Object Current.Object
+		Else
+			Display.MSprite 2,0							// Set  the Spray To Palette 2 and Visble
+			Draw.MSprite Reference.Object+70,SpraySpr(Reference.Object)+Shr1(g)
+			SprayStatus(Reference.Object)=g+1
+		EndIf
+	Else
+		Clear.MGroup Reference.Object+70,1
+		Kill.Object Current.Object
+	EndIf
+EndF
+
+Function PositionOrderChange:Void()
+	For f=0 To 3
+		Draw.Sprite 46+f,12,PosNx(f)							//Helmets
+	Next
+	PosTrigger=0
+EndF
+Function Car1_Control:Void()
+	// Car 1 on ground driving mode
+	If Car1_Doing=0 Then
+		a=Car1_Rotated - Car1_DesRot
+		c=Min(Abs(a),Car1_TurnMax)
+		If c>0 Then
+			If a And 8192 Then
+				Car1_Turn = Min(Car1_Turn+Car1_TurnInc,c)
+			Else
+				Car1_Turn = Max(Car1_Turn-Car1_TurnInc,-c)
+			EndIf
+			Car1_DesSpeed=Car1_CornerSpeed
+		Else
+			Car1_Rotated=Car1_DesRot
+			Car1_DesSpeed=Car1_TopSpeed
+			Car1_Turn=0
+		EndIf
+		If SlowDown=1 Then
+			// Slow down the car cos Player is stopped
+			Car1_DesSpeed=500
+		EndIf
+		If Car1_Speed <Car1_DesSpeed Then
+			Car1_Speed=Min(Car1_Speed+Car1_AccelSpeed,Car1_DesSpeed)
+		Else
+			Car1_Speed=Max(Car1_Speed+Car1_DecelSpeed,Car1_DesSpeed)
+		EndIf
+		Car1_Rotated=(Car1_Rotated +Car1_Turn) And 16383
+	ElseIf Car1_Doing=12 Then
+		;If Car1_Speed>32 Then
+		;	Car1_Rotated=(Car1_Rotated +200) And 16383
+		;EndIf
+		Car1_Speed=Max(Car1_Speed-80,0)
+	ElseIf Car1_Doing > 29 Then
+		// Car1 is in air
+		Car1_InAirVal=Min(Car1_InAirVal-Car1_InAirInc,0)
+		If Car1_AirCount=0 Then
+			Car1_InAirInc=Car1_InAirInc-1
+			If Car1_InAirVal=0 Then
+				If Car1_Doing>30 Then
+					Car1_Doing=30
+					Car1_InAirInc=1
+					Car1_InAirVal=0
+					Car1_AirCount=0
+				Else
+					Car1_Doing=0
+					Clear.MGroup 67,1
+				EndIf
+			EndIf
+		EndIf
+		Car1_AirCount=(Car1_AirCount+1) And 1
+	EndIf
+	If Car1_Doing = 2 Then
+		// Player backwards cos of Hit
+		Car1_Speed = Max(Car1_Speed-350,0)				// Slow down cos hit object
+		If Car1_Speed=0 Then
+			Car1_Doing=0
+			Car1_Rotated=(Car1_Rotated+8192) And 16383
+		EndIf
+	Else
+		Car1_Facing=RotGroup(Shr8((Car1_Rotated + Shl4(Car1_Turn)) And 16383))
+	EndIf
+	// Speecis 0..8191 and Rotation is 0..16383
+	c=Car1_X:d=Car1_Y
+	If Car1_Speed>0 Then
+		a=Shr8(Car1_Speed):b=Shr9(Car1_Rotated)
+		Car1_X.Frac.Add AngleX(a,b)							//Add X for (Speed 0..31,Rotation 0..31)
+		Car1_Y.Frac.Add AngleY(a,b)							//Add Y for (Speed 0..31,Rotation 0..31)
+	EndIf
+	
+	//Okay what are we going over???
+	Hit = Attr.MapA(Car1_X,Car1_Y)						//What is beneath Vehicle Pivot Point
+	If Hit>0 Then
+		// Less That 17 Direction marker
+		If Hit<17 Then
+			Car1_DesRot=Shl8(Shl3((Hit-1)And 7))
+		ElseIf Hit>20 Then
+			// Only check these if in Driving Mode
+			If Car1_Doing=0 Then
+				If Hit < 25 Then
+				ElseIf Hit = 34 Then
+					//Glue
+					If Car1_Speed>1500 Then
+						Car1_Speed=Car1_Speed-500
+					EndIf
+				ElseIf Hit=38 Then
+					//Escalator Down
+					If (Game.Counter And 3)=0 Then		//Every 4th frame
+						Car1_Y=Car1_Y+1
+					EndIf
+				ElseIf Hit = 26 Then
+					//Bump
+					If Car1_Speed>1200 Then
+						Car1_Doing=31 : Car1_InAirInc=1 : Car1_InAirVal=0 : Car1_AirCount=0
+					EndIf
+				ElseIf Hit = 27 Then
+					//Small Hop
+					If Car1_Speed>2000 Then
+						Car1_Doing=31 : Car1_InAirInc=2 : Car1_InAirVal=0 : Car1_AirCount=0
+					EndIf
+				ElseIf Hit=28 Then
+					// Large Jump
+					If Car1_Speed>2000 Then
+						Car1_Doing=33 : Car1_InAirInc=6 : Car1_InAirVal=0 : Car1_AirCount=0
+					EndIf
+				ElseIf Hit=35 Then
+					// Oil Spill
+					Car1_Rotated=(Car1_Rotated+Shr5(Car1_Speed)) And 16383
+					Car1_TurnInc=Car1_TurnMax
+				ElseIf Hit=30 Then
+					// Driven off map
+					Car1_Doing=11 : Car1_Count=0
+				ElseIf Hit=33 Then
+					// Hit Solid But Only in driving mode
+					Car1_Doing=2
+					Car1_X=c:Car1_Y=d
+					Car1_Rotated=(Car1_Rotated+8192) And 16383
+				EndIf
+			EndIf
+			// Hit Solid Object
+			If Hit = 29 Then
+				Car1_Doing=2
+				Car1_X=c:Car1_Y=d
+				Car1_Rotated=(Car1_Rotated+8192) And 16383
+			ElseIf Hit>127 Then
+				// Waypoint
+				f=Hit-128
+				If f=Car1_NextWayPoint Then
+					Car1_NextWayPoint=Car1_NextWayPoint+1
+					If Car1_NextWayPoint>=Level_WayPoints Then
+						Car1_NextWayPoint=0
+					EndIf
+					Car1_WayPoint=f : Car1_SpawnX = Car1_X : Car1_SpawnY = Car1_Y : Car1_SpawnRotate = Car1_Rotated
+					If f=0 Then
+						Car1_Lap=Car1_Lap+1
+						;If Car1_Lap>0 Then
+						;	Car1_Doing=12
+						;EndIf
+					EndIf
+					g=Pos(1)
+					Pos(1)=Shl8(Shl5(Car1_Lap And 7)+f)+(255-Shr8(Game.Counter))
+					SortRaceOrder(1)
+					If g>Pos(0) Then
+						If Pos(1)<Pos(0) Then
+							PlayEffect(9,255)
+						EndIf
+					EndIf
+					
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	
+	
+	
+	// Car 1 Draw Stuff
+	Display.MSprite 2,0
+	Car1_Collidable=0
+	
+	If Car1_Doing<11 Then
+		// Normal Driving
+		If OnScreen(Car1_X,Car1_Y) Then
+			Draw.MGroup Car1_Facing+16,54
+			Car1_Collidable=1
+			// Leave Spray ? Cos Car Visible
+			If (Game.Counter And 1)=1 Then
+				If Abs(Car1_Turn)>64 Then
+					a=FindEmpty.Object(20,10)
+					If a>=0 Then
+						f=a-20
+						SprayStatus(f)=0
+						SprayX(f)=Car1_X+OrigSprayX(Car1_Facing)
+						SprayY(f)=Car1_Y+OrigSprayY(Car1_Facing)
+						SpraySpr(f)=OrigSpraySpr(Car1_Facing)
+						Spawn.Object (a,SprayObject.Addr,f)
+					EndIf
+				EndIf
+			EndIf
+		Else
+			Clear.MGroup 54,4
+		EndIf
+	ElseIf Car1_Doing=12 Then
+		// Finished race
+		If OnScreen(Car1_X,Car1_Y) Then
+			Car1_Collidable=1
+			Draw.MGroup Car1_Facing+16,54
+		Else
+			Clear.MGroup 54,4
+		EndIf
+		Clear.MGroup 67,1
+	ElseIf Car1_Doing>29 Then
+		// Jumping
+		b=Shr1(Abs(Car1_InAirVal))
+		If OnScreen(Car1_X-b,Car1_Y-b) Then
+			Draw.MGroup Car1_Facing+16,54
+			If Hit<>30 Then
+				If OnScreen(Car1_X-8,Car1_Y-8) Then
+					Draw.MSprite 67,144+(Game.Counter And 1)
+				EndIf
+			Else
+				Clear.MGroup 67,1
+			EndIf
+		Else
+			Clear.MGroup 54,4
+			Clear.MGroup 67,1
+		EndIf
+	ElseIf Car1_Doing=28 Then
+		// Flashing
+		Car1_Count=Max(Car1_Count-1,0)
+		If Car1_Count=0 Then
+			Car1_Doing=0
+		EndIf
+		If Car1_Count And 8 Then
+			If OnScreen(Car1_X,Car1_Y) Then
+				Draw.MGroup Car1_Facing+16,54
+			Else
+				Clear.MGroup 54,4
+			EndIf
+		Else
+			Clear.MGroup 54,4
+		EndIf
+	ElseIf Car1_Doing=11 Then
+		// Falling off map
+		Car1_Speed = Max(Car1_Speed-500,0)				// Slow down cos off map
+		Car1_Count=Car1_Count+1
+		If Car1_Count>80 Then
+			Car1_X=Car1_SpawnX:Car1_Y=Car1_SpawnY
+			Car1_Rotated=0; Car1_SpawnRotate
+			Car1_Speed = 0 : Car1_Doing=28 : Car1_Count=32
+			Clear.MGroup 54,4
+			If Car1_NextWayPoint=0 Then
+				Car1_NextWayPoint=Level_WayPoints
+				Car1_Lap=Car1_Lap-1
+			Else
+				Car1_NextWayPoint=Car1_NextWayPoint-1
+			EndIf
+		Else
+			If OnScreen(Car1_X,Car1_Y) Then
+				Display.MSprite 2,2					//Make Behind Background
+				Clear.MGroup 54,4
+				Draw.MGroup 76+(Shr3(Car1_Count)),54
+			Else
+				Clear.MGroup 54,4
+			EndIf
+		EndIf
+	EndIf
+EndF
+Function Car2_Control:Void()
+	
+	If Car2_Doing=0 Then
+		a=Car2_Rotated - Car2_DesRot
+		c=Min(Abs(a),Car2_TurnMax)
+		If c>0 Then
+			If a And 8192 Then
+				Car2_Turn = Min(Car2_Turn+Car2_TurnInc,c)
+			Else
+				Car2_Turn = Max(Car2_Turn-Car2_TurnInc,-c)
+			EndIf
+			Car2_DesSpeed=Car2_CornerSpeed
+		Else
+			Car2_Rotated=Car2_DesRot
+			Car2_DesSpeed=Car2_TopSpeed
+			Car2_Turn=0
+		EndIf
+		If SlowDown=1 Then
+			// Slow down the car cos Player is stopped
+			Car2_DesSpeed=2000
+		EndIf
+		If Car2_Speed <Car2_DesSpeed Then
+			Car2_Speed = Min(Car2_Speed+Car2_AccelSpeed,Car2_DesSpeed)
+		Else
+			Car2_Speed = Max(Car2_Speed+Car2_DecelSpeed,Car2_DesSpeed)
+		EndIf
+		Car2_Rotated=(Car2_Rotated +Car2_Turn) And 16383
+	ElseIf Car2_Doing > 29 Then
+		// Car2 is in air
+		Car2_InAirVal=Min(Car2_InAirVal-Car2_InAirInc,0)
+		If Car2_AirCount=0 Then
+			Car2_InAirInc=Car2_InAirInc-1
+			If Car2_InAirVal=0 Then
+				If Car2_Doing>30 Then
+					Car2_Doing=30
+					Car2_InAirInc=1
+					Car2_InAirVal=0
+					Car2_AirCount=0
+				Else
+					Car2_Doing=0
+					Clear.MGroup 68,1
+				EndIf
+			EndIf
+		EndIf
+		Car2_AirCount=(Car2_AirCount+1) And 1
+	EndIf
+	If Car2_Doing = 2 Then
+		// backwards cos of hit
+		Car2_Speed = Max(Car2_Speed-350,0)				// Slow down cos hit object
+		If Car2_Speed=0 Then
+			Car2_Doing=0
+			Car2_Rotated=(Car2_Rotated+8192) And 16383
+		EndIf
+	Else
+		Car2_Facing=RotGroup(Shr8((Car2_Rotated + Shl4(Car2_Turn)) And 16383))
+	EndIf
+	
+	// Speecis 0..8191 and Rotation is 0..16383
+	c=Car2_X:d=Car2_Y
+	a=Shr8(Car2_Speed):b=Shr9(Car2_Rotated)
+	Car2_X.Frac.Add AngleX(a,b)									//Add X for (Speed 0..31,Rotation 0..31)
+	Car2_Y.Frac.Add AngleY(a,b)									//Add Y for (Speed 0..31,Rotation 0..31)
+	//Okay what are we going over???
+	Hit = Attr.MapA(Car2_X,Car2_Y)						//What is beneath Vehicle Pivot Point
+	If Hit>0 Then
+		// Less That 17 Direction marker
+		If Hit<17 Then
+			Car2_DesRot=Shl8(Shl3((Hit-1)And 7))
+		ElseIf Hit>20 Then
+			// Only check these if in Driving Mode
+			If Car2_Doing=0 Then
+				If Hit < 25 Then
+				ElseIf Hit = 34 Then
+					//Glue
+					If Car2_Speed>1500 Then
+						Car2_Speed=Car2_Speed-500
+					EndIf
+				ElseIf Hit=38
+					//Escalator Down
+					If (Game.Counter And 3)=0 Then				//Only do every 4th frame
+						Car2_Y=Car2_Y+1
+					EndIf
+				ElseIf Hit = 26 Then
+					//Bump
+					If Car2_Speed>1200 Then
+						Car2_Doing=31 : Car2_InAirInc=1 : Car2_InAirVal=0 : Car2_AirCount=0
+					EndIf
+				ElseIf Hit = 27 Then
+					//Small Hop
+					If Car2_Speed>2000 Then
+						Car2_Doing=31 : Car2_InAirInc=2 : Car2_InAirVal=0 : Car2_AirCount=0
+					EndIf
+				ElseIf Hit=28 Then
+					// Large Jump
+					If Car2_Speed>2000 Then
+						Car2_Doing=33 : Car2_InAirInc=6 : Car2_InAirVal=0 : Car2_AirCount=0
+					EndIf
+				ElseIf Hit=35 Then
+					// Oil Spill
+					Car2_Rotated=(Car2_Rotated+Shr5(Car2_Speed)) And 16383
+					Car2_TurnInc=Car2_TurnMax
+				ElseIf Hit=30 Then
+					// Driven off map
+					Car2_Doing=11 : Car2_Count=0
+				ElseIf Hit=33 Then
+					// Hit Solid But Only in driving mode
+					Car2_Doing=2
+					Car2_X=c:Car2_Y=d
+					Car2_Rotated=(Car2_Rotated+8192) And 16383
+				EndIf
+			EndIf
+			If Hit = 29 Then
+				// Hit Solid Object
+				Car2_Doing=2
+				Car2_X=c:Car2_Y=d
+				Car2_Rotated=(Car2_Rotated+8192) And 16383
+			ElseIf Hit>127 Then
+				// Waypoint
+				f=Hit-128
+				If f=Car2_NextWayPoint Then
+					Car2_NextWayPoint=Car2_NextWayPoint+1
+					If Car2_NextWayPoint>=Level_WayPoints Then
+						Car2_NextWayPoint=0
+					EndIf
+					Car2_WayPoint=f : Car2_SpawnX = Car2_X : Car2_SpawnY = Car2_Y : Car2_SpawnRotate = Car2_Rotated
+					If f=0 Then
+						Car2_Lap=Car2_Lap+1
+					EndIf
+					g=Pos(2)
+					Pos(2)=Shl8(Shl5(Car2_Lap And 7 )+f)+(255-Shr8(Game.Counter))
+					SortRaceOrder(2)
+					If g>Pos(0) Then
+						If Pos(2)<Pos(0) Then
+							PlayEffect(9,255)
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	
+	
+	// Car 2 Draw Stuff
+	Display.MSprite 3,0
+	Car2_Collidable=0
+	If Car2_Doing<11 Then
+		// Normal Driving
+		If OnScreen(Car2_X,Car2_Y) Then
+			Draw.MGroup Car2_Facing,58
+			Car2_Collidable=1
+			// Leave Spray ? Cos Car Visible
+			If (Game.Counter And 1)=0 Then
+				If Abs(Car1_Turn)>64 Then
+					a=FindEmpty.Object(20,10)
+					If a>=0 Then
+						f=a-20
+						SprayStatus(f)=0
+						SprayX(f)=Car2_X+OrigSprayX(Car2_Facing)
+						SprayY(f)=Car2_Y+OrigSprayY(Car2_Facing)
+						SpraySpr(f)=OrigSpraySpr(Car2_Facing)
+						Spawn.Object (a,SprayObject.Addr,f)
+					EndIf
+				EndIf
+			EndIf
+		Else
+			Clear.MGroup 58,4
+		EndIf
+	ElseIf Car2_Doing>29 Then
+		// Jumping
+		b=Shr1(Abs(Car2_InAirVal))
+		If OnScreen(Car2_X-b,Car2_Y-b) Then
+			Draw.MGroup Car2_Facing,58
+			If Hit<>30 Then
+				If OnScreen(Car2_X-8,Car2_Y-8) Then
+					Draw.MSprite 68,144+(Game.Counter And 1)
+				EndIf
+			Else
+				Clear.MGroup 68,1
+			EndIf
+		Else
+			Clear.MGroup 58,4
+			Clear.MGroup 68,1
+		EndIf
+	ElseIf Car2_Doing=28 Then
+		// Flashing
+		Car2_Count=Max(Car2_Count-1,0)
+		If Car2_Count=0 Then
+			Car2_Doing=0
+		EndIf
+		If Car2_Count And 8 Then
+			If OnScreen(Car2_X,Car2_Y) Then
+				Draw.MGroup Car2_Facing,58
+			Else
+				Clear.MGroup 58,4
+			EndIf
+		Else
+			Clear.MGroup 58,4
+		EndIf
+	ElseIf Car2_Doing=11 Then
+		// Falling off map
+		Car2_Speed = Max(Car2_Speed-500,0)				// Slow down cos off map
+		Car2_Count=Car2_Count+1
+		If Car2_Count>80 Then
+			Car2_X=Car2_SpawnX:Car2_Y=Car2_SpawnY
+			Car2_Rotated=0 							//Car1_SpawnRotate
+			Car2_Speed = 0 : Car2_Doing=28 : Car2_Count=32
+			Clear.MGroup 58,4
+		Else
+			If OnScreen(Car2_X,Car2_Y) Then
+				Display.MSprite 3,2					//Make Behind Background
+				Clear.MGroup 58,4
+				Draw.MGroup 64+(Shr3(Car2_Count)),58
+			Else
+				Clear.MGroup 58,4
+			EndIf
+		EndIf
+	EndIf
+EndF
+Function Car3_Control:Void()
+	
+	;	BackColour 11
+	;	Asm
+	;	Ld	de,9000
+	;	Ld	hl,9000
+	;	Ld	bc,32
+	;	Ldir
+	;	Quigs
+	;	BackColour 1
+	
+	If Car3_Doing=0 Then
+		a=Car3_Rotated - Car3_DesRot
+		c=Min(Abs(a),Car3_TurnMax)
+		If c>0 Then
+			If a And 8192 Then
+				Car3_Turn = Min(Car3_Turn+Car3_TurnInc,c)
+			Else
+				Car3_Turn = Max(Car3_Turn-Car3_TurnInc,-c)
+			EndIf
+			Car3_DesSpeed=Car3_CornerSpeed
+		Else
+			Car3_Rotated=Car3_DesRot
+			Car3_DesSpeed=Car3_TopSpeed
+			Car3_Turn=0
+		EndIf
+		If SlowDown=1 Then
+			// Slow down the car cos Player is stopped
+			Car3_DesSpeed=2000
+		EndIf
+		If Car3_Speed <Car3_DesSpeed Then
+			Car3_Speed = Min(Car3_Speed+Car3_AccelSpeed,Car3_DesSpeed)
+		Else
+			Car3_Speed = Max(Car3_Speed+Car3_DecelSpeed,Car3_DesSpeed)
+		EndIf
+		Car3_Rotated=(Car3_Rotated +Car3_Turn) And 16383
+	ElseIf Car3_Doing > 29 Then
+		// Car3 is in air
+		Car3_InAirVal=Min(Car3_InAirVal-Car3_InAirInc,0)
+		If Car3_AirCount=0 Then
+			Car3_InAirInc=Car3_InAirInc-1
+			If Car3_InAirVal=0 Then
+				If Car3_Doing>30 Then
+					Car3_Doing=30
+					Car3_InAirInc=1
+					Car3_InAirVal=0
+					Car3_AirCount=0
+				Else
+					Car3_Doing=0
+					Clear.MGroup 69,1
+				EndIf
+			EndIf
+		EndIf
+		Car3_AirCount=(Car3_AirCount+1) And 1
+	EndIf
+	If Car3_Doing = 2 Then
+		// backwards cos of hit
+		Car3_Speed = Max(Car3_Speed-350,0)				// Slow down cos hit object
+		If Car3_Speed=0 Then
+			Car3_Doing=0
+			Car3_Rotated=(Car3_Rotated+8192) And 16383
+		EndIf
+	Else
+		Car3_Facing=RotGroup(Shr8((Car3_Rotated + Shl4(Car3_Turn)) And 16383))
+	EndIf
+	;	// Speed is 0..8191 and Rotation is 0..16383
+	c=Car3_X:d=Car3_Y
+	a=Shr8(Car3_Speed):b=Shr9(Car3_Rotated)
+	Car3_X.Frac.Add AngleX(a,b)							//Add X for (Speed 0..31,Rotation 0..31)
+	Car3_Y.Frac.Add AngleY(a,b)							//Add Y for (Speed 0..31,Rotation 0..31)
+	//Okay what are we going over???
+	Hit = Attr.MapA(Car3_X,Car3_Y)						//What is beneath Vehicle Pivot Point
+	If Hit>0 Then
+		// Less That 17 Direction marker
+		If Hit<17 Then
+			Car3_DesRot=Shl8(Shl3((Hit-1)And 7))
+		ElseIf Hit>20 Then
+			// Only check these if in Driving Mode
+			If Car3_Doing=0 Then
+				If Hit < 25 Then
+				ElseIf Hit = 34 Then
+					//Glue
+					If Car3_Speed>1500 Then
+						Car3_Speed=Car3_Speed-500
+					EndIf
+				ElseIf Hit=38
+					//Escalator Down
+					If (Game.Counter And 3)=0 Then
+						Car3_Y=Car3_Y+1				//Every 4th Frame
+					EndIf
+				ElseIf Hit = 26 Then
+					//Bump
+					If Car3_Speed>1200 Then
+						Car3_Doing=31 : Car3_InAirInc=1 : Car3_InAirVal=0 : Car3_AirCount=0
+					EndIf
+				ElseIf Hit = 27 Then
+					//Small Hop
+					If Car3_Speed>2000 Then
+						Car3_Doing=31 : Car3_InAirInc=2 : Car3_InAirVal=0 : Car3_AirCount=0
+					EndIf
+				ElseIf Hit=28 Then
+					// Large Jump
+					If Car3_Speed>2000 Then
+						Car3_Doing=33 : Car3_InAirInc=6 : Car3_InAirVal=0 : Car3_AirCount=0
+					EndIf
+				ElseIf Hit=35 Then
+					// Oil Spill
+					Car3_Rotated=(Car3_Rotated+Shr5(Car3_Speed)) And 16383
+					Car3_TurnInc=Car3_TurnMax
+				ElseIf Hit=30 Then
+					// Driven off map
+					Car3_Doing=11 : Car3_Count=0
+				ElseIf Hit=33 Then
+					// Hit Solid But Only in driving mode
+					Car3_Doing=2
+					Car3_X=c:Car3_Y=d
+					Car3_Rotated=(Car3_Rotated+8192) And 16383
+				EndIf
+			EndIf
+			If Hit = 29 Then
+				// Hit Solid Object
+				Car3_Doing=2
+				Car3_X=c:Car3_Y=d
+				Car3_Rotated=(Car3_Rotated+8192) And 16383
+			ElseIf Hit>127 Then
+				// Waypoint
+				f=Hit-128
+				If f=Car3_NextWayPoint Then
+					Car3_NextWayPoint=Car3_NextWayPoint+1
+					If Car3_NextWayPoint>=Level_WayPoints Then
+						Car3_NextWayPoint=0
+					EndIf
+					Car3_WayPoint=f : Car3_SpawnX = Car3_X : Car3_SpawnY = Car3_Y : Car3_SpawnRotate = Car3_Rotated
+					If f=0 Then
+						Car3_Lap=Car3_Lap+1
+					EndIf
+					g=PosNx(3)
+					Pos(3)=Shl8(Shl5(Car3_Lap And 7 )+f)+(255-Shr8(Game.Counter))
+					SortRaceOrder(3)
+					If g>PosNx(0) Then
+						If PosNx(3)<PosNx(0) Then
+							PlayEffect(9,255)
+						EndIf
+					EndIf
+				EndIf
+				
+			EndIf
+		EndIf
+	EndIf
+	
+	
+	
+	// Car 3 Draw Stuff
+	Display.MSprite 3,0
+	Car3_Collidable=0
+	If Car3_Doing<11 Then
+		// Normal Driving
+		If OnScreen(Car3_X,Car3_Y) Then
+			ValDisplay=20
+			Draw.MGroup Car3_Facing+16,62
+			Car3_Collidable=1
+			// Leave Spray ? Cos Car Visible
+			If (Game.Counter And 1)=1 Then
+				If Abs(Car3_Turn)>64 Then
+					a=FindEmpty.Object(20,10)
+					If a>=0 Then
+						f=a-20
+						SprayStatus(f)=0
+						SprayX(f)=Car3_X+OrigSprayX(Car3_Facing)
+						SprayY(f)=Car3_Y+OrigSprayY(Car3_Facing)
+						SpraySpr(f)=OrigSpraySpr(Car3_Facing)
+						Spawn.Object (a,SprayObject.Addr,f)
+					EndIf
+				EndIf
+			EndIf
+		Else
+			ValDisplay=1
+			Clear.MGroup 62,4
+		EndIf
+	ElseIf Car3_Doing>29 Then
+		// Jumping
+		b=Shr1(Abs(Car3_InAirVal))
+		If OnScreen(Car3_X-b,Car3_Y-b) Then
+			Draw.MGroup Car3_Facing+16,62
+			If Hit<>30 Then
+				If OnScreen(Car3_X-8,Car3_Y-8) Then
+					Draw.MSprite 69,144+(Game.Counter And 1)
+				EndIf
+			Else
+				Clear.MGroup 69,1
+			EndIf
+		Else
+			Clear.MGroup 62,4
+			Clear.MGroup 69,1
+		EndIf
+	ElseIf Car3_Doing=28 Then
+		// Flashing
+		Car3_Count=Max(Car3_Count-1,0)
+		If Car3_Count=0 Then
+			Car3_Doing=0
+		EndIf
+		If Car3_Count And 8 Then
+			If OnScreen(Car3_X,Car3_Y) Then
+				Draw.MGroup Car3_Facing+16,62
+			Else
+				Clear.MGroup 62,4
+			EndIf
+		Else
+			Clear.MGroup 62,4
+		EndIf
+	ElseIf Car3_Doing=11 Then
+		// Falling off map
+		Car3_Speed = Max(Car3_Speed-500,0)				// Slow down cos off map
+		Car3_Count=Car3_Count+1
+		If Car3_Count>80 Then
+			Car3_X=Car3_SpawnX:Car3_Y=Car3_SpawnY
+			Car3_Rotated=0; 							Car1_SpawnRotate
+			Car3_Speed = 0 : Car3_Doing=28 : Car3_Count=32
+			Clear.MGroup 62,4
+		Else
+			If OnScreen(Car3_X,Car3_Y) Then
+				Display.MSprite 3,2					//Make Behind Background
+				Clear.MGroup 62,4
+				Draw.MGroup 76+(Shr3(Car3_Count)),62
+			Else
+				Clear.MGroup 62,4
+			EndIf
+		EndIf
+	EndIf
+	
+EndF
+
+Function SortRaceOrder:Void(a)
+	n=Pos(a)
+	b=12
+	For f=0 To 3
+		If f<>a Then
+			If n<=Pos(f) Then
+				b=b+15
+			EndIf
+		EndIf
+	Next
+	If b<>n Then
+		n=PosNx(a)
+		PosTrigger=1
+		For f=0 To 3
+			If f<>a Then
+				If PosNx(f)=b Then
+					If PosNx(f)<n Then
+						PosNx(f)=PosNx(f)+15
+					ElseIf PosNx(f)>n Then
+						PosNx(f)=PosNx(f)-15
+					EndIf
+				Else
+					If PosNx(f)>b Then
+						If PosNx(f)<n Then
+							PosNx(f)=PosNx(f)+15
+						EndIf
+					ElseIf PosNx(f)<b Then
+						If PosNx(f)>n Then
+							PosNx(f)=PosNx(f)-15
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		Next
+		PosNx(a)=b
+	EndIf
+EndF
+
+Function Player_Control:Void()
+	// (0 Driving Mode) (10 InAir) (11 Falling) (30/31/32/33 In Air)
+	
+	KeyMul.Read
+	
+	
+	
+	
+	// Player =0 is on ground driving mode
+	If Player_Doing = 0 Then
+		// Speed increase on Space press, but every second loop slows.
+		If KeyMul.Get(KeyMul.Scan1)Then
+			If Player_WasTurning=8 Then
+				Player_DesSpeed=Player_CornerSpeed 						// Last Input was turning =8 so slow to Cornering speed
+			Else
+				Player_DesSpeed=Player_TopSpeed 							// Last Input not turning <>8 so accellorate
+			EndIf
+			Player_Speed = Min(Player_Speed+Player_AccelSpeed,Player_DesSpeed)		// Apply speed change
+		Else
+			Player_Speed = Max(Player_Speed+Player_DecelSpeed,0)				// Slow down cos not pressing Space
+		EndIf
+		If Player_Speed>32 Then
+			// Update Tyre palette so rotate look
+			If( Game.Counter And 3)=3 Then
+				If (Game.Counter And 4)=0 Then
+					Palette 43,5,3,0:Palette 44,11,7,0
+					Palette 59,11,7,0:Palette 60,5,3,0
+				Else
+					Palette 43,11,7,0:Palette 44,5,3,0
+					Palette 59,5,3,0:Palette 60,11,7,0
+				EndIf
+			EndIf
+			Player_WasTurning=Max(Player_WasTurning-1,0)
+			If KeyMul.Get(KeyMul.Scan2)Then
+				If Player_Turn>=0 Then
+					Player_Turn=-Player_TurnInc
+				EndIf
+				Player_Turn=Max(Player_Turn-Player_TurnInc,-Player_TurnMax)
+				Player_WasTurning=8
+				If Skreech=0 Then
+					If Player_Speed>1200 Then
+						PlayEffect(11,Shr6(Player_Speed-1200))					//Skreeech turn
+						Skreech=1
+					EndIf
+				Else
+					Skreech=(Skreech+1) And 15
+				EndIf
+			ElseIf  KeyMul.Get(KeyMul.Scan3)Then
+				If Player_Turn<=0 Then
+					Player_Turn=Player_TurnInc
+				EndIf
+				Player_Turn=Min(Player_Turn+Player_TurnInc, Player_TurnMax)
+				Player_WasTurning=8
+				If Skreech=0 Then
+					If Player_Speed>1200 Then
+						PlayEffect (11,Shr6(Player_Speed-1200))					//Skreeech turn
+						Skreech=1
+					EndIf
+				Else
+					Skreech=(Skreech+1) And 15
+				EndIf
+			EndIf
+			If Player_WasTurning<8 Then
+				If Player_WasTurning=1 Then
+					Player_Rotated=(Player_Rotated+1024) And 14336
+					Player_Turn=0
+				EndIf
+				If Player_Turn<>0 Then
+					If Player_Turn<-32 Then
+						Player_Turn=Player_Turn+32
+					EndIf
+					If Player_Turn>32 Then
+						Player_Turn=Player_Turn-32
+					EndIf
+				Else
+					Skreech=0						//Repeat Skreech
+				EndIf
+			Else
+				Player_Rotated=(Player_Rotated + Player_Turn) And 16383
+			EndIf
+		EndIf
+		
+		If (Game.Counter And 1)=0 Then
+			If Abs(Player_Turn)>64 Then
+				a=FindEmpty.Object(20,10)
+				If a>=0 Then
+					f=a-20
+					SprayStatus(f)=0
+					SprayX(f)=Player_X+OrigSprayX(Shr1(Player_Facing))
+					SprayY(f)=Player_Y+OrigSprayY(Shr1(Player_Facing))
+					SpraySpr(f)=OrigSpraySpr(Shr1(Player_Facing))
+					Spawn.Object (a,SprayObject.Addr,f)
+					ValDisplay=f
+				EndIf
+			EndIf
+		EndIf
+		
+	ElseIf Player_Doing = 2 Then
+		// Player backwards cos of hit
+		Player_Speed = Max(Player_Speed-350,0)				// Slow down cos hit object
+		If Player_Speed=0 Then
+			Player_Doing=0
+			Player_Rotated=(Player_Rotated+8192) And 16383
+		EndIf
+	ElseIf Player_Doing > 29 Then
+		// Player is in air
+		Player_InAirVal=Min(Player_InAirVal-Player_InAirInc,0)
+		If Player_AirCount=0 Then
+			Player_InAirInc=Player_InAirInc-1
+			If Player_InAirVal=0 Then
+				If Player_Doing>30 Then
+					Player_Doing=30
+					Player_InAirInc=1
+					Player_InAirVal=0
+					Player_AirCount=0
+				Else
+					Player_Doing=0
+					Clear.MGroup 66,1
+				EndIf
+			EndIf
+		EndIf
+		Player_AirCount=(Player_AirCount+1) And 1
+	EndIf
+	
+	// Speed is 0..8191 and Rotation is 0..16383
+	c=Player_X:d=Player_Y
+	a=Shr8(Player_Speed):b=Shr9(Player_Rotated)
+	Player_X.Frac.Add AngleX(a,b)			//Add X for (Speed 0..31,Rotation 0..31)
+	Player_Y.Frac.Add AngleY(a,b)			//Add Y for (Speed 0..31,Rotation 0..31)
+	Hit =Attr.MapA(Player_X,Player_Y)
+	If Player_Doing<>2 Then
+		Player_Facing=RotGroup2(Shr8((Player_Rotated + Shl4(Player_Turn)) And 16383))
+	EndIf
+	
+	If Hit>17 Then
+		// Only check these if in Driving Mode
+		If Player_Doing=0 Then
+			If Hit < 25 Then
+			ElseIf Hit = 34 Then
+				//Glue
+				If Player_Speed>1500 Then
+					Player_Speed=Player_Speed-500
+				EndIf
+			ElseIf Hit=38
+				//Escalator Down
+				If (Game.Counter And 1)=0 Then				//Every 4th frame
+					Player_Y=Player_Y+1
+					If (Game.Counter And 3)=0 Then
+						PlayEffect (15,64)
+					EndIf
+				EndIf
+			ElseIf Hit = 26 Then
+				//Bump
+				If Player_Speed>1200 Then
+					Player_Doing=31
+					Player_InAirInc=1
+					Player_InAirVal=0
+					Player_AirCount=0
+					PlayEffect(15,128)					//Jump/bump
+				EndIf
+			ElseIf Hit = 27 Then
+				//Small Hop
+				If Player_Speed>2000 Then
+					Player_Doing=31
+					Player_InAirInc=2
+					Player_InAirVal=0
+					Player_AirCount=0
+					PlayEffect(6,128)						//Jump/bump
+				EndIf
+			ElseIf Hit=28 Then
+				// Large Jump
+				If Player_Speed>2000 Then
+					Player_Doing=33
+					Player_InAirInc=6
+					Player_InAirVal=0
+					Player_AirCount=0
+					PlayEffect(6,255)						//Jump
+				EndIf
+			ElseIf Hit=35 Then
+				// Oi Spill
+				Player_Rotated=(Player_Rotated+Shr5(Player_Speed)) And 16383
+				Player_TurnInc=Player_TurnMax
+				If OilSkid<Game.Counter-50 Then
+					PlayEffect (14,255)					//Oil
+					OilSkid=Game.Counter
+				ElseIf OilSkid>Game.Counter Then
+					OilSkid=0
+				EndIf
+			ElseIf Hit=30 Then
+				// Driven off Map
+				Player_Doing=11
+				Player_Count=0
+				SlowDown=1							//Slow other cars down cos we're off map
+				PlayEffect (5,255)							//Falling
+			ElseIf Hit=33 Then
+				// Hit Solid But Only in driving mode
+				Player_Doing=2
+				Player_X=c:Player_Y=d
+				Player_Rotated=(Player_Rotated+8192) And 16383
+				If Player_Speed>3000 Then
+					PlayEffect (12,255)					//Hit Solid
+				ElseIf Player_Speed>1200 Then
+					PlayEffect (13,64)
+				EndIf
+			EndIf
+		EndIf
+		// Hit Solid Object
+		If Hit = 32 Then
+			Player_Doing=2
+			Player_Rotated=(Player_Rotated+8192) And 16383
+			If Player_Speed>3000 Then
+				PlayEffect (12,255)						//Hit Solid
+			ElseIf Player_Speed>1400 Then
+				PlayEffect (13,64)
+			Else
+				Player_Speed=1000
+			EndIf
+			Player_X=c:Player_Y=d
+		EndIf
+		// Waypoint
+		If Hit>127 Then
+			f=Hit-128
+			If f=Player_NextWayPoint Then
+				Player_NextWayPoint=Player_NextWayPoint+1
+				If Player_NextWayPoint>=Level_WayPoints Then
+					Player_NextWayPoint=0
+				EndIf
+				Player_WayPoint=f
+				Player_SpawnX = Player_X
+				Player_SpawnY =Player_Y
+				Player_SpawnRotate = Player_Rotated
+				If f=0 Then
+					Player_Lap=Player_Lap+1
+					Pattern.Sprite 31,245-Player_Lap
+					;LapCountdownChange
+					PlayEffect (10,255)
+				EndIf
+				g=PosNx(0)
+				Pos(0)=Shl8(Shl5(Player_Lap And 7)+f)+(255-Shr8(Game.Counter))
+				SortRaceOrder(0)
+				If PosNx(0)<g Then
+					PlayEffect(8,255)
+				EndIf
+				
+			EndIf
+		EndIf
+	EndIf
+	
+	If Car1_Collidable Then
+		If Collision(26,Player_X,Player_Y,Car1_X,Car1_Y) Then
+			PlayerCollide(Car1_X,Car1_Y,Car1_Speed,Car1_Rotated)
+			Car1_X=x1:Car1_Y=y1
+			Car1_Speed=c1:Car1_Rotated=r1
+		EndIf
+	EndIf
+	If Car2_Collidable Then
+		If Collision(26,Player_X,Player_Y,Car2_X,Car2_Y) Then
+			PlayerCollide(Car2_X,Car2_Y,Car2_Speed,Car2_Rotated)
+			Car2_X=x1:Car2_Y=y1
+			Car2_Speed=c1:Car2_Rotated=r1
+		EndIf
+	EndIf
+	If Car3_Collidable Then
+		If Collision(26,Player_X,Player_Y,Car3_X,Car3_Y) Then
+			PlayerCollide(Car3_X,Car3_Y,Car3_Speed,Car3_Rotated)
+			Car3_X=x1:Car3_Y=y1
+			Car3_Speed=c1:Car3_Rotated=r1
+		EndIf
+	EndIf
+	
+	// Set Scrolls
+	Scroll.LayerA Range(MapXMin,MapXMax,Player_X-128),Range(MapYMin,MapYMax,Player_Y-100)
+	Scroll.LayerB Shr2(Scroll.LayerA.X),Shr2(Scroll.LayerA.Y)
+	
+	// Draw Player Car
+	Display.MSprite 2,0
+	If Player_Doing<11 Then
+		//**** JUST DRIVING Doing<11 ****
+		If OnScreen(Player_X,Player_Y) Then
+			Draw.MGroup Player_Facing+32,50
+			Clear.MGroup 66,1
+		Else
+			Clear.MGroup 50,4
+		EndIf
+	ElseIf Player_Doing>29 Then
+		//**** IN AIR Doing>29 ****
+		b=Shr1(Abs(Player_InAirVal))
+		If OnScreen(Player_X-b,Player_Y-b) Then
+			Draw.MGroup Player_Facing+32,50
+			If Hit<>30 Then
+				If OnScreen(Player_X-8,Player_Y-8) Then
+					Draw.MSprite 66,144+(Game.Counter And 1)
+				EndIf
+			Else
+				Clear.MGroup 66,1
+			EndIf
+		Else
+			Clear.MGroup 50,4
+			Clear.MGroup 66,1
+		EndIf
+	ElseIf Player_Doing=28 Then
+		Player_Count=Max(Player_Count-1,0)
+		If Player_Count=0 Then
+			Player_Doing=0
+			SlowDown=0
+		EndIf
+		If Player_Count And 8 Then
+			If OnScreen(Player_X,Player_Y) Then
+				Draw.MGroup Player_Facing+32,50
+			Else
+				
+				Clear.MGroup 50,4
+			EndIf
+		Else
+			If flasNoise<Game.Counter Then
+				PlayEffect(2,255)				//Collide Noise Loud
+				flasNoise=Game.Counter+40
+			EndIf
+			Clear.MGroup 50,4
+		EndIf
+	ElseIf Player_Doing=11 Then
+		Player_Speed = Max(Player_Speed-500,0)				// Slow down cos off map
+		Player_Count=Player_Count+1
+		If Player_Count>80 Then
+			// Okay We Die So Better Respawn
+			Player_X=Player_SpawnX:Player_Y=Player_SpawnY
+			Player_Rotated=Player_SpawnRotate
+			Player_Speed = 0
+			
+			a=Range(MapXMin,MapXMax,Player_X-128)
+			b=Range(MapYMin,MapYMax,Player_Y-100)
+			
+			Scroll.LayerA a-1,b-1
+			Draw.LayerA
+			a=Shr2(a):b=Shr2(b)
+			Scroll.LayerB a-1,b-1
+			Draw.LayerB
+			
+			Player_Turn=0
+			Player_Doing=28
+			Player_Count=64
+			
+			If Player_NextWayPoint=0 Then
+				Player_NextWayPoint=Level_WayPoints
+				Player_Lap=Player_Lap-1
+			Else
+				Player_NextWayPoint=Player_NextWayPoint-1
+			EndIf
+		EndIf
+		Display.MSprite 2,2
+		If OnScreen(Player_X,Player_Y) Then
+			Clear.MGroup 50,4
+			Draw.MGroup 64+(Shr3(Player_Count)),50
+		Else
+			Clear.MGroup 50,4
+		EndIf
+	EndIf
+	
+EndF
+
+Function PlayerCollide:Void(x1,y1,c1,r1)
+	
+	If collideNoise<Game.Counter-50 Then
+		If Player_Speed>1200 Then
+			PlayEffect(16,255)			//Collide Noise Loud
+		Else
+			PlayEffect(18,180)			//Collide softer
+		EndIf
+		collideNoise=Game.Counter
+	ElseIf collideNoise>Game.Counter Then
+		collideNoise=0
+	EndIf
+	
+	a=Shr1(Player_Speed+c1) : Player_Speed=a : c1=a
+	If x1>Player_X Then
+		a=1
+	Else
+		a=-1
+	EndIf
+	If y1>Player_Y Then
+		b=1
+	Else
+		b=-1
+	EndIf
+	;x1=x1+a:y1=y1+b
+	Player_X=Player_X-a:Player_Y=Player_Y-b
+	While Collision(26,Player_X,Player_Y,x1,y1)
+		x1=x1+a:y1=y1+b
+		Player_X=Player_X-a:Player_Y=Player_Y-b
+	Wend
+	r1=r1+Shl9(a)
+EndF
+
+Function TimeUpdate:Void()
+	TimeSecs1=TimeSecs1+1
+	If TimeSecs1>9 Then
+		TimeSecs1=0
+		TimeSecs2=TimeSecs2+1
+		If TimeSecs2>5 Then
+			TimeSecs2=0
+			TimeMin1=TimeMin1+1
+		EndIf
+	EndIf
+	Pattern.Sprite 40,231+TimeMin1		// Minute
+	Pattern.Sprite 42,231+TimeSecs2		// Seconds 2
+	Pattern.Sprite 43,231+TimeSecs1		// Seconds1
+	
+EndF
+
+Function UpdateValDisplay:Void()
+	Pattern.Sprite 36,(Shr12(ValDisplay)And 15)+239
+	Pattern.Sprite 37,(Shr8(ValDisplay)And 15)+239
+	Pattern.Sprite 38,(Shr4(ValDisplay)And 15)+239
+	Pattern.Sprite 39,(ValDisplay And 15)+239
+	OldValDisplay=ValDisplay
+EndF
+
+
+
+Function DrawOddSprites:Void()
+	// Display Sprites & Set Palette
+	For f=30 To 49
+		Display.Sprite f,0
+		Palette.Sprite  f,2
+	Next
+	// Draw Time
+	Pattern.Sprite 44,251:Draw.Sprite 44,216,2
+	Pattern.Sprite 45,252:Draw.Sprite 45,232,2
+	For f=0 To 3
+		Draw.Sprite 40+f,(f*8)+216,10
+	Next
+	Pattern.Sprite 40,231
+	Pattern.Sprite 41,230
+	Pattern.Sprite 42,231
+	Pattern.Sprite 43,231
+	// Draw Helmet sprites
+	For f=0 To 3
+		Draw.Sprite 32+f,4,14+(f*15)		//Race Position Number
+		Pattern.Sprite 32+f,242+f
+		Draw.Sprite 46+f,12,PosNx(f)		//Helmets
+		Pattern.Sprite 46+f,254+(f And 1)
+	Next
+	Palette.Sprite 48,3:Palette.Sprite 49,3
+	// Draw Laps
+	Pattern.Sprite 30,253:Draw.Sprite 30,10,3
+	Pattern.Sprite 31,241:Draw.Sprite 31,32,1
+	// Draw Result
+	For f=0 To 3
+		Palette.Sprite f+36,2:Display.Sprite f+36,0
+		Draw.Sprite f+36,(f*8)+112,180
+		Pattern.Sprite f+36,241
+	Next
+EndF
+
+Function Load_Map:Void(Backname,ForeName,MapName,MapXMax,MapYMax)
+	
+	Var f:Int
+	Var ts:Int
+	Var fil:String
+	
+	// take info from String format "name=start,name=start"l
+	While Backname>""
+		f=FindStr(Backname,"=",1)
+		fil=Mid(Backname,1,f-1)
+		ts=CInt(Mid(Backname,f+1,999))
+		f=Load.Pattern.B(App.Path+fil+".qpt",ts,80)
+		f=FindStr(Backname,",",1)
+		If f=0 Then
+			Backname=""
+		Else
+			Backname=Mid(Backname,f+1,999)
+		EndIf
+	Wend
+	// take info from String format "name=start,name=start"
+	While ForeName>""
+		f=FindStr(ForeName,"=",1)
+		fil=Mid(ForeName,1,f-1)
+		If f>0 Then
+			ts=CInt(Mid(ForeName,f+1,999))
+			f=Load.Pattern.A(App.Path+fil+".qpt",ts,32)
+			f=FindStr(ForeName,",",1)
+		EndIf
+		If f>0 Then
+			ForeName=Mid(ForeName,f+1,999)
+		Else
+			ForeName=""
+		EndIf
+	Wend
+	
+	// Load maps
+	
+	If Meta.Load(App.Path+MapName+".qmt")=0 Then
+		;App.Exit
+	EndIf
+	If Load.MapB(App.Path+MapName+".qmb")=0 Then
+		;App.Exit
+	EndIf
+	If Load.MapA(App.Path+MapName+".qma")=0 Then
+		;App.Exit
+	EndIf
+	
+	MapXMin = 0
+	;	MapXMax = 2176+32
+	MapXPMax = MapXMax+248
+	MapYMin = 0
+	;	MapYMax =2208
+	MapYPMax = MapYMax+192
+	
+EndF
+
+Function PosAngle_Vehicles:Void(x1,y1,c1)
+	If c1=0 Then
+		a=-40:b=-50
+	ElseIf c1=1 Then
+		a=50:b=-40
+	ElseIf c1=2 Then
+		a=40:b=50
+	Else
+		a=-50:b=40
+	EndIf
+	Player_X=x1:Player_Y=y1
+	Car1_X=x1+a:Car1_Y=y1+b
+	Car2_X=x1+a:Car2_Y=y1
+	Car3_X=x1:Car3_Y=y1+b
+	c1=c1 * 4096
+	Player_Rotated=c1 : Player_DesRot=c1
+	Car1_Rotated=c1 : Car1_DesRot=c1
+	Car2_Rotated=c1 : Car2_DesRot=c1
+	Car3_Rotated=c1 : Car3_DesRot=c1
+	Car1_Count=120:Car1_Doing=28:Car1_DesSpeed=0:Car1_Speed=0
+	Car2_Count=120:Car2_Doing=28:Car2_DesSpeed=0:Car2_Speed=0
+	Car3_Count=120:Car3_Doing=28:Car3_DesSpeed=0:Car3_Speed=0
+	Player_Count=120:Player_Doing=28:Player_DesSpeed=0:Player_Speed=0
+	Player_NextWayPoint=0 : Car1_NextWayPoint=0 : Car2_NextWayPoint=0 : Car3_NextWayPoint=0
+	Player_Lap=0 : Car1_Lap=0 : Car2_Lap=0 : Car3_Lap=0
+	Copy_PlayerSpawn
+	Copy_Car1Spawn
+	Copy_Car2Spawn
+	Copy_Car3Spawn
+	Spawn.Object (0,Player_Control.Addr,0)
+	Spawn.Object (1,Car1_Control.Addr,0)
+	Spawn.Object (2,Car2_Control.Addr,0)
+	Spawn.Object (3,Car3_Control.Addr,0)
+EndF
+
+Function Load_Level:Void(a,b)
+	// a = Level number, b=vehicle type
+	
+	// Load Vehicle
+	If b=0 Then
+		ForeName="mm4x4"
+		//Player
+		Player_TopSpeed = 4800 : Player_CornerSpeed = 4200 : Player_AccelSpeed =120 : Player_DecelSpeed = -50 : Player_TurnInc=60 : Player_TurnMax=180
+		// Car 1
+		Car1_TopSpeed = 4200 : Car1_CornerSpeed = 4000 : Car1_AccelSpeed =140 : Car1_DecelSpeed = -110 : Car1_TurnInc=30 : Car1_TurnMax=180
+		// Car 2
+		Car2_TopSpeed = 4400 : Car2_CornerSpeed = 3800 : Car2_AccelSpeed =94 : Car2_DecelSpeed = -150 : Car2_TurnInc=42 : Car2_TurnMax=220
+		// Car 3
+		Car3_TopSpeed = 4000 : Car3_CornerSpeed = 3900 : Car3_AccelSpeed =100 : Car3_DecelSpeed = -120 : Car3_TurnInc=40 : Car3_TurnMax=210
+	ElseIf b=1 Then
+		ForeName="mmbuggy"
+		//Player
+		Player_TopSpeed = 6400 : Player_CornerSpeed = 5600 : Player_AccelSpeed =120 : Player_DecelSpeed = -50 : Player_TurnInc=60 : Player_TurnMax=180
+		// Car 1
+		Car1_TopSpeed = 6000 : Car1_CornerSpeed = 4800 : Car1_AccelSpeed =140 : Car1_DecelSpeed = -110 : Car1_TurnInc=30 : Car1_TurnMax=180
+		// Car 2
+		Car2_TopSpeed = 6200 : Car2_CornerSpeed = 5000 : Car2_AccelSpeed =94 : Car2_DecelSpeed = -150 : Car2_TurnInc=42 : Car2_TurnMax=220
+		// Car 3
+		Car3_TopSpeed = 6100 : Car3_CornerSpeed = 4900 : Car3_AccelSpeed =100 : Car3_DecelSpeed = -120 : Car3_TurnInc=40 : Car3_TurnMax=210
+	EndIf
+	b=Load.Pattern.A(App.Path+ForeName+".qpt",0,48)
+	
+	//load Level
+	If a=1 Then
+		Load_Map("m5-back=0","m5-tab=1216,m5a-tab=2368","m5-tab",2100,2200)
+		Level_WayPoints=16										// How many waypoint level has
+		Spawn.Object (31,Level_m5.Addr,0)							// Add specific Level code
+	ElseIf a=2 Then
+		Load_Map("carpet=0","m4a-tab=1952,m4-tab=1216","m4-tab",1200,1200)
+		Level_WayPoints=8										// How many waypoint level has
+		Spawn.Object (31,Level_m4.Addr,0)							// Add specific Level code
+	EndIf
+	
+	
+	
+	
+	
+	
+EndF
+
+Function Level_m5:Void()
+	// Update map animations
+	If (Game.Counter And 1) = 1 Then
+		New.Slot.G9KInterrupt						//Corn Animation
+		Copy.Source.G9KInterrupt 0,intercount+600
+		Copy.Dest.G9KInterrupt 0,592
+		Copy.Size.G9KInterrupt 172,8
+		intercount = intercount+8 And 31
+	EndIf
+EndF
+Function Level_m4:Void()
+	// Update map animations
+	If (Game.Counter And 1) = 1 Then
+		New.Slot.G9KInterrupt						//Machine Rotation Animation
+		Copy.Source.G9KInterrupt 0,intercount+496
+		Copy.Dest.G9KInterrupt 0,488
+		Copy.Size.G9KInterrupt 128,8
+		
+		New.Slot.G9KInterrupt
+		Copy.Source.G9KInterrupt 128,488+Shl1(intercount)
+		Copy.Dest.G9KInterrupt 0,560
+		Copy.Size.G9KInterrupt 32,16
+		
+		New.Slot.G9KInterrupt
+		Copy.Source.G9KInterrupt 160,488+Shl1(intercount)
+		Copy.Dest.G9KInterrupt 32,560
+		Copy.Size.G9KInterrupt 16,16
+		
+		New.Slot.G9KInterrupt
+		Copy.Source.G9KInterrupt 176,488+Shl1(intercount)
+		Copy.Dest.G9KInterrupt 48,560
+		Copy.Size.G9KInterrupt 48,16
+		
+		intercount = intercount+8 And 63
+	EndIf
+EndF
+
+
+
+Function Copy_PlayerSpawn:Void()
+	Player_SpawnX=Player_X
+	Player_SpawnY=Player_Y
+	Player_SpawnRotate = Player_Rotated
+EndF
+Function Copy_Car1Spawn:Void()
+	Car1_SpawnX = Car1_X
+	Car1_SpawnY = Car1_Y
+	Car1_SpawnRotate = Car1_DesRot
+EndF
+Function Copy_Car2Spawn:Void()
+	Car2_SpawnX = Car2_X
+	Car2_SpawnY = Car2_Y
+	Car2_SpawnRotate = Car2_DesRot
+EndF
+Function Copy_Car3Spawn:Void()
+	Car3_SpawnX = Car3_X
+	Car3_SpawnY = Car3_Y
+	Car3_SpawnRotate = Car3_DesRot
+EndF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1908 @@
+// Quigs Application for SymbOS
+// Name: SymFoot - By BigFive
+// Version: 0.1 - Phase 1
+//
+// Football Manager inspired by Elifoot
+// 8 teams, 18 players each, 14 rounds
+// Single division, English interface
+//
+// FORMS:
+//   Form1 = Title screen
+//   Form2 = Squad (main hub)
+//   Form3 = Manager Setup
+//   Form4 = Transfer Market
+//   Form5 = Finances + Loan
+//   Form6 = League Table
+//   Form7 = Top Scorers / Results
+//   Form8 = Match Results
+
+// ============================================================
+// LOGO SHEET
+// ============================================================
+Var shLogo:Sheet
+
+// ============================================================
+// FILE I/O
+// ============================================================
+Var MySaveFile:File
+Var MyLoadFile:File
+
+// ============================================================
+// GAME STATE
+// ============================================================
+Var gameStarted:Int = 0
+Var managerName:String = ""
+Var playerTeam:Int = 0
+Var currentRound:Int = 0
+Var season:Int = 2026
+Var formation:Int = 4
+Var matchRunning:Int = 0
+Var matchMinute:Int = 0
+Var matchHalf:Int = 1
+
+// Formation codes (index = menu order)
+// 0=334, 1=343, 2=424, 3=433, 4=442
+// 5=451, 6=523, 7=532, 8=541, 9=631
+Var fDef(10):Int
+Var fMid(10):Int
+Var fAtt(10):Int
+
+// ============================================================
+// PLAYER DATA - 144 players (8 teams x 18)
+// ============================================================
+Var pName(144):String
+Var pPos(144):Int
+Var pAge(144):Int
+Var pPts(144):Int
+Var pSalary(144):Int
+Var pGols(144):Int
+Var pYellow(144):Int
+Var pRed(144):Int
+Var pSusp(144):Int
+Var pStarter(144):Int
+
+// ============================================================
+// CLUB DATA - 8 teams
+// ============================================================
+Var cName(8):String
+Var cMoney(8):Int
+Var cDebt(8):Int
+Var cStadium(8):Int
+Var cTicket(8):Int
+Var cReputation(8):Int
+Var cPoints(8):Int
+Var cWins(8):Int
+Var cDraws(8):Int
+Var cLosses(8):Int
+Var cGoalsFor(8):Int
+Var cMatches(8):Int
+
+// ============================================================
+// CALENDAR - 56 games (14 rounds x 4 games)
+// ============================================================
+Var calHome(56):Int
+Var calAway(56):Int
+Var calGoalH(56):Int
+Var calGoalA(56):Int
+Var calPlayed(56):Int
+
+// ============================================================
+// MARKET - up to 8 free agents
+// ============================================================
+Var mName(8):String
+Var mPos(8):Int
+Var mAge(8):Int
+Var mPts(8):Int
+Var mPrice(8):Int
+Var mCount:Int = 0
+
+// ============================================================
+// MATCH EVENTS - up to 20 per round
+// ============================================================
+Var evMin(20):Int
+Var evType(20):Int
+Var evTeam(20):Int
+Var evPlayer(20):Int
+Var evCount:Int = 0
+
+// ============================================================
+// NAME DATABASE - 70 surnames
+// ============================================================
+Var dbName(70):String
+
+// ============================================================
+// TEMP VARIABLES
+// ============================================================
+Var i:Int = 0
+Var j:Int = 0
+Var k:Int = 0
+Var t:Int = 0
+Var r:Int = 0
+Var tmp:Int = 0
+Var tmp2:Int = 0
+Var tmpStr:String = ""
+Var bx1:Int = 0
+Var rot(7):Int
+Var gNeed:Int = 0
+Var gPos:Int = 0
+Var gBase:Int = 0
+Var gRow:Int = 0
+Var gIdx:Int = 0
+Var gSel:Int = 0
+Var gCalcTeam:Int = 0
+Var gCalcPts:Int = 0
+Var gCalcAge:Int = 0
+Var lastSec:Int = 0
+Var matchEvMin(20):Int
+Var matchEvTxt(20):String
+Var matchEvCnt:Int = 0
+Var matchEvShown:Int = 0
+Var liveGH(4):Int
+Var liveGA(4):Int
+Var liveGame(4):Int
+Var gEvCode:String = ""
+Var gEvRow:Int = 0
+Var gEvSide:String = ""
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+Function Main:Void()
+	If matchRunning = 1 Then
+		// Check if 1 second has passed
+		tmp = Time.Second.Get
+		If tmp <> lastSec Then
+			lastSec = tmp
+			RunMatchTick
+		EndIf
+	EndIf
+EndF
+
+// ============================================================
+// FORM1 - TITLE SCREEN
+// ============================================================
+Function Form1.Open.Event:Void()
+	If Screen.Colour = 16 Then
+		shLogo.Load(App.Path+"logo.qs2")
+	Else
+		shLogo.Load(App.Path+"logo.qs1")
+	EndIf
+	Ctrl.Image.Tile.Set Image1, shLogo, 0
+	Ctrl.Refresh Image1
+	Randomize Time.Second.Get * Time.Minute.Get
+EndF
+
+Function Form1.Close.Event:Void()
+	shLogo.Free
+	Form1.Close
+EndF
+
+Function Button1.Event:Void()
+	// New Game
+	InitNames
+	InitFormations
+	Form3.Open
+EndF
+
+Function Button2.Event:Void()
+	// Load Game
+	loadgame
+EndF
+
+Function Button3.Event:Void()
+	// Exit Game
+	shLogo.Free
+	Form1.Close
+EndF
+
+// ============================================================
+// FORM2 - SQUAD (MAIN HUB)
+// ============================================================
+Function Form2.Open.Event:Void()
+	RefreshSquad
+	RefreshInfo
+EndF
+
+Function Form2.Close.Event:Void()
+	bx1 = MsgBox("Quit game?","Unsaved data will be lost","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+	If bx1 = MsgBox.Result.Yes Then
+		Form2.Close
+	EndIf
+EndF
+
+// ============================================================
+// FORM3 - MANAGER SETUP
+// ============================================================
+Function Form3.Open.Event:Void()
+	FillTeamList
+EndF
+
+Function Button5.Event:Void()
+	// Start button
+	managerName = TextLine1.Text.Get
+	If managerName = "" Then
+		bx1 = MsgBox("Please enter your name","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		If MList2.Index.Get < 0 Then
+			bx1 = MsgBox("Please select a team","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Else
+			playerTeam = MList2.Index.Get
+			InitClubs
+			InitPlayers
+			InitCalendar
+			AutoSelectAll
+			gameStarted = 1
+			currentRound = 0
+			Form3.Close
+			Form1.Close
+			Form2.Open
+		EndIf
+	EndIf
+EndF
+
+Function Button6.Event:Void()
+	// Cancel
+	Form3.Close
+EndF
+
+// ============================================================
+// FORM4 - TRANSFER MARKET
+// ============================================================
+Function Form4.Open.Event:Void()
+	RefreshMarket
+EndF
+
+Function Button7.Event:Void()
+	// Buy Player
+	BuyPlayer
+EndF
+
+Function Button8.Event:Void()
+	// Close
+	Form4.Close
+EndF
+
+// ============================================================
+// FORM5 - FINANCES
+// ============================================================
+Function Form5.Open.Event:Void()
+	RefreshFinances
+EndF
+
+Function Button9.Event:Void()
+	// Borrow 500k
+	BorrowMoney
+EndF
+
+Function Button10.Event:Void()
+	// Pay 500k
+	PayDebt
+EndF
+
+Function Button11.Event:Void()
+	// Close
+	Form5.Close
+EndF
+
+// ============================================================
+// FORM6 - LEAGUE TABLE
+// ============================================================
+Function Form6.Open.Event:Void()
+	RefreshTable
+EndF
+
+Function Button12.Event:Void()
+	Form6.Close
+EndF
+
+// ============================================================
+// FORM7 - TOP SCORERS / RESULTS
+// ============================================================
+Function Button13.Event:Void()
+	Form7.Close
+EndF
+
+// ============================================================
+// FORM8 - MATCH
+// ============================================================
+Function Button14.Event:Void()
+	// Continue (after match)
+	matchRunning = 0
+	Form8.Close
+	ProcessEndRound
+	RefreshSquad
+	RefreshInfo
+EndF
+
+// ============================================================
+// MENU EVENT HANDLERS - Form2
+// ============================================================
+Function newgame:Void()
+	bx1 = MsgBox("Start new game?","Current game will be lost","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+	If bx1 = MsgBox.Result.Yes Then
+		Form2.Close
+		Form1.Open
+	EndIf
+EndF
+
+Function loadgame:Void()
+	If File.Select.Open(App.Path, "sav") = File.Select.OK Then
+		MyLoadFile.Open(File.Select.File)
+		tmp = MyLoadFile.ReadInt
+		managerName = MyLoadFile.ReadString
+		playerTeam = MyLoadFile.ReadInt
+		currentRound = MyLoadFile.ReadInt
+		season = MyLoadFile.ReadInt
+		formation = MyLoadFile.ReadInt
+		// Players
+		i = 0
+		While i < 144
+			pName(i) = MyLoadFile.ReadString
+			pPos(i) = MyLoadFile.ReadInt
+			pAge(i) = MyLoadFile.ReadInt
+			pPts(i) = MyLoadFile.ReadInt
+			pSalary(i) = MyLoadFile.ReadInt
+			pGols(i) = MyLoadFile.ReadInt
+			pYellow(i) = MyLoadFile.ReadInt
+			pRed(i) = MyLoadFile.ReadInt
+			pSusp(i) = MyLoadFile.ReadInt
+			pStarter(i) = MyLoadFile.ReadInt
+			i = i + 1
+		Wend
+		// Clubs
+		i = 0
+		While i < 8
+			cName(i) = MyLoadFile.ReadString
+			cMoney(i) = MyLoadFile.ReadInt
+			cDebt(i) = MyLoadFile.ReadInt
+			cStadium(i) = MyLoadFile.ReadInt
+			cTicket(i) = MyLoadFile.ReadInt
+			cReputation(i) = MyLoadFile.ReadInt
+			cPoints(i) = MyLoadFile.ReadInt
+			cWins(i) = MyLoadFile.ReadInt
+			cDraws(i) = MyLoadFile.ReadInt
+			cLosses(i) = MyLoadFile.ReadInt
+			cGoalsFor(i) = MyLoadFile.ReadInt
+			cMatches(i) = MyLoadFile.ReadInt
+			i = i + 1
+		Wend
+		// Calendar
+		i = 0
+		While i < 56
+			calHome(i) = MyLoadFile.ReadInt
+			calAway(i) = MyLoadFile.ReadInt
+			calGoalH(i) = MyLoadFile.ReadInt
+			calGoalA(i) = MyLoadFile.ReadInt
+			calPlayed(i) = MyLoadFile.ReadInt
+			i = i + 1
+		Wend
+		MyLoadFile.Close
+		InitNames
+		InitFormations
+		gameStarted = 1
+		Form1.Close
+		Form2.Open
+	EndIf
+EndF
+
+Function savegame:Void()
+	If File.Select.Save(App.Path, "sav") = File.Select.OK Then
+		MySaveFile.New(File.Select.File)
+		MySaveFile.WriteInt(1)
+		MySaveFile.WriteString(managerName)
+		MySaveFile.WriteInt(playerTeam)
+		MySaveFile.WriteInt(currentRound)
+		MySaveFile.WriteInt(season)
+		MySaveFile.WriteInt(formation)
+		// Players
+		i = 0
+		While i < 144
+			MySaveFile.WriteString(pName(i))
+			MySaveFile.WriteInt(pPos(i))
+			MySaveFile.WriteInt(pAge(i))
+			MySaveFile.WriteInt(pPts(i))
+			MySaveFile.WriteInt(pSalary(i))
+			MySaveFile.WriteInt(pGols(i))
+			MySaveFile.WriteInt(pYellow(i))
+			MySaveFile.WriteInt(pRed(i))
+			MySaveFile.WriteInt(pSusp(i))
+			MySaveFile.WriteInt(pStarter(i))
+			i = i + 1
+		Wend
+		// Clubs
+		i = 0
+		While i < 8
+			MySaveFile.WriteString(cName(i))
+			MySaveFile.WriteInt(cMoney(i))
+			MySaveFile.WriteInt(cDebt(i))
+			MySaveFile.WriteInt(cStadium(i))
+			MySaveFile.WriteInt(cTicket(i))
+			MySaveFile.WriteInt(cReputation(i))
+			MySaveFile.WriteInt(cPoints(i))
+			MySaveFile.WriteInt(cWins(i))
+			MySaveFile.WriteInt(cDraws(i))
+			MySaveFile.WriteInt(cLosses(i))
+			MySaveFile.WriteInt(cGoalsFor(i))
+			MySaveFile.WriteInt(cMatches(i))
+			i = i + 1
+		Wend
+		// Calendar
+		i = 0
+		While i < 56
+			MySaveFile.WriteInt(calHome(i))
+			MySaveFile.WriteInt(calAway(i))
+			MySaveFile.WriteInt(calGoalH(i))
+			MySaveFile.WriteInt(calGoalA(i))
+			MySaveFile.WriteInt(calPlayed(i))
+			i = i + 1
+		Wend
+		MySaveFile.Close
+		bx1 = MsgBox("Game saved!","","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	EndIf
+EndF
+
+Function quitgame:Void()
+	bx1 = MsgBox("Quit game?","","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+	If bx1 = MsgBox.Result.Yes Then
+		shLogo.Free
+		Form2.Close
+		App.Exit
+	EndIf
+EndF
+
+// --- FORMATIONS ---
+Function f334:Void()
+	formation = 0
+	ApplyFormation
+EndF
+Function f343:Void()
+	formation = 1
+	ApplyFormation
+EndF
+Function f424:Void()
+	formation = 2
+	ApplyFormation
+EndF
+Function f433:Void()
+	formation = 3
+	ApplyFormation
+EndF
+Function f442:Void()
+	formation = 4
+	ApplyFormation
+EndF
+Function f451:Void()
+	formation = 5
+	ApplyFormation
+EndF
+Function f523:Void()
+	formation = 6
+	ApplyFormation
+EndF
+Function f532:Void()
+	formation = 7
+	ApplyFormation
+EndF
+Function f541:Void()
+	formation = 8
+	ApplyFormation
+EndF
+Function f631:Void()
+	formation = 9
+	ApplyFormation
+EndF
+
+// --- TRANSFER ---
+Function buyplay:Void()
+	Form4.Open
+EndF
+
+Function sellplay:Void()
+	SellPlayer
+EndF
+
+// --- FINANCES ---
+Function details:Void()
+	Form5.Open
+EndF
+
+Function loan:Void()
+	Form5.Open
+EndF
+
+// --- STADIUM ---
+Function expand:Void()
+	ExpandStadium
+EndF
+
+Function ticker:Void()
+	ChangeTicket
+EndF
+
+// --- FIXTURE ---
+Function league:Void()
+	Form6.Open
+EndF
+
+Function scorer:Void()
+	Label28.Text.Set "Top Scorers"
+	Label28.Refresh
+	ShowTopScorers
+	Form7.Open
+EndF
+
+Function results:Void()
+	Label28.Text.Set "Results"
+	Label28.Refresh
+	ShowResults
+	Form7.Open
+EndF
+
+// --- PLAY ROUND ---
+Function Button4.Event:Void()
+	PlayRound
+EndF
+
+// ============================================================
+// INIT: NAME DATABASE
+// ============================================================
+Function InitNames:Void()
+	dbName(0) = "Silva"
+	dbName(1) = "Santos"
+	dbName(2) = "Oliveira"
+	dbName(3) = "Souza"
+	dbName(4) = "Lima"
+	dbName(5) = "Pereira"
+	dbName(6) = "Costa"
+	dbName(7) = "Ferreira"
+	dbName(8) = "Rodrigues"
+	dbName(9) = "Almeida"
+	dbName(10) = "Nascimento"
+	dbName(11) = "Araujo"
+	dbName(12) = "Melo"
+	dbName(13) = "Barbosa"
+	dbName(14) = "Ribeiro"
+	dbName(15) = "Martins"
+	dbName(16) = "Carvalho"
+	dbName(17) = "Gomes"
+	dbName(18) = "Rocha"
+	dbName(19) = "Dias"
+	dbName(20) = "Moraes"
+	dbName(21) = "Teixeira"
+	dbName(22) = "Mendes"
+	dbName(23) = "Cardoso"
+	dbName(24) = "Lopes"
+	dbName(25) = "Freitas"
+	dbName(26) = "Pinto"
+	dbName(27) = "Ramos"
+	dbName(28) = "Monteiro"
+	dbName(29) = "Campos"
+	dbName(30) = "Nunes"
+	dbName(31) = "Machado"
+	dbName(32) = "Braga"
+	dbName(33) = "Duarte"
+	dbName(34) = "Moura"
+	dbName(35) = "Castro"
+	dbName(36) = "Reis"
+	dbName(37) = "Vieira"
+	dbName(38) = "Batista"
+	dbName(39) = "Farias"
+	dbName(40) = "Cunha"
+	dbName(41) = "Borges"
+	dbName(42) = "Dantas"
+	dbName(43) = "Tavares"
+	dbName(44) = "Sampaio"
+	dbName(45) = "Fonseca"
+	dbName(46) = "Aguiar"
+	dbName(47) = "Miranda"
+	dbName(48) = "Correia"
+	dbName(49) = "Andrade"
+	dbName(50) = "Marques"
+	dbName(51) = "Azevedo"
+	dbName(52) = "Nogueira"
+	dbName(53) = "Prado"
+	dbName(54) = "Alencar"
+	dbName(55) = "Viana"
+	dbName(56) = "Brito"
+	dbName(57) = "Leal"
+	dbName(58) = "Xavier"
+	dbName(59) = "Coelho"
+	dbName(60) = "Medeiros"
+	dbName(61) = "Bezerra"
+	dbName(62) = "Carneiro"
+	dbName(63) = "Lacerda"
+	dbName(64) = "Valente"
+	dbName(65) = "Amaral"
+	dbName(66) = "Barreto"
+	dbName(67) = "Coutinho"
+	dbName(68) = "Palhares"
+	dbName(69) = "Telles"
+EndF
+
+// ============================================================
+// INIT: FORMATION TABLE
+// ============================================================
+Function InitFormations:Void()
+	// D-M-A (goalkeeper always 1)
+	fDef(0) = 3
+	fMid(0) = 3
+	fAtt(0) = 4
+	fDef(1) = 3
+	fMid(1) = 4
+	fAtt(1) = 3
+	fDef(2) = 4
+	fMid(2) = 2
+	fAtt(2) = 4
+	fDef(3) = 4
+	fMid(3) = 3
+	fAtt(3) = 3
+	fDef(4) = 4
+	fMid(4) = 4
+	fAtt(4) = 2
+	fDef(5) = 4
+	fMid(5) = 5
+	fAtt(5) = 1
+	fDef(6) = 5
+	fMid(6) = 2
+	fAtt(6) = 3
+	fDef(7) = 5
+	fMid(7) = 3
+	fAtt(7) = 2
+	fDef(8) = 5
+	fMid(8) = 4
+	fAtt(8) = 1
+	fDef(9) = 6
+	fMid(9) = 3
+	fAtt(9) = 1
+EndF
+
+// ============================================================
+// INIT: CLUBS
+// ============================================================
+Function InitClubs:Void()
+	cName(0) = "Botafogo"
+	cName(1) = "Flamengo"
+	cName(2) = "Vasco"
+	cName(3) = "Fluminense"
+	cName(4) = "Santos"
+	cName(5) = "Corinthians"
+	cName(6) = "Palmeiras"
+	cName(7) = "Atletico-MG"
+
+	cMoney(0) = 5000
+	cMoney(1) = 8000
+	cMoney(2) = 4000
+	cMoney(3) = 3500
+	cMoney(4) = 4500
+	cMoney(5) = 7000
+	cMoney(6) = 6500
+	cMoney(7) = 5500
+
+	cStadium(0) = 40
+	cStadium(1) = 60
+	cStadium(2) = 35
+	cStadium(3) = 30
+	cStadium(4) = 25
+	cStadium(5) = 50
+	cStadium(6) = 45
+	cStadium(7) = 35
+
+	cTicket(0) = 20
+	cTicket(1) = 25
+	cTicket(2) = 18
+	cTicket(3) = 15
+	cTicket(4) = 20
+	cTicket(5) = 22
+	cTicket(6) = 22
+	cTicket(7) = 18
+
+	cReputation(0) = 70
+	cReputation(1) = 85
+	cReputation(2) = 65
+	cReputation(3) = 55
+	cReputation(4) = 60
+	cReputation(5) = 80
+	cReputation(6) = 75
+	cReputation(7) = 65
+
+	i = 0
+	While i < 8
+		cDebt(i) = 0
+		cPoints(i) = 0
+		cWins(i) = 0
+		cDraws(i) = 0
+		cLosses(i) = 0
+		cGoalsFor(i) = 0
+		cMatches(i) = 0
+		i = i + 1
+	Wend
+EndF
+
+// ============================================================
+// INIT: PLAYERS (144 total)
+// ============================================================
+Function InitPlayers:Void()
+	// Each team: 2G + 5D + 6M + 5A = 18
+	// Position: 0=G, 1=D, 2=M, 3=A
+	t = 0
+	While t < 8
+		GenTeamPlayers
+		t = t + 1
+	Wend
+EndF
+
+Function GenTeamPlayers:Void()
+	// Generate 18 players for team t
+	k = t * 18
+	// 2 Goalkeepers
+	i = 0
+	While i < 2
+		pPos(k) = 0
+		GenOnePlayer
+		k = k + 1
+		i = i + 1
+	Wend
+	// 5 Defenders
+	i = 0
+	While i < 5
+		pPos(k) = 1
+		GenOnePlayer
+		k = k + 1
+		i = i + 1
+	Wend
+	// 6 Midfielders
+	i = 0
+	While i < 6
+		pPos(k) = 2
+		GenOnePlayer
+		k = k + 1
+		i = i + 1
+	Wend
+	// 5 Attackers
+	i = 0
+	While i < 5
+		pPos(k) = 3
+		GenOnePlayer
+		k = k + 1
+		i = i + 1
+	Wend
+EndF
+
+Function GenOnePlayer:Void()
+	// Uses k as index, t as team
+	// pPos(k) must be set before calling
+	tmp = cReputation(t) / 3 + 10
+	pName(k) = dbName(Rnd(70))
+	pAge(k) = 17 + Rnd(16)
+	pPts(k) = tmp + Rnd(35)
+	If pPts(k) > 99 Then
+		pPts(k) = 99
+	EndIf
+	If pPts(k) < 1 Then
+		pPts(k) = 1
+	EndIf
+	pSalary(k) = pPts(k) / 10 + 1
+	pGols(k) = 0
+	pYellow(k) = 0
+	pRed(k) = 0
+	pSusp(k) = 0
+	pStarter(k) = 0
+EndF
+
+// ============================================================
+// INIT: CALENDAR (Round-Robin 8 teams)
+// ============================================================
+Function InitCalendar:Void()
+	// 7 rounds (turn), then 7 mirrored (return)
+	// Each round: 4 games
+	Var idx:Int
+	r = 0
+	While r < 7
+		// Rotate [1,2,3,4,5,6,7]
+		j = 0
+		While j < 7
+			rot(j) = ((j + r) Mod 7) + 1
+			j = j + 1
+		Wend
+		idx = r * 4
+		// Game 0: team 0 vs rot(6)
+		calHome(idx) = 0
+		calAway(idx) = rot(6)
+		// Game 1: rot(0) vs rot(5)
+		calHome(idx + 1) = rot(0)
+		calAway(idx + 1) = rot(5)
+		// Game 2: rot(1) vs rot(4)
+		calHome(idx + 2) = rot(1)
+		calAway(idx + 2) = rot(4)
+		// Game 3: rot(2) vs rot(3)
+		calHome(idx + 3) = rot(2)
+		calAway(idx + 3) = rot(3)
+		r = r + 1
+	Wend
+	// Return: mirror home/away
+	i = 0
+	While i < 28
+		calHome(28 + i) = calAway(i)
+		calAway(28 + i) = calHome(i)
+		i = i + 1
+	Wend
+	// Mark all unplayed
+	i = 0
+	While i < 56
+		calGoalH(i) = 0
+		calGoalA(i) = 0
+		calPlayed(i) = 0
+		i = i + 1
+	Wend
+EndF
+
+// ============================================================
+// AUTO-SELECT: Best 11 for a team
+// ============================================================
+Function AutoSelectAll:Void()
+	// Select best 11 for all 8 teams
+	t = 0
+	While t < 8
+		AutoSelectTeam
+		t = t + 1
+	Wend
+EndF
+
+Function AutoSelectTeam:Void()
+	// Select best players by formation
+	// Uses global t (team index), formation
+	gBase = t * 18
+	// Reset all to reserve
+	i = gBase
+	While i < gBase + 18
+		pStarter(i) = 0
+		i = i + 1
+	Wend
+	// Select 1 GK (best by pts)
+	gPos = 0
+	gNeed = 1
+	SelectBestN
+	// Select defenders
+	gPos = 1
+	gNeed = fDef(formation)
+	SelectBestN
+	// Select midfielders
+	gPos = 2
+	gNeed = fMid(formation)
+	SelectBestN
+	// Select attackers
+	gPos = 3
+	gNeed = fAtt(formation)
+	SelectBestN
+EndF
+
+Function SelectBestN:Void()
+	// Select gNeed best players of gPos
+	// from team t, skip suspended
+	// Uses globals: t, gPos, gNeed, gBase
+	Var count:Int
+	Var best:Int
+	Var bestIdx:Int
+	count = 0
+	While count < gNeed
+		best = -1
+		bestIdx = -1
+		j = gBase
+		While j < gBase + 18
+			If pPos(j) = gPos Then
+				If pStarter(j) = 0 Then
+					If pSusp(j) = 0 Then
+						If pPts(j) > best Then
+							best = pPts(j)
+							bestIdx = j
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+			j = j + 1
+		Wend
+		If bestIdx >= 0 Then
+			pStarter(bestIdx) = 1
+		EndIf
+		count = count + 1
+	Wend
+EndF
+
+// ============================================================
+// APPLY FORMATION (player team only)
+// ============================================================
+Function ApplyFormation:Void()
+	t = playerTeam
+	AutoSelectTeam
+	RefreshSquad
+	Form2.Status.Text.Set "Formation set"
+	Form2.Status.Refresh
+EndF
+
+// ============================================================
+// FILL TEAM LIST (Form3)
+// ============================================================
+Function FillTeamList:Void()
+	InitClubs
+	i = 0
+	While i < 8
+		MList2.Text.Set 0, i, cName(i)
+		i = i + 1
+	Wend
+	MList2.Rows.Set 8
+	MList2.Refresh
+EndF
+
+// ============================================================
+// REFRESH SQUAD (Form2 MList1)
+// ============================================================
+Function RefreshSquad:Void()
+	gBase = playerTeam * 18
+	i = 0
+	While i < 18
+		j = gBase + i
+		// Position string
+		If pPos(j) = 0 Then
+			tmpStr = "G"
+		EndIf
+		If pPos(j) = 1 Then
+			tmpStr = "D"
+		EndIf
+		If pPos(j) = 2 Then
+			tmpStr = "M"
+		EndIf
+		If pPos(j) = 3 Then
+			tmpStr = "A"
+		EndIf
+		MList1.Text.Set 0, i, tmpStr
+		MList1.Text.Set 1, i, pName(j)
+		MList1.Text.Set 2, i, Str(pAge(j))
+		MList1.Text.Set 3, i, Str(pPts(j))
+		MList1.Text.Set 4, i, Str(pSalary(j))
+		// Status
+		If pSusp(j) > 0 Then
+			MList1.Text.Set 5, i, "SUS"
+		Else
+			If pStarter(j) = 1 Then
+				MList1.Text.Set 5, i, "+"
+			Else
+				MList1.Text.Set 5, i, ""
+			EndIf
+		EndIf
+		i = i + 1
+	Wend
+	MList1.Rows.Set 18
+	MList1.Refresh
+EndF
+
+// ============================================================
+// REFRESH INFO LABELS (Form2)
+// ============================================================
+Function RefreshInfo:Void()
+	// Club name
+	Label7.Text.Set cName(playerTeam)
+	Label7.Refresh
+	// Find next game
+	tmp = currentRound * 4
+	tmp2 = -1
+	tmpStr = ""
+	i = tmp
+	While i < tmp + 4
+		If calHome(i) = playerTeam Then
+			tmp2 = calAway(i)
+			tmpStr = "HOME"
+		EndIf
+		If calAway(i) = playerTeam Then
+			tmp2 = calHome(i)
+			tmpStr = "AWAY"
+		EndIf
+		i = i + 1
+	Wend
+	If tmp2 >= 0 Then
+		Label2.Text.Set cName(tmp2)
+	Else
+		Label2.Text.Set "---"
+	EndIf
+	Label2.Refresh
+	Label3.Text.Set tmpStr
+	Label3.Refresh
+	Label4.Text.Set ""
+	Label4.Refresh
+	Label9.Text.Set "League"
+	Label9.Refresh
+	Label10.Text.Set "Round " + Str(currentRound + 1)
+	Label10.Refresh
+	Label6.Text.Set Str(cMoney(playerTeam)) + "k"
+	Label6.Refresh
+EndF
+
+// ============================================================
+// REFRESH FINANCES (Form5)
+// ============================================================
+Function RefreshFinances:Void()
+	gCalcTeam = playerTeam
+	tmp = CalcPayroll()
+	tmp2 = cDebt(playerTeam) * 5 / 100
+	Label18.Text.Set Str(tmp) + "k/round"
+	Label18.Refresh
+	Label20.Text.Set Str(cMoney(playerTeam)) + "k"
+	Label20.Refresh
+	Label22.Text.Set Str(cDebt(playerTeam)) + "k"
+	Label22.Refresh
+	Label24.Text.Set Str(cReputation(playerTeam) * 200) + "k"
+	Label24.Refresh
+	Label26.Text.Set Str(tmp2) + "k/round"
+	Label26.Refresh
+EndF
+
+Function CalcPayroll:Int()
+	Var total:Int
+	total = 0
+	j = gCalcTeam * 18
+	While j < gCalcTeam * 18 + 18
+		total = total + pSalary(j)
+		j = j + 1
+	Wend
+	Return total
+EndF
+
+// ============================================================
+// REFRESH LEAGUE TABLE (Form6)
+// ============================================================
+Function RefreshTable:Void()
+	// Simple display - not sorted yet
+	i = 0
+	While i < 8
+		MList4.Text.Set 0, i, cName(i)
+		MList4.Text.Set 1, i, Str(cMatches(i))
+		MList4.Text.Set 2, i, Str(cWins(i))
+		MList4.Text.Set 3, i, Str(cDraws(i))
+		MList4.Text.Set 4, i, Str(cLosses(i))
+		MList4.Text.Set 5, i, Str(cPoints(i))
+		i = i + 1
+	Wend
+	MList4.Rows.Set 8
+	MList4.SortColumn 5, 1
+	MList4.SortOnRefresh
+	MList4.Refresh
+EndF
+
+// ============================================================
+// REFRESH MARKET (Form4)
+// ============================================================
+Function RefreshMarket:Void()
+	i = 0
+	While i < mCount
+		If mPos(i) = 0 Then
+			tmpStr = "G"
+		EndIf
+		If mPos(i) = 1 Then
+			tmpStr = "D"
+		EndIf
+		If mPos(i) = 2 Then
+			tmpStr = "M"
+		EndIf
+		If mPos(i) = 3 Then
+			tmpStr = "A"
+		EndIf
+		MList3.Text.Set 0, i, tmpStr
+		MList3.Text.Set 1, i, mName(i)
+		MList3.Text.Set 2, i, Str(mAge(i))
+		MList3.Text.Set 3, i, Str(mPts(i))
+		MList3.Text.Set 4, i, Str(mPrice(i))
+		i = i + 1
+	Wend
+	MList3.Rows.Set mCount
+	MList3.Refresh
+	Label15.Text.Set Str(cMoney(playerTeam)) + "k"
+	Label15.Refresh
+EndF
+
+// ============================================================
+// GENERATE MARKET PLAYERS
+// ============================================================
+Function GenMarket:Void()
+	mCount = 3 + Rnd(3)
+	i = 0
+	While i < mCount
+		mName(i) = dbName(Rnd(70))
+		mPos(i) = Rnd(4)
+		mAge(i) = 18 + Rnd(15)
+		mPts(i) = 20 + Rnd(50)
+		gCalcPts = mPts(i)
+		gCalcAge = mAge(i)
+		mPrice(i) = CalcValue()
+		i = i + 1
+	Wend
+EndF
+
+Function CalcValue:Int()
+	Var base:Int
+	Var factor:Int
+	base = gCalcPts * gCalcPts
+	If gCalcAge <= 24 Then
+		factor = 12
+	EndIf
+	If gCalcAge >= 25 Then
+		If gCalcAge <= 28 Then
+			factor = 10
+		EndIf
+	EndIf
+	If gCalcAge >= 29 Then
+		If gCalcAge <= 31 Then
+			factor = 7
+		EndIf
+	EndIf
+	If gCalcAge >= 32 Then
+		If gCalcAge <= 34 Then
+			factor = 4
+		EndIf
+	EndIf
+	If gCalcAge >= 35 Then
+		factor = 2
+	EndIf
+	Return base * factor / 10
+EndF
+
+// ============================================================
+// BUY PLAYER
+// ============================================================
+Function BuyPlayer:Void()
+	Var sel:Int
+	sel = MList3.Index.Get
+	If sel < 0 Then
+		bx1 = MsgBox("Select a player","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		If cMoney(playerTeam) < mPrice(sel) Then
+			bx1 = MsgBox("Not enough money","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Else
+			bx1 = MsgBox("Buy " + mName(sel) + "?","Price: " + Str(mPrice(sel)) + "k","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+			If bx1 = MsgBox.Result.Yes Then
+				cMoney(playerTeam) = cMoney(playerTeam) - mPrice(sel)
+				// Find worst player of same position to replace
+				gBase = playerTeam * 18
+				tmp = 999
+				tmp2 = -1
+				j = gBase
+				While j < gBase + 18
+					If pPos(j) = mPos(sel) Then
+						If pPts(j) < tmp Then
+							tmp = pPts(j)
+							tmp2 = j
+						EndIf
+					EndIf
+					j = j + 1
+				Wend
+				If tmp2 < 0 Then
+					// No player of same position, replace worst overall
+					j = gBase
+					While j < gBase + 18
+						If pPts(j) < tmp Then
+							tmp = pPts(j)
+							tmp2 = j
+						EndIf
+						j = j + 1
+					Wend
+				EndIf
+				If tmp2 >= 0 Then
+					pName(tmp2) = mName(sel)
+					pPos(tmp2) = mPos(sel)
+					pAge(tmp2) = mAge(sel)
+					pPts(tmp2) = mPts(sel)
+					pSalary(tmp2) = mPts(sel) / 10 + 1
+					pGols(tmp2) = 0
+					pYellow(tmp2) = 0
+					pRed(tmp2) = 0
+					pSusp(tmp2) = 0
+					pStarter(tmp2) = 0
+				EndIf
+				bx1 = MsgBox("Player signed!","","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+				RefreshMarket
+				RefreshSquad
+				RefreshInfo
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+// ============================================================
+// SELL PLAYER
+// ============================================================
+Function SellPlayer:Void()
+	Var sel:Int
+	Var idx:Int
+	Var price:Int
+	sel = MList1.Index.Get
+	If sel < 0 Then
+		bx1 = MsgBox("Select a player first","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		idx = playerTeam * 18 + sel
+		gCalcPts = pPts(idx)
+		gCalcAge = pAge(idx)
+		price = CalcValue()
+		price = price * (80 + Rnd(30)) / 100
+		If price < 1 Then
+			price = 1
+		EndIf
+		bx1 = MsgBox("Sell " + pName(idx) + "?","Price: " + Str(price) + "k","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+		If bx1 = MsgBox.Result.Yes Then
+			cMoney(playerTeam) = cMoney(playerTeam) + price
+			// Generate replacement
+			k = idx
+			t = playerTeam
+			pPos(k) = pPos(idx)
+			GenOnePlayer
+			pPts(k) = 15 + Rnd(20)
+			pSalary(k) = pPts(k) / 10 + 1
+			bx1 = MsgBox("Player sold for " + Str(price) + "k!","","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+			RefreshSquad
+			RefreshInfo
+		EndIf
+	EndIf
+EndF
+
+// ============================================================
+// BORROW / PAY MONEY
+// ============================================================
+Function BorrowMoney:Void()
+	Var limit:Int
+	limit = cReputation(playerTeam) * 200
+	If cDebt(playerTeam) + 500 > limit Then
+		bx1 = MsgBox("Debt limit reached","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		cDebt(playerTeam) = cDebt(playerTeam) + 500
+		cMoney(playerTeam) = cMoney(playerTeam) + 500
+		RefreshFinances
+		RefreshInfo
+	EndIf
+EndF
+
+Function PayDebt:Void()
+	If cDebt(playerTeam) < 500 Then
+		bx1 = MsgBox("No debt to pay","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		If cMoney(playerTeam) < 500 Then
+			bx1 = MsgBox("Not enough money","","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Else
+			cDebt(playerTeam) = cDebt(playerTeam) - 500
+			cMoney(playerTeam) = cMoney(playerTeam) - 500
+			RefreshFinances
+			RefreshInfo
+		EndIf
+	EndIf
+EndF
+
+// ============================================================
+// STADIUM
+// ============================================================
+Function ExpandStadium:Void()
+	Var cost:Int
+	cost = 15
+	If cStadium(playerTeam) >= 80 Then
+		bx1 = MsgBox("Stadium at maximum","Capacity: " + Str(cStadium(playerTeam)) + ",000","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	Else
+		If cMoney(playerTeam) < cost Then
+			bx1 = MsgBox("Not enough money","Capacity: " + Str(cStadium(playerTeam)) + ",000 Cost: " + Str(cost) + "k","",MsgBox.Title.Warning,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+		Else
+			bx1 = MsgBox("Expand +5000?","Now: " + Str(cStadium(playerTeam)) + ",000 Cost: " + Str(cost) + "k","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+			If bx1 = MsgBox.Result.Yes Then
+				cMoney(playerTeam) = cMoney(playerTeam) - cost
+				cStadium(playerTeam) = cStadium(playerTeam) + 5
+				bx1 = MsgBox("Expanded!","New: " + Str(cStadium(playerTeam)) + ",000","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+				RefreshInfo
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+Function ChangeTicket:Void()
+	bx1 = MsgBox("Ticket: " + Str(cTicket(playerTeam)) + " | Increase?","Yes=+1 No=-1","",MsgBox.Title.Confirmation,MsgBox.Buttons.YesNo,MsgBox.Icon.Default)
+	If bx1 = MsgBox.Result.Yes Then
+		If cTicket(playerTeam) < 50 Then
+			cTicket(playerTeam) = cTicket(playerTeam) + 1
+		EndIf
+	Else
+		If cTicket(playerTeam) > 5 Then
+			cTicket(playerTeam) = cTicket(playerTeam) - 1
+		EndIf
+	EndIf
+	bx1 = MsgBox("Ticket price: " + Str(cTicket(playerTeam)),"","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+EndF
+
+// ============================================================
+// SHOW TOP SCORERS (Form7)
+// ============================================================
+Function ShowTopScorers:Void()
+	// Find top 10 scorers across all teams
+	// uses gRow
+	MList5.Title.Set 0, "Name"
+	MList5.Title.Set 1, "Team"
+	MList5.Title.Set 2, "Goals"
+	gRow = 0
+	// Simple: list all players with goals > 0
+	i = 0
+	While i < 144
+		If pGols(i) > 0 Then
+			If gRow < 15 Then
+				MList5.Text.Set 0, gRow, pName(i)
+				MList5.Text.Set 1, gRow, cName(i / 18)
+				MList5.Text.Set 2, gRow, Str(pGols(i))
+				gRow = gRow + 1
+			EndIf
+		EndIf
+		i = i + 1
+	Wend
+	MList5.Rows.Set gRow
+	MList5.SortColumn 2, 1
+	MList5.SortOnRefresh
+	MList5.Refresh
+EndF
+
+// ============================================================
+// SHOW RESULTS (Form7)
+// ============================================================
+Function ShowResults:Void()
+	// uses gRow
+	// uses gIdx
+	MList5.Title.Set 0, "Home"
+	MList5.Title.Set 1, "Score"
+	MList5.Title.Set 2, "Away"
+	gRow = 0
+	If currentRound > 0 Then
+		gIdx = (currentRound - 1) * 4
+		i = gIdx
+		While i < gIdx + 4
+			MList5.Text.Set 0, gRow, cName(calHome(i))
+			MList5.Text.Set 1, gRow, Str(calGoalH(i)) + " x " + Str(calGoalA(i))
+			MList5.Text.Set 2, gRow, cName(calAway(i))
+			gRow = gRow + 1
+			i = i + 1
+		Wend
+	EndIf
+	MList5.Rows.Set gRow
+	MList5.Refresh
+EndF
+
+// ============================================================
+// PLAY ROUND
+// ============================================================
+Function PlayRound:Void()
+	If currentRound >= 14 Then
+		EndSeason
+	Else
+		// Generate market
+		GenMarket
+		// Simulate all 4 games
+		SimulateRound
+		// Generate match events for player's game
+		GenMatchEvents
+		// Show Form8
+		ShowMatchForm
+		currentRound = currentRound + 1
+	EndIf
+EndF
+
+// ============================================================
+// SIMULATE ROUND
+// ============================================================
+Function SimulateRound:Void()
+	Var homeT:Int
+	Var awayT:Int
+	Var forceH:Int
+	Var forceA:Int
+	Var diff:Int
+	Var chH:Int
+	Var chA:Int
+	Var gH:Int
+	Var gA:Int
+	gIdx = currentRound * 4
+	i = gIdx
+	While i < gIdx + 4
+		homeT = calHome(i)
+		awayT = calAway(i)
+		// Calculate force
+		gCalcTeam = homeT
+		forceH = CalcForce() + 5
+		gCalcTeam = awayT
+		forceA = CalcForce()
+		diff = forceH - forceA
+		// Goals home
+		chH = 30 + diff
+		If chH < 10 Then
+			chH = 10
+		EndIf
+		If chH > 60 Then
+			chH = 60
+		EndIf
+		gH = 0
+		j = 0
+		While j < 5
+			If Rnd(100) < chH Then
+				gH = gH + 1
+			EndIf
+			j = j + 1
+		Wend
+		// Goals away
+		chA = 30 - diff
+		If chA < 10 Then
+			chA = 10
+		EndIf
+		If chA > 60 Then
+			chA = 60
+		EndIf
+		gA = 0
+		j = 0
+		While j < 5
+			If Rnd(100) < chA Then
+				gA = gA + 1
+			EndIf
+			j = j + 1
+		Wend
+		calGoalH(i) = gH
+		calGoalA(i) = gA
+		calPlayed(i) = 1
+		// Update table
+		cMatches(homeT) = cMatches(homeT) + 1
+		cMatches(awayT) = cMatches(awayT) + 1
+		cGoalsFor(homeT) = cGoalsFor(homeT) + gH
+		cGoalsFor(awayT) = cGoalsFor(awayT) + gA
+		If gH > gA Then
+			cWins(homeT) = cWins(homeT) + 1
+			cLosses(awayT) = cLosses(awayT) + 1
+			cPoints(homeT) = cPoints(homeT) + 3
+		EndIf
+		If gH = gA Then
+			cDraws(homeT) = cDraws(homeT) + 1
+			cDraws(awayT) = cDraws(awayT) + 1
+			cPoints(homeT) = cPoints(homeT) + 1
+			cPoints(awayT) = cPoints(awayT) + 1
+		EndIf
+		If gH < gA Then
+			cLosses(homeT) = cLosses(homeT) + 1
+			cWins(awayT) = cWins(awayT) + 1
+			cPoints(awayT) = cPoints(awayT) + 3
+		EndIf
+		i = i + 1
+	Wend
+EndF
+
+// ============================================================
+// GENERATE MATCH EVENTS (for player's game)
+// ============================================================
+Function GenMatchEvents:Void()
+	// Generate events for ALL 4 games with player names
+	Var gh:Int
+	Var ga:Int
+	Var gameRow:Int
+	Var scorer:Int
+	matchEvCnt = 0
+	matchEvShown = 0
+	gIdx = currentRound * 4
+	gameRow = 0
+	While gameRow < 4
+		i = gIdx + gameRow
+		gh = calGoalH(i)
+		ga = calGoalA(i)
+		// Goal events for home team
+		j = 0
+		While j < gh
+			If matchEvCnt < 20 Then
+				matchEvMin(matchEvCnt) = 1 + Rnd(89)
+				// Pick random attacker or midfielder from home team
+				gCalcTeam = calHome(i)
+				scorer = PickScorer()
+				pGols(scorer) = pGols(scorer) + 1
+				matchEvTxt(matchEvCnt) = "G" + Str(gameRow) + "H " + Str(matchEvMin(matchEvCnt)) + "' GOAL " + pName(scorer)
+				matchEvCnt = matchEvCnt + 1
+			EndIf
+			j = j + 1
+		Wend
+		// Goal events for away team
+		j = 0
+		While j < ga
+			If matchEvCnt < 20 Then
+				matchEvMin(matchEvCnt) = 1 + Rnd(89)
+				gCalcTeam = calAway(i)
+				scorer = PickScorer()
+				pGols(scorer) = pGols(scorer) + 1
+				matchEvTxt(matchEvCnt) = "G" + Str(gameRow) + "A " + Str(matchEvMin(matchEvCnt)) + "' GOAL " + pName(scorer)
+				matchEvCnt = matchEvCnt + 1
+			EndIf
+			j = j + 1
+		Wend
+		// Yellow cards (0-2 per game)
+		j = Rnd(3)
+		While j > 0
+			If matchEvCnt < 20 Then
+				matchEvMin(matchEvCnt) = 1 + Rnd(89)
+				If Rnd(2) = 0 Then
+					gCalcTeam = calHome(i)
+					scorer = PickPlayer()
+					matchEvTxt(matchEvCnt) = "C" + Str(gameRow) + "  " + Str(matchEvMin(matchEvCnt)) + "' YELLOW " + pName(scorer)
+				Else
+					gCalcTeam = calAway(i)
+					scorer = PickPlayer()
+					matchEvTxt(matchEvCnt) = "C" + Str(gameRow) + "  " + Str(matchEvMin(matchEvCnt)) + "' YELLOW " + pName(scorer)
+				EndIf
+				matchEvCnt = matchEvCnt + 1
+			EndIf
+			j = j - 1
+		Wend
+		gameRow = gameRow + 1
+	Wend
+	SortMatchEvents
+EndF
+
+Function PickScorer:Int()
+	// Pick scorer with probability: 10% D, 40% M, 50% A
+	Var cnt:Int
+	Var picks(11):Int
+	Var wantPos:Int
+	// Roll dice: 0-9=D, 10-49=M, 50-99=A
+	tmp = Rnd(100)
+	If tmp < 10 Then
+		wantPos = 1
+	EndIf
+	If tmp >= 10 Then
+		If tmp < 50 Then
+			wantPos = 2
+		EndIf
+	EndIf
+	If tmp >= 50 Then
+		wantPos = 3
+	EndIf
+	// Find starters of that position
+	cnt = 0
+	k = gCalcTeam * 18
+	While k < gCalcTeam * 18 + 18
+		If pStarter(k) = 1 Then
+			If pPos(k) = wantPos Then
+				picks(cnt) = k
+				cnt = cnt + 1
+			EndIf
+		EndIf
+		k = k + 1
+	Wend
+	// Fallback: if no player found, pick any M or A
+	If cnt = 0 Then
+		k = gCalcTeam * 18
+		While k < gCalcTeam * 18 + 18
+			If pStarter(k) = 1 Then
+				If pPos(k) >= 2 Then
+					picks(cnt) = k
+					cnt = cnt + 1
+				EndIf
+			EndIf
+			k = k + 1
+		Wend
+	EndIf
+	If cnt > 0 Then
+		Return picks(Rnd(cnt))
+	Else
+		Return gCalcTeam * 18
+	EndIf
+EndF
+
+Function PickPlayer:Int()
+	// Pick any random starter from gCalcTeam
+	Var cnt:Int
+	Var picks(11):Int
+	cnt = 0
+	k = gCalcTeam * 18
+	While k < gCalcTeam * 18 + 18
+		If pStarter(k) = 1 Then
+			picks(cnt) = k
+			cnt = cnt + 1
+		EndIf
+		k = k + 1
+	Wend
+	If cnt > 0 Then
+		Return picks(Rnd(cnt))
+	Else
+		Return gCalcTeam * 18
+	EndIf
+EndF
+
+Function SortMatchEvents:Void()
+	Var swapped:Int
+	Var tempMin:Int
+	Var tempTxt:String
+	swapped = 1
+	While swapped = 1
+		swapped = 0
+		i = 0
+		While i < matchEvCnt - 1
+			If matchEvMin(i) > matchEvMin(i + 1) Then
+				tempMin = matchEvMin(i)
+				tempTxt = matchEvTxt(i)
+				matchEvMin(i) = matchEvMin(i + 1)
+				matchEvTxt(i) = matchEvTxt(i + 1)
+				matchEvMin(i + 1) = tempMin
+				matchEvTxt(i + 1) = tempTxt
+				swapped = 1
+			EndIf
+			i = i + 1
+		Wend
+	Wend
+
+EndF
+
+Function CalcForce:Int()
+	Var total:Int
+	Var count:Int
+	total = 0
+	count = 0
+	j = gCalcTeam * 18
+	While j < gCalcTeam * 18 + 18
+		If pStarter(j) = 1 Then
+			If pSusp(j) = 0 Then
+				total = total + pPts(j)
+				count = count + 1
+			EndIf
+		EndIf
+		j = j + 1
+	Wend
+	If count > 0 Then
+		Return total / count
+	Else
+		Return 30
+	EndIf
+EndF
+
+// ============================================================
+// SHOW MATCH FORM (Form8)
+// ============================================================
+Function ShowMatchForm:Void()
+	gIdx = currentRound * 4
+	Label29.Text.Set "League"
+	Label29.Refresh
+	Label54.Text.Set "Round " + Str(currentRound + 1)
+	Label54.Refresh
+	k = 0
+	While k < 4
+		i = gIdx + k
+		// Set labels for each game row
+		SetMatchRow
+		k = k + 1
+	Wend
+	// Start match animation
+	matchMinute = 0
+	matchHalf = 1
+	matchRunning = 1
+	matchEvShown = 0
+	lastSec = Time.Second.Get
+	Progress1.Value.Set 0
+	Progress1.Refresh
+	Label50.Text.Set ""
+	Label50.Refresh
+	Form8.Open
+EndF
+
+Function SetMatchRow:Void()
+	// Uses i (game index), k (row 0-3)
+	gCalcTeam = calHome(i)
+	tmp = CalcAttendance()
+	liveGH(k) = 0
+	liveGA(k) = 0
+	liveGame(k) = i
+	If k = 0 Then
+		Label30.Text.Set Str(tmp * 10) + "0"
+		Label30.Refresh
+		Label34.Text.Set cName(calHome(i))
+		Label34.Refresh
+		Label38.Text.Set "0"
+		Label38.Refresh
+		Label42.Text.Set "0"
+		Label42.Refresh
+		Label46.Text.Set cName(calAway(i))
+		Label46.Refresh
+		Label50.Text.Set ""
+		Label50.Refresh
+	EndIf
+	If k = 1 Then
+		Label31.Text.Set Str(tmp * 10) + "0"
+		Label31.Refresh
+		Label35.Text.Set cName(calHome(i))
+		Label35.Refresh
+		Label39.Text.Set "0"
+		Label39.Refresh
+		Label43.Text.Set "0"
+		Label43.Refresh
+		Label47.Text.Set cName(calAway(i))
+		Label47.Refresh
+		Label51.Text.Set ""
+		Label51.Refresh
+	EndIf
+	If k = 2 Then
+		Label32.Text.Set Str(tmp * 10) + "0"
+		Label32.Refresh
+		Label36.Text.Set cName(calHome(i))
+		Label36.Refresh
+		Label40.Text.Set "0"
+		Label40.Refresh
+		Label44.Text.Set "0"
+		Label44.Refresh
+		Label48.Text.Set cName(calAway(i))
+		Label48.Refresh
+		Label52.Text.Set ""
+		Label52.Refresh
+	EndIf
+	If k = 3 Then
+		Label33.Text.Set Str(tmp * 10) + "0"
+		Label33.Refresh
+		Label37.Text.Set cName(calHome(i))
+		Label37.Refresh
+		Label41.Text.Set "0"
+		Label41.Refresh
+		Label45.Text.Set "0"
+		Label45.Refresh
+		Label49.Text.Set cName(calAway(i))
+		Label49.Refresh
+		Label53.Text.Set ""
+		Label53.Refresh
+	EndIf
+EndF
+
+Function CalcAttendance:Int()
+	// cStadium is in thousands (40 = 40,000)
+	// Return attendance in hundreds (280 = 28,000)
+	Var att:Int
+	att = cStadium(gCalcTeam) * 6
+	att = att * (100 - cTicket(gCalcTeam)) / 100
+	att = att * cReputation(gCalcTeam) / 100
+	att = att + att * (Rnd(21) - 10) / 100
+	If att > cStadium(gCalcTeam) * 10 Then
+		att = cStadium(gCalcTeam) * 10
+	EndIf
+	If att < 10 Then
+		att = 10
+	EndIf
+	Return att
+EndF
+
+// ============================================================
+// MATCH TICK (called from Main loop)
+// ============================================================
+Function RunMatchTick:Void()
+	matchMinute = matchMinute + 1
+	If matchMinute = 46 Then
+		// Half time - pause briefly then continue
+		// Reset progress for second half
+		Progress1.Value.Set 0
+		Progress1.Refresh
+	EndIf
+	If matchMinute > 90 Then
+		// Match ended
+		matchRunning = 0
+		Progress1.Value.Set 255
+		Progress1.Refresh
+		// Auto return to Form2 after match
+		ProcessEndRound
+		Form8.Close
+		RefreshSquad
+		RefreshInfo
+	Else
+		// Update progress bar
+		If matchMinute <= 45 Then
+			tmp = matchMinute * 255 / 45
+			Progress1.Value.Set tmp
+		Else
+			tmp = matchMinute - 45
+			tmp = tmp * 255 / 45
+			Progress1.Value.Set tmp
+		EndIf
+		Progress1.Refresh
+		// Show events that happen at this minute
+		ShowMatchEvents
+	EndIf
+EndF
+
+Function ShowMatchEvents:Void()
+	If matchEvShown < matchEvCnt Then
+		If matchEvMin(matchEvShown) <= matchMinute Then
+			gEvCode = Left(matchEvTxt(matchEvShown), 1)
+			gEvRow = CInt(Mid(matchEvTxt(matchEvShown), 2, 1))
+			tmpStr = Mid(matchEvTxt(matchEvShown), 4, 40)
+			If gEvRow = 0 Then
+				Label50.Text.Set tmpStr
+				Label50.Refresh
+			EndIf
+			If gEvRow = 1 Then
+				Label51.Text.Set tmpStr
+				Label51.Refresh
+			EndIf
+			If gEvRow = 2 Then
+				Label52.Text.Set tmpStr
+				Label52.Refresh
+			EndIf
+			If gEvRow = 3 Then
+				Label53.Text.Set tmpStr
+				Label53.Refresh
+			EndIf
+			If gEvCode = "G" Then
+				UpdateLiveScore
+			EndIf
+			matchEvShown = matchEvShown + 1
+		EndIf
+	EndIf
+EndF
+
+Function UpdateLiveScore:Void()
+	gEvSide = Mid(matchEvTxt(matchEvShown), 3, 1)
+	If gEvSide = "H" Then
+		liveGH(gEvRow) = liveGH(gEvRow) + 1
+	Else
+		liveGA(gEvRow) = liveGA(gEvRow) + 1
+	EndIf
+	If gEvRow = 0 Then
+		Label38.Text.Set Str(liveGH(0))
+		Label38.Refresh
+		Label42.Text.Set Str(liveGA(0))
+		Label42.Refresh
+	EndIf
+	If gEvRow = 1 Then
+		Label39.Text.Set Str(liveGH(1))
+		Label39.Refresh
+		Label43.Text.Set Str(liveGA(1))
+		Label43.Refresh
+	EndIf
+	If gEvRow = 2 Then
+		Label40.Text.Set Str(liveGH(2))
+		Label40.Refresh
+		Label44.Text.Set Str(liveGA(2))
+		Label44.Refresh
+	EndIf
+	If gEvRow = 3 Then
+		Label41.Text.Set Str(liveGH(3))
+		Label41.Refresh
+		Label45.Text.Set Str(liveGA(3))
+		Label45.Refresh
+	EndIf
+EndF
+
+// ============================================================
+// PROCESS END OF ROUND
+// ============================================================
+Function ProcessEndRound:Void()
+	// Pay salaries for all teams
+	t = 0
+	While t < 8
+		gCalcTeam = t
+		cMoney(t) = cMoney(t) - CalcPayroll()
+		// Pay interest
+		cMoney(t) = cMoney(t) - cDebt(t) * 5 / 100
+		// Sponsorship
+		cMoney(t) = cMoney(t) + cReputation(t) * 5
+		t = t + 1
+	Wend
+	// Bilheteria for home teams
+	// uses gIdx
+	gIdx = (currentRound - 1) * 4
+	i = gIdx
+	While i < gIdx + 4
+		gCalcTeam = calHome(i)
+		tmp = CalcAttendance()
+		tmp = tmp * cTicket(calHome(i)) / 10
+		cMoney(calHome(i)) = cMoney(calHome(i)) + tmp
+		i = i + 1
+	Wend
+	// Decrease suspensions
+	i = 0
+	While i < 144
+		If pSusp(i) > 0 Then
+			pSusp(i) = pSusp(i) - 1
+		EndIf
+		i = i + 1
+	Wend
+EndF
+
+// ============================================================
+// END SEASON
+// ============================================================
+Function EndSeason:Void()
+	bx1 = MsgBox("Season ended!","Check final standings","",MsgBox.Title.Confirmation,MsgBox.Buttons.Ok,MsgBox.Icon.Default)
+	// TODO: prizes, evolution, new season
+EndF
+
+// Save and Load are now in savegame:Void() and loadgame:Void() menu handlers
+

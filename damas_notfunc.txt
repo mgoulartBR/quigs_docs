@@ -1,0 +1,881 @@
+// Quigs Application for Symbos
+// Name: Checkers (Damas) - By BigFive
+// Version: 2.0
+//
+// Classic Checkers / Draughts game for MSX/SymbOS
+// Board: 8x8, 32 playable dark squares only
+// Modes: Human vs CPU, Human vs Human
+//
+// SPRITE SHEET (pieces): 12 tiles 16x16
+//   0=LightSq 1=DarkEmpty 2=Red 3=RedKing
+//   4=Blue 5=BlueKing 6=SelEmpty 7=MoveDot
+//   8=SelRed 9=SelRedKing 10=SelBlue 11=SelBlueKing
+//
+// 32 ImageBox on dark squares, Event="ImgCell.Event"
+// ImgPanel Event="ImgPanel.Event"
+//
+// PIECE ENCODING: 0=empty 1=Red 2=RedKing 3=Blue 4=BlueKing
+
+// ============================================================
+// SHEETS
+// ============================================================
+Var shPieces:Sheet
+Var shBoardL:Sheet
+Var shBoardR:Sheet
+
+// ============================================================
+// CONTROL IDS
+// ============================================================
+Var cid(32):Int
+Var cidBoard:Int = 0
+Var cidPanel:Int = 0
+Var baseDisp:Int = 0
+
+// ============================================================
+// BOARD MAPPING: slot -> row, col
+// Row 0: slots 0-3, Row 1: slots 4-7, etc.
+// ============================================================
+Var cellRow(32):Int
+Var cellCol(32):Int
+
+// ============================================================
+// REVERSE MAP: calculated from (r,c)
+// On dark squares: (r+c) is odd
+// slot = r*4 + c/2 for even rows, r*4 + (c-1)/2 for odd rows
+// ============================================================
+
+// ============================================================
+// GAME BOARD (32 slots)
+// ============================================================
+Var board(32):Int
+
+// ============================================================
+// GAME STATE
+// ============================================================
+Var turn:Int = 0
+Var selSlot:Int = -1
+Var gameOver:Int = 0
+Var redCount:Int = 12
+Var blkCount:Int = 12
+Var mustCapture:Int = 0
+Var chainSlot:Int = -1
+Var cpuMode:Int = 1
+Var skillLevel:Int = 1
+
+// ============================================================
+// CPU AI
+// ============================================================
+Var bestFrom:Int = -1
+Var bestTo:Int = -1
+Var bestScore:Int = 0
+Var bestCaptured:Int = -1
+
+// ============================================================
+// VALID MOVES FOR SINGLE PIECE
+// ============================================================
+Var validTo(12):Int
+Var validCap(12):Int
+Var validCount:Int = 0
+Var hasCapture:Int = 0
+
+// ============================================================
+// ALL CAPTURES / MOVES FOR TURN
+// ============================================================
+Var capFrom(48):Int
+Var capTo(48):Int
+Var capMid(48):Int
+Var capCount:Int = 0
+Var movFrom(48):Int
+Var movTo(48):Int
+Var movCount:Int = 0
+
+// ============================================================
+// TEMP VARS
+// ============================================================
+Var i:Int = 0
+Var j:Int = 0
+Var f:Int = 0
+Var g:Int = 0
+Var r:Int = 0
+Var c:Int = 0
+Var tr:Int = 0
+Var tc:Int = 0
+Var dr:Int = 0
+Var dc:Int = 0
+Var piece:Int = 0
+Var fromSlot:Int = 0
+Var toSlot:Int = 0
+Var capIdx:Int = -1
+Var canCapMore:Int = 0
+Var slotClicked:Int = 0
+Var isPiece:Int = 0
+Var isOpp:Int = 0
+Var gSlot:Int = 0
+Var gTile:Int = 0
+Var tmpSlot:Int = 0
+Var evalScore:Int = 0
+Var cpuBestVal:Int = 0
+Var cpuIdx:Int = 0
+Var tmpBoard(32):Int
+Var savRedCount:Int = 0
+Var savBlkCount:Int = 0
+
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+Function Main:Void()
+EndF
+
+
+// ============================================================
+// GET SLOT FROM ROW/COL (-1 if invalid)
+// r,c must be set before calling
+// ============================================================
+Var rcResult:Int = 0
+
+Function RowColToSlot:Void
+	rcResult = -1
+	If r >= 0 Then
+		If r <= 7 Then
+			If c >= 0 Then
+				If c <= 7 Then
+					If (r + c) And 1 Then
+						rcResult = r * 4 + c / 2
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// GET TILE FOR RENDERING
+// ============================================================
+Function GetTile:Void
+	piece = board(gSlot)
+	gTile = 1
+	If piece = 1 Then
+		gTile = 2
+	EndIf
+	If piece = 2 Then
+		gTile = 3
+	EndIf
+	If piece = 3 Then
+		gTile = 4
+	EndIf
+	If piece = 4 Then
+		gTile = 5
+	EndIf
+EndF
+
+
+// ============================================================
+// GET SELECTED TILE (highlighted) -> gTile
+// ============================================================
+Function GetSelTile:Void
+	piece = board(gSlot)
+	gTile = 6
+	If piece = 1 Then
+		gTile = 8
+	EndIf
+	If piece = 2 Then
+		gTile = 9
+	EndIf
+	If piece = 3 Then
+		gTile = 10
+	EndIf
+	If piece = 4 Then
+		gTile = 11
+	EndIf
+	If piece = 0 Then
+		gTile = 7
+	EndIf
+EndF
+
+
+// ============================================================
+// RENDER BOARD (32 slots)
+// ============================================================
+Function RenderBoard:Void
+	For gSlot = 0 To 31
+		GetTile
+		Ctrl.Image.Tile.Set cid(gSlot), shPieces, gTile
+		Ctrl.Refresh cid(gSlot)
+	Next
+EndF
+
+
+// ============================================================
+// INIT BOARD MAPPING
+// Fills cellRow/cellCol for 32 dark squares
+// ============================================================
+Function InitMapping:Void
+	g = 0
+	For r = 0 To 7
+		For c = 0 To 7
+			If (r + c) And 1 Then
+				cellRow(g) = r
+				cellCol(g) = c
+				g = g + 1
+			EndIf
+		Next
+	Next
+EndF
+
+
+// ============================================================
+// INIT BOARD
+// ============================================================
+Function InitBoard:Void
+	For i = 0 To 11
+		board(i) = 1
+	Next
+	For i = 12 To 19
+		board(i) = 0
+	Next
+	For i = 20 To 31
+		board(i) = 3
+	Next
+	redCount = 12
+	blkCount = 12
+EndF
+
+
+// ============================================================
+// CHECK OWN PIECE / OPPONENT
+// ============================================================
+Function CheckOwn:Void
+	isPiece = 0
+	If turn = 0 Then
+		If piece = 1 Or piece = 2 Then
+			isPiece = 1
+		EndIf
+	Else
+		If piece = 3 Or piece = 4 Then
+			isPiece = 1
+		EndIf
+	EndIf
+EndF
+
+Function CheckOpponent:Void
+	isOpp = 0
+	If turn = 0 Then
+		If piece = 3 Or piece = 4 Then
+			isOpp = 1
+		EndIf
+	Else
+		If piece = 1 Or piece = 2 Then
+			isOpp = 1
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// TRY ONE DIAGONAL DIRECTION
+// fromSlot, dr, dc must be set
+// Appends to validTo/validCap if move found
+// ============================================================
+Function TryDirection:Void
+	r = cellRow(fromSlot) + dr
+	c = cellCol(fromSlot) + dc
+	RowColToSlot
+	tmpSlot = rcResult
+	If tmpSlot >= 0 Then
+		If board(tmpSlot) = 0 Then
+			// Normal move
+			validTo(validCount) = tmpSlot
+			validCap(validCount) = -1
+			validCount = validCount + 1
+		Else
+			// Occupied: check capture
+			piece = board(tmpSlot)
+			CheckOpponent
+			If isOpp = 1 Then
+				r = cellRow(fromSlot) + dr + dr
+				c = cellCol(fromSlot) + dc + dc
+				RowColToSlot
+				toSlot = rcResult
+				If toSlot >= 0 Then
+					If board(toSlot) = 0 Then
+						validTo(validCount) = toSlot
+						validCap(validCount) = tmpSlot
+						validCount = validCount + 1
+						hasCapture = 1
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// FIND VALID MOVES FOR PIECE AT fromSlot
+// ============================================================
+Function FindMovesForPiece:Void
+	validCount = 0
+	hasCapture = 0
+	piece = board(fromSlot)
+	If piece = 1 Then
+		// Red: forward = down (dr=+1)
+		dr = 1
+		dc = -1
+		TryDirection
+		dc = 1
+		TryDirection
+	EndIf
+	If piece = 3 Then
+		// Blue: forward = up (dr=-1)
+		dr = -1
+		dc = -1
+		TryDirection
+		dc = 1
+		TryDirection
+	EndIf
+	If piece = 2 Or piece = 4 Then
+		// Kings: all 4 diagonals
+		dr = -1
+		dc = -1
+		TryDirection
+		dc = 1
+		TryDirection
+		dr = 1
+		dc = -1
+		TryDirection
+		dc = 1
+		TryDirection
+	EndIf
+EndF
+
+
+// ============================================================
+// FIND ALL MOVES FOR CURRENT PLAYER
+// ============================================================
+Function FindAllMoves:Void
+	capCount = 0
+	movCount = 0
+	mustCapture = 0
+	For i = 0 To 31
+		piece = board(i)
+		If piece > 0 Then
+			CheckOwn
+			If isPiece = 1 Then
+				fromSlot = i
+				FindMovesForPiece
+				For j = 0 To validCount - 1
+					If validCap(j) >= 0 Then
+						capFrom(capCount) = i
+						capTo(capCount) = validTo(j)
+						capMid(capCount) = validCap(j)
+						capCount = capCount + 1
+					Else
+						movFrom(movCount) = i
+						movTo(movCount) = validTo(j)
+						movCount = movCount + 1
+					EndIf
+				Next
+			EndIf
+		EndIf
+	Next
+	If capCount > 0 Then
+		mustCapture = 1
+	EndIf
+EndF
+
+
+// ============================================================
+// CHECK CHAIN CAPTURE
+// ============================================================
+Function CheckChainCapture:Void
+	canCapMore = 0
+	fromSlot = chainSlot
+	FindMovesForPiece
+	For j = 0 To validCount - 1
+		If validCap(j) >= 0 Then
+			canCapMore = 1
+		EndIf
+	Next
+EndF
+
+
+// ============================================================
+// PROMOTE TO KING
+// ============================================================
+Function CheckPromotion:Void
+	r = cellRow(gSlot)
+	If board(gSlot) = 1 Then
+		If r = 7 Then
+			board(gSlot) = 2
+		EndIf
+	EndIf
+	If board(gSlot) = 3 Then
+		If r = 0 Then
+			board(gSlot) = 4
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// EXECUTE MOVE
+// fromSlot, toSlot, capIdx must be set
+// ============================================================
+Function DoMove:Void
+	board(toSlot) = board(fromSlot)
+	board(fromSlot) = 0
+	If capIdx >= 0 Then
+		piece = board(capIdx)
+		If piece = 1 Or piece = 2 Then
+			redCount = redCount - 1
+		EndIf
+		If piece = 3 Or piece = 4 Then
+			blkCount = blkCount - 1
+		EndIf
+		board(capIdx) = 0
+	EndIf
+	gSlot = toSlot
+	CheckPromotion
+EndF
+
+
+// ============================================================
+// UPDATE STATUS LABELS
+// ============================================================
+Function UpdateStatus:Void
+	LblRedCount.Text.Set Str(redCount)
+	LblRedCount.Refresh
+	LblBlkCount.Text.Set Str(blkCount)
+	LblBlkCount.Refresh
+	If cpuMode = 1 Then
+		LblMode.Text.Set "Human x CPU"
+	Else
+		LblMode.Text.Set "Human x Human"
+	EndIf
+	LblMode.Refresh
+	If cpuMode = 1 Then
+		If skillLevel = 1 Then
+			LblCpu.Text.Set "Easy"
+		EndIf
+		If skillLevel = 2 Then
+			LblCpu.Text.Set "Medium"
+		EndIf
+		If skillLevel = 3 Then
+			LblCpu.Text.Set "Hard"
+		EndIf
+	Else
+		LblCpu.Text.Set "-----"
+	EndIf
+	LblCpu.Refresh
+	If gameOver = 1 Then
+		If redCount = 0 Then
+			LblStatus.Text.Set "Blue Wins!"
+		Else
+			If blkCount = 0 Then
+				LblStatus.Text.Set "Red Wins!"
+			Else
+				If turn = 0 Then
+					LblStatus.Text.Set "Red Blocked!"
+				Else
+					LblStatus.Text.Set "Blue Blocked!"
+				EndIf
+			EndIf
+		EndIf
+	Else
+		If turn = 0 Then
+			LblStatus.Text.Set "Red's Turn"
+		Else
+			If cpuMode = 1 Then
+				LblStatus.Text.Set "CPU Turn"
+			Else
+				LblStatus.Text.Set "Blue's Turn"
+			EndIf
+		EndIf
+	EndIf
+	LblStatus.Refresh
+EndF
+
+
+// ============================================================
+// CHECK WIN
+// ============================================================
+Function CheckWin:Void
+	If redCount = 0 Then
+		gameOver = 1
+	EndIf
+	If blkCount = 0 Then
+		gameOver = 1
+	EndIf
+	If gameOver = 0 Then
+		FindAllMoves
+		If capCount = 0 Then
+			If movCount = 0 Then
+				gameOver = 1
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// SWITCH TURN
+// ============================================================
+Function SwitchTurn:Void
+	turn = (turn + 1) And 1
+	selSlot = -1
+	chainSlot = -1
+	CheckWin
+	UpdateStatus
+	RenderBoard
+	If gameOver = 0 Then
+		If cpuMode = 1 Then
+			If turn = 1 Then
+				CpuMove
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// SHOW VALID MOVES (dots)
+// ============================================================
+Function ShowValidMoves:Void
+	For j = 0 To validCount - 1
+		If mustCapture = 1 Then
+			If validCap(j) >= 0 Then
+				gSlot = validTo(j)
+				Ctrl.Image.Tile.Set cid(gSlot), shPieces, 7
+				Ctrl.Refresh cid(gSlot)
+			EndIf
+		Else
+			gSlot = validTo(j)
+			Ctrl.Image.Tile.Set cid(gSlot), shPieces, 7
+			Ctrl.Refresh cid(gSlot)
+		EndIf
+	Next
+EndF
+
+
+// ============================================================
+// CELL CLICK EVENT (32 slots)
+// ============================================================
+Function ImgCell.Event:Void()
+	LblStatus.Text.Set "CLICK!"
+	LblStatus.Refresh
+EndF
+
+
+// ============================================================
+// CPU - EVAL BOARD (positive = good for Blue)
+// ============================================================
+Function EvalBoard:Int
+	evalScore = 0
+	For i = 0 To 31
+		r = cellRow(i)
+		c = cellCol(i)
+		If board(i) = 1 Then
+			evalScore = evalScore - 10 - r
+		EndIf
+		If board(i) = 2 Then
+			evalScore = evalScore - 30
+		EndIf
+		If board(i) = 3 Then
+			evalScore = evalScore + 10 + (7 - r)
+		EndIf
+		If board(i) = 4 Then
+			evalScore = evalScore + 30
+		EndIf
+	Next
+	Return evalScore
+EndF
+
+
+// ============================================================
+// CPU - SAVE / RESTORE
+// ============================================================
+Function SaveBoard:Void
+	For i = 0 To 31
+		tmpBoard(i) = board(i)
+	Next
+	savRedCount = redCount
+	savBlkCount = blkCount
+EndF
+
+Function RestoreBoard:Void
+	For i = 0 To 31
+		board(i) = tmpBoard(i)
+	Next
+	redCount = savRedCount
+	blkCount = savBlkCount
+EndF
+
+
+// ============================================================
+// CPU MOVE
+// ============================================================
+Function CpuMove:Void
+	LblStatus.Text.Set "Thinking..."
+	LblStatus.Refresh
+	FindAllMoves
+	cpuBestVal = -9999
+	bestFrom = -1
+	bestTo = -1
+	bestCaptured = -1
+	If capCount > 0 Then
+		For cpuIdx = 0 To capCount - 1
+			SaveBoard
+			fromSlot = capFrom(cpuIdx)
+			toSlot = capTo(cpuIdx)
+			capIdx = capMid(cpuIdx)
+			DoMove
+			chainSlot = toSlot
+			CheckChainCapture
+			If canCapMore = 1 Then
+				fromSlot = chainSlot
+				FindMovesForPiece
+				For j = 0 To validCount - 1
+					If validCap(j) >= 0 Then
+						toSlot = validTo(j)
+						capIdx = validCap(j)
+						DoMove
+					EndIf
+				Next
+			EndIf
+			evalScore = EvalBoard + Rnd(3)
+			If evalScore > cpuBestVal Then
+				cpuBestVal = evalScore
+				bestFrom = capFrom(cpuIdx)
+				bestTo = capTo(cpuIdx)
+				bestCaptured = capMid(cpuIdx)
+			EndIf
+			RestoreBoard
+		Next
+		fromSlot = bestFrom
+		toSlot = bestTo
+		capIdx = bestCaptured
+		DoMove
+		chainSlot = toSlot
+		CheckChainCapture
+		While canCapMore = 1
+			fromSlot = chainSlot
+			FindMovesForPiece
+			cpuBestVal = -9999
+			For j = 0 To validCount - 1
+				If validCap(j) >= 0 Then
+					SaveBoard
+					toSlot = validTo(j)
+					capIdx = validCap(j)
+					DoMove
+					evalScore = EvalBoard
+					If evalScore > cpuBestVal Then
+						cpuBestVal = evalScore
+						bestTo = validTo(j)
+						bestCaptured = validCap(j)
+					EndIf
+					RestoreBoard
+				EndIf
+			Next
+			toSlot = bestTo
+			capIdx = bestCaptured
+			DoMove
+			chainSlot = toSlot
+			CheckChainCapture
+		Wend
+		chainSlot = -1
+	Else
+		For cpuIdx = 0 To movCount - 1
+			SaveBoard
+			fromSlot = movFrom(cpuIdx)
+			toSlot = movTo(cpuIdx)
+			capIdx = -1
+			DoMove
+			evalScore = EvalBoard
+			If skillLevel = 1 Then
+				evalScore = evalScore + Rnd(4)
+			Else
+				evalScore = evalScore + Rnd(2)
+			EndIf
+			If evalScore > cpuBestVal Then
+				cpuBestVal = evalScore
+				bestFrom = movFrom(cpuIdx)
+				bestTo = movTo(cpuIdx)
+			EndIf
+			RestoreBoard
+		Next
+		If bestFrom >= 0 Then
+			fromSlot = bestFrom
+			toSlot = bestTo
+			capIdx = -1
+			DoMove
+		EndIf
+	EndIf
+	chainSlot = -1
+	SwitchTurn
+EndF
+
+
+// ============================================================
+// NEW GAME
+// ============================================================
+Function StartNewGame:Void
+	LblStatus.Text.Set "NEW GAME!"
+	LblStatus.Refresh
+EndF
+
+
+// ============================================================
+// PANEL CLICK EVENT
+// ============================================================
+Function ImgPanel.Event:Void()
+	i = Event.MouseX
+	j = Event.MouseY
+	LblCpu.Text.Set "X"
+	LblCpu.Refresh
+	LblMode.Text.Set "Y"
+	LblMode.Refresh
+	// NEW GAME (absolute form coordinates)
+	If i >= 172 Then
+		If i <= 309 Then
+			If j >= 139 Then
+				If j <= 153 Then
+					StartNewGame
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	// CHANGE MODE
+	If i >= 172 Then
+		If i <= 309 Then
+			If j >= 156 Then
+				If j <= 168 Then
+					LblStatus.Text.Set "MODE!"
+					LblStatus.Refresh
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+	// CPU LEVEL
+	If i >= 172 Then
+		If i <= 309 Then
+			If j >= 171 Then
+				If j <= 182 Then
+					LblStatus.Text.Set "LEVEL!"
+					LblStatus.Refresh
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+// ============================================================
+// FORM OPEN
+// ============================================================
+Function Form1.Open.Event:Void()
+	Randomize Time.Second.Get * Time.Minute.Get
+	
+	// Init mapping
+	g = 0
+	For r = 0 To 7
+		For c = 0 To 7
+			If (r + c) And 1 Then
+				cellRow(g) = r
+				cellCol(g) = c
+				g = g + 1
+			EndIf
+		Next
+	Next
+
+	If Screen.Colour = 16 Then
+		shPieces.Load(App.Path + "pieces.qs2")
+		shBoardL.Load(App.Path + "boardL.qs2")
+		shBoardR.Load(App.Path + "boardR.qs2")
+	Else
+		shPieces.Load(App.Path + "pieces.qs1")
+		shBoardL.Load(App.Path + "boardL.qs1")
+		shBoardR.Load(App.Path + "boardR.qs1")
+	EndIf
+
+	cidBoard = Ctrl.GetID(Form1, ImgBoard.Display)
+	cidPanel = Ctrl.GetID(Form1, ImgPanel.Display)
+	Ctrl.Image.Tile.Set cidBoard, shBoardL, 0
+	Ctrl.Refresh cidBoard
+	Ctrl.Image.Tile.Set cidPanel, shBoardR, 0
+	Ctrl.Refresh cidPanel
+
+	baseDisp = Image3.Display
+	g = 0
+	For f = Image3.Display To Image34.Display
+		cid(g) = Ctrl.GetID(Form1, f)
+		g = g + 1
+	Next
+
+	cpuMode = 1
+	skillLevel = 1
+
+	// Init board
+	For i = 0 To 11
+		board(i) = 1
+	Next
+	For i = 12 To 19
+		board(i) = 0
+	Next
+	For i = 20 To 31
+		board(i) = 3
+	Next
+	redCount = 12
+	blkCount = 12
+	turn = 0
+	selSlot = -1
+	chainSlot = -1
+	gameOver = 0
+
+	// Render each slot individually
+	For gSlot = 0 To 31
+		piece = board(gSlot)
+		If piece = 0 Then
+			gTile = 1
+		EndIf
+		If piece = 1 Then
+			gTile = 2
+		EndIf
+		If piece = 2 Then
+			gTile = 3
+		EndIf
+		If piece = 3 Then
+			gTile = 4
+		EndIf
+		If piece = 4 Then
+			gTile = 5
+		EndIf
+		Ctrl.Image.Tile.Set cid(gSlot), shPieces, gTile
+		Ctrl.Refresh cid(gSlot)
+	Next
+
+	// Update labels
+	LblRedCount.Text.Set "12"
+	LblRedCount.Refresh
+	LblBlkCount.Text.Set "12"
+	LblBlkCount.Refresh
+	LblStatus.Text.Set "Red's Turn"
+	LblStatus.Refresh
+	LblMode.Text.Set "Human x CPU"
+	LblMode.Refresh
+	LblCpu.Text.Set "Easy"
+	LblCpu.Refresh
+EndF
+
+
+// ============================================================
+// FORM CLOSE
+// ============================================================
+Function Form1.Close.Event:Void()
+	shPieces.Free
+	shBoardL.Free
+	shBoardR.Free
+	Form1.Close
+EndF
+

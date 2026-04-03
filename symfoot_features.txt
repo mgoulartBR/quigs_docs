@@ -1,0 +1,103 @@
+============================================
+SYMFOOT v17 - FEATURE LIST
+Football Manager for MSX/SymbOS
+By BigFive
+============================================
+
+LEAGUE STRUCTURE
+- 32 active teams in 4 divisions of 8
+- 18 reserve teams (promotion/relegation pool)
+- 14 rounds per season (home + away)
+- Promotion: top 2 of each division go up
+- Relegation: bottom 2 go down
+- Div 4 bottom 2 swap with reserve pool
+- External .SFL league files (editable)
+- Real player data from CBF/Transfermarkt 2026
+
+MATCH SIMULATION
+- Force-based match engine (team strength + home advantage)
+- Live match display showing all 4 divisions simultaneously
+- 16 games per round with real-time score updates
+- Goal events with scorer names and minute
+- Progress bar for match time (1st/2nd half)
+
+TEAM COLORS
+- Each team has custom Paper (background) and Pen (text) colors
+- 16-color SymbOS palette
+- Colors loaded from .SFL file
+- Colors follow teams through promotion/relegation
+
+SQUAD MANAGEMENT
+- 18 players per team (G, D, M, A positions)
+- Squad display ordered by position (G→D→M→A)
+- Player stats: Name, Age, Pts, Salary
+- Player status: Starter (+), Suspended (SUS)
+- Sell players (removed from squad)
+- Buy players from transfer market
+
+TRANSFER MARKET
+- 3-6 random players available each round
+- Players have position, age, pts, price
+- Price based on pts and age (young = expensive)
+- Bought player replaces weakest in squad
+- Purchased player removed from market list
+
+FORMATIONS
+- 10 formations: 334, 343, 424, 433, 442, 451, 523, 532, 541, 631
+- Auto-select best 11 based on formation
+- Selectable via menu
+
+FINANCES
+- Team balance (income/expenses per round)
+- Salary payments every round
+- Ticket revenue from home games
+- Sponsorship based on reputation
+- Loan system (borrow/pay 500k)
+- Debt with 5% interest per round
+
+STADIUM
+- Expandable (+5,000 capacity)
+- Cost proportional to current size
+- Ticket price adjustable (affects attendance)
+
+ATTENDANCE
+- Dynamic calculation based on:
+  - Division factor (Div1=100%, Div4=40%)
+  - Ticket price (higher = less fans)
+  - Team reputation
+  - Win streak (more wins = more fans)
+  - Random variation (+/-10%)
+
+PLAYER EVOLUTION
+- Young players (<25): 30% chance to gain +1 pt per round
+- Old players (>32): 20% chance to lose -1 pt per round
+- Win bonus: 15% chance of +1 pt for starters
+- Loss penalty: 10% chance of -1 pt for starters
+- Retirement at age 42 (replaced by youth player)
+- Annual aging: all players +1 year at season end
+
+MANAGER CAREER
+- Fired: 4+ consecutive losses
+- Fired: position 7th/8th after round 10
+- Fired: team relegated
+- Invited: 5+ consecutive wins while 1st/2nd
+- Invited: division champion at season end
+- When fired: offered new team to manage
+- When invited: accept/refuse offer from upper division
+
+LEAGUE TABLE
+- Manual bubble sort by Points → Wins → Draws
+- 4 division tables (MList4, MList6, MList7, MList8)
+
+SAVE/LOAD
+- Binary save using WriteMemory/ReadMemory
+- Fast: dumps 9216-byte Memory Blocks directly
+- Saves: all player data, club data, calendar, reserves
+- Incompatible with older save formats (version 3)
+
+TECHNICAL
+- Memory Blocks for player data (2x 9216 bytes)
+- 16 getter/setter helper functions
+- Data segment: ~11KB (within 16KB limit)
+- Runs on MSX2/MSX2+ with SymbOS
+- Z80 @ 3.58MHz, 128KB+ RAM

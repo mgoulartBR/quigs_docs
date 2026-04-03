@@ -1,0 +1,11 @@
+;*****
+;***** Quigs Settings
+;*****
+;Can use settings [DestDir],[ResWidth],[ResHeight],[Style],[Font],[FontSize]
+[DestDir] E:\symbos\
+[ResWidth] 1920 
+[ResHeight] 1080
+[Font] verdana
+[FontSize] 16
+[Library] sys\quig-lib.asm
+[Library] sys\quig-g9klib.asm

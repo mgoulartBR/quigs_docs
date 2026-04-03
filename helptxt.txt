@@ -1,0 +1,5910 @@
+****
+<Name:And>
+    <Category:Basic>
+    <Description:Used as a logical operator in expressions.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Byte>
+    <Category:Basic>
+    <Description:Declare a unsigned BYTE 8Bit variable type.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Data.Set>
+    <Category:Basic>
+    <Description:Sets the Data reading to a Label position.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Else>
+    <Category:Basic>
+    <Description:Else statement>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:ElseIf>
+    <Category:Basic>
+    <Description:Used to check if an additional condition is true or false. Use with Then, Else & Endif.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:EndIf>
+    <Category:Basic>
+    <Description:Used to complete an If structure. Use with If, Then & Else.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:File>
+    <Category:Basic>
+    <Description:Declare a type FILE>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Float>
+    <Category:Basic>
+    <Description:Declare a FLOAT variable type.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Font>
+    <Category:Basic>
+    <Description:Declare a type FONT>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:For>
+    <Category:Basic>
+    <Description:For...Next is loop method which assigns a variable a range of numbers to Step through.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:If>
+    <Category:Basic>
+    <Description:Used to check IF a condition is true or false. Use with Then, Else & Endif.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Int>
+    <Category:Basic>
+    <Description:Declare a signed INT 16bit variable type.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:IntFrac>
+    <Category:Basic>
+    <Description:Declare a INTFRAC type>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Jump>
+    <Category:Basic>
+    <Description:Jump to Label.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:JumpTable>
+    <Category:Basic>
+    <Description:Jump table.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Lock.Off>
+    <Category:Basic>
+    <Description:Enable Interrupts.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Lock.On>
+    <Category:Basic>
+    <Description:Disable Interrupts.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Long>
+    <Category:Basic>
+    <Description:Declare a signed LONG 32Bit variable type.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Memory>
+    <Category:Basic>
+    <Description:Declare a type MEMORY>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Next>
+    <Category:Basic>
+    <Description:Next completes a loop in the For..Next. Based on variable number the For will repeat.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Or>
+    <Category:Basic>
+    <Description:Used as a logical operator in expressions.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Return>
+    <Category:Basic>
+    <Description:Return Null Or Value from Function>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Sheet>
+    <Category:Basic>
+    <Description:Declare a type SHEET>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Step>
+    <Category:Basic>
+    <Description:Step is a value to increment or decrement the For Loop Variable.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:String>
+    <Category:Basic>
+    <Description:Declare a STRING variable type.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Then>
+    <Category:Basic>
+    <Description:Used in an IF THEN ENDIF structure to indicate what commands should Then be executed.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:To>
+    <Category:Basic>
+    <Description:Used in a For statement. Value To Value.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Void>
+    <Category:Basic>
+    <Description:Declare a type VOID>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Wend>
+    <Category:Basic>
+    <Description:While End statement>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:While>
+    <Category:Basic>
+    <Description:While...Wend is a loop method While a condition is true.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Xor>
+    <Category:Basic>
+    <Description:Used as a logical operator in expressions.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Mod>
+    <Category:Basic>
+    <Description:Return Mod result.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Delete>
+    <Category:File:File>
+    <Description:Delete an existing file.>
+    <Inputs:Path:String>
+    <Output:(None)>
+****
+<Name:File.Move>
+    <Category:File:File>
+    <Description:Move an existing file to new directory.>
+    <Inputs:Path:String,NewPath:String>
+    <Output:(None)>
+****
+<Name:File.Rename>
+    <Category:File:File>
+    <Description:Rename an existing file with new name.>
+    <Inputs:Path:String,NewPath:String>
+    <Output:(None)>
+****
+<Name:[FileName].Close>
+    <Category:File:File>
+    <Description:Close File1 file>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FileName].CloseReadFile>
+    <Category:File:File>
+    <Description:Close the file File1 but do NOT add an Eof marker>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FileName].New>
+    <Category:File:File>
+    <Description:Create new file in file container File1. Status 0-Fail/1-Success>
+    <Inputs:file:String>
+    <Output:(None)>
+****
+<Name:[FileName].NewBinary>
+    <Category:File:File>
+    <Description:Create new file in file container File1. Status 0-Fail/1-Success>
+    <Inputs:file:String>
+    <Output:(None)>
+****
+<Name:[FileName].Open>
+    <Category:File:File>
+    <Description:Opens an existing file in file container File1. Status 0-Fail/1-Success>
+    <Inputs:file:String>
+    <Output:(None)>
+****
+<Name:[FileName].OpenBinary>
+    <Category:File:File>
+    <Description:Opens an existing file in file container File1. Status 0-Fail/1-Success>
+    <Inputs:file:String>
+    <Output:(None)>
+****
+<Name:[FileName].WriteByte>
+    <Category:File:File>
+    <Description:Write a single Byte to file>
+    <Inputs:int:Int>
+    <Output:(None)>
+****
+<Name:[FileName].WriteInt>
+    <Category:File:File>
+    <Description:Write a single 16Bite Integer to file>
+    <Inputs:int:Int>
+    <Output:(None)>
+****
+<Name:[FileName].WriteMemory>
+    <Category:File:File>
+    <Description:Write a section of a memory area to file.>
+    <Inputs:bank:Int,addr:Int,length:Int>
+    <Output:(None)>
+****
+<Name:[FileName].WriteString>
+    <Category:File:File>
+    <Description:Write a string to file>
+    <Inputs:file:String>
+    <Output:(None)>
+****
+<Name:DateCode.Day>
+    <Category:File:File>
+    <Description:Return Minute Day from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:DateCode.Month>
+    <Category:File:File>
+    <Description:Return Month value from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:DateCode.Year>
+    <Category:File:File>
+    <Description:Return Year value from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:File.Exist>
+    <Category:File:File>
+    <Description:Returns 1 if the given string is an existing file>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:File.Result>
+    <Category:File:File>
+    <Description:Directory Command error report 1-Okay else Check error list.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Select.File>
+    <Category:File:File>
+    <Description:Returns the last path/file from the File select Dialog>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:File.Select.Open>
+    <Category:File:File>
+    <Description:Displays file select dialog. Result string placed in variable 'File.Select.File'>
+    <Inputs:Path:String,Ext:String>
+    <Output:Int>
+****
+<Name:File.Select.Save>
+    <Category:File:File>
+    <Description:Displays file select dialog. Result string placed in variable 'File.Select.File'>
+    <Inputs:Path:String,Ext:String>
+    <Output:Int>
+****
+<Name:File.Size>
+    <Category:File:File>
+    <Description:Returns file size in bytes.>
+    <Inputs:Filename:String>
+    <Output:Long>
+****
+<Name:[FileName]>
+    <Category:File:File>
+    <Description:Returns file container File1 ID>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FileName].EOF>
+    <Category:File:File>
+    <Description:Check the EOF End of File status of a file.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FileName].Error>
+    <Category:File:File>
+    <Description:Returns Error value of File. 1=Okay. See Device.Error constants list.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FileName].ReadByte>
+    <Category:File:File>
+    <Description:Reads a single byte from given file.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FileName].ReadInt>
+    <Category:File:File>
+    <Description:Reads a sing 16bit Integer from file.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FileName].ReadMemory>
+    <Category:File:File>
+    <Description:Read a length of data from file into memory. Returns the number of bytes read.>
+    <Inputs:bank:Int,addr:Int,length:Int>
+    <Output:Int>
+****
+<Name:[FileName].ReadString>
+    <Category:File:File>
+    <Description:Reads a string from given file.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[FileName].Status>
+    <Category:File:File>
+    <Description:Return the status of the given file. 1-Normal/2-Binary>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:TimeCode.Hour>
+    <Category:File:File>
+    <Description:Return Minute value from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:TimeCode.Min>
+    <Category:File:File>
+    <Description:Return Minute value from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:TimeCode.Sec>
+    <Category:File:File>
+    <Description:Return Second value from a Timecode.>
+    <Inputs:Timecode:Int>
+    <Output:Int>
+****
+<Name:File.Select.Cancel>
+    <Category:File:File>
+    <Description:Constant File.Select.Cancel = 1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Select.InUse>
+    <Category:File:File>
+    <Description:Constant File.Select.InUse = 2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Select.MemFull>
+    <Category:File:File>
+    <Description:Constant File.Select.MemFull = 3.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Select.NoWindow>
+    <Category:File:File>
+    <Description:Constant File.Select.NoWindow = 4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:File.Select.OK>
+    <Category:File:File>
+    <Description:Constant File.Select.OK = 0.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Delete>
+    <Category:File:Directory>
+    <Description:Delete an existing directory.>
+    <Inputs:Path:String>
+    <Output:(None)>
+****
+<Name:Dir.Move>
+    <Category:File:Directory>
+    <Description:Move an existing directory with new name.>
+    <Inputs:Path:String,NewPath:String>
+    <Output:(None)>
+****
+<Name:Dir.New>
+    <Category:File:Directory>
+    <Description:Make new directory with path name.>
+    <Inputs:Path:String>
+    <Output:(None)>
+****
+<Name:Dir.Read>
+    <Category:File:Directory>
+    <Description:Sets Directory Read path & attributes.>
+    <Inputs:Path:String,Attr:Int>
+    <Output:(None)>
+****
+<Name:Dir.Read.Next>
+    <Category:File:Directory>
+    <Description:Reads a single entry from the given path/directory.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Dir.Rename>
+    <Category:File:Directory>
+    <Description:Rename an existing directory with new name.>
+    <Inputs:Path:String,NewPath:String>
+    <Output:(None)>
+****
+<Name:Dir.Exist>
+    <Category:File:Directory>
+    <Description:Returns 1 if the given string is an existing directory>
+    <Inputs:Dir:String>
+    <Output:Int>
+****
+<Name:Dir.Read.Attr>
+    <Category:File:Directory>
+    <Description:Gets the attributes of the last Dir.Read.Next. For result comparisons see Dir.Attr.x constants.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Read.Date>
+    <Category:File:Directory>
+    <Description:Gets the Datecode of either name/directory. Use with File.Decode.x to get Day/Month/Year.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Read.Entry>
+    <Category:File:Directory>
+    <Description:Returns 0 (False)/(1)True as to whether there is a readable Next Directory Entry.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Read.Name>
+    <Category:File:Directory>
+    <Description:Gets the name of file/directory after calling a Directory Read.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Dir.Read.Size>
+    <Category:File:Directory>
+    <Description:Gets the size of file/directory after calling a Directory Read.>
+    <Inputs:(None)>
+    <Output:Long>
+****
+<Name:Dir.Read.Time>
+    <Category:File:Directory>
+    <Description:Gets the Timecode of either name/directory. Use with File.Decode.x to get Hour/Min/Sec.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Result>
+    <Category:File:Directory>
+    <Description:Directory Command error report 1-Okay else Check error list.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select>
+    <Category:File:Directory>
+    <Description:Displays directory select dialog.Result string placed in variable 'Directory.Select.File'>
+    <Inputs:Path:String>
+    <Output:Int>
+****
+<Name:Dir.Select.Path>
+    <Category:File:Directory>
+    <Description:Returns the last path/file from the Directory select Dialog.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Dir.Attr.Archive>
+    <Category:File:Directory>
+    <Description:Constant for Directory Archive =32.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Attr.Directory>
+    <Category:File:Directory>
+    <Description:Constant for Directory =16.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Attr.Hidden>
+    <Category:File:Directory>
+    <Description:Constant for Directory Hidden =2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Attr.ReadOnly>
+    <Category:File:Directory>
+    <Description:Constant for Directory ReadOnly =1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Attr.System>
+    <Category:File:Directory>
+    <Description:Constant for Directory System =4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Attr.VolumeID>
+    <Category:File:Directory>
+    <Description:Constant for Directory VolumeID =8.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select.Cancel>
+    <Category:File:Directory>
+    <Description:Constant Directory.Select.Cancel = 1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select.InUse>
+    <Category:File:Directory>
+    <Description:Constant Directory.Select.InUse = 2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select.MemFull>
+    <Category:File:Directory>
+    <Description:Constant Directory.Select.MemFull = 3.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select.NoWindow>
+    <Category:File:Directory>
+    <Description:Constant Directory.Select.NoWindow = 4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Dir.Select.OK>
+    <Category:File:Directory>
+    <Description:Constant Directory.Select.OK = 0.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Garbage>
+    <Category:System>
+    <Description:Force a Garbage Collection.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Idle>
+    <Category:System>
+    <Description:Return time to OS.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Execute>
+    <Category:System>
+    <Description:Launch an app or file. Returns 0-Success/1-File not found/2-Not executable/3-File Error/4-Memory Full>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:App.Exit>
+    <Category:System:App>
+    <Description:Close and Exit the application.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:App.Bank>
+    <Category:System:App>
+    <Description:Returns the Applications Bank number.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:App.Coder>
+    <Category:System:App>
+    <Description:Returns the Application Coder name string.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.CommandLine>
+    <Category:System:App>
+    <Description:Return application entry string, including Path\file & parameters.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.CommandLine.Len>
+    <Category:System:App>
+    <Description:Return application entry string length.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:App.Date>
+    <Category:System:App>
+    <Description:Returns the Applications Compile Date string.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.Name>
+    <Category:System:App>
+    <Description:Return application name string.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.Name.Len>
+    <Category:System:App>
+    <Description:Return application name string.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:App.Path>
+    <Category:System:App>
+    <Description:Return application entry directory path.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.SystemPath>
+    <Category:System:App>
+    <Description:Return symbos system directory path.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:App.TranExt.Size>
+    <Category:System:App>
+    <Description:Memory allocated to extend Transfer Area.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:App.Version>
+    <Category:System:App>
+    <Description:Returns the Applications Version string.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Clipboard.Text.Set>
+    <Category:System:Clipboard>
+    <Description:Sets the Text on Clipboard.>
+    <Inputs:String:String>
+    <Output:(None)>
+****
+<Name:Clipboard.Len>
+    <Category:System:Clipboard>
+    <Description:Returns type of data in clipboard size in bytes>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Clipboard.Text.Get>
+    <Category:System:Clipboard>
+    <Description:Returns Text if any on clipbaord.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Clipboard.Type>
+    <Category:System:Clipboard>
+    <Description:Returns type of data in clipboard. Empty-0 Text-1 Graphic-2>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Screen.Colour>
+    <Category:System:Screen>
+    <Description:Return current screen mode colour (2-16)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Screen.Mode>
+    <Category:System:Screen>
+    <Description:Return current screen mode. PCW-0 CPC-1/2 MSX-5/6/7>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Screen.Resolution.X>
+    <Category:System:Screen>
+    <Description:Return current screen x resolution.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Screen.Resolution.Y>
+    <Category:System:Screen>
+    <Description:Return current screen x resolution.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Data.Byte>
+    <Category:System:Data>
+    <Description:Reads and returns a single byte from Data Address... Address will be advanced 1 byte.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Data.Int>
+    <Category:System:Data>
+    <Description:Reads and returns a single Int from Data Address... Address will be advanced 2 bytes.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Data.String>
+    <Category:System:Data>
+    <Description:Reads And returns a Single String from Data Address... Address will be advanced by length of String.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Time.Day.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock day 1-31>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Time.Hour.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock hour 0-23>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Time.Minute.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock minute 0-59>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Time.Month.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock month 1-12>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Time.Second.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock second 0-59>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Time.Year.Get>
+    <Category:System:Time>
+    <Description:Returns the current clock year 1900-2100>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Timer.On>
+    <Category:System:Timer>
+    <Description:Turns on the Timer>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Timer.Stop>
+    <Category:System:Timer>
+    <Description:Halts the Timer>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Timer.IsOn>
+    <Category:System:Timer>
+    <Description:Return the status of the Timer Halted 0 or On 1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine>
+    <Category:System:Mouse>
+    <Description:Return machine type - See machine value list>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.464>
+    <Category:System:Mouse>
+    <Description:Constant CPC464 - 0>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.464Plus>
+    <Category:System:Mouse>
+    <Description:Constant CPC464Plus - 3>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.6128>
+    <Category:System:Mouse>
+    <Description:Constant CPC6128 - 2>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.6128Plus>
+    <Category:System:Mouse>
+    <Description:Constant CPC6128Plus - 4>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.664>
+    <Category:System:Mouse>
+    <Description:Constant CPC664 - 1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.Enterprise>
+    <Category:System:Mouse>
+    <Description:Constant Enterprise 64/128 - 6>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.MSX1>
+    <Category:System:Mouse>
+    <Description:Constant MSX1 - 7>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.MSX2>
+    <Category:System:Mouse>
+    <Description:Constant MSX2 - 8>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.MSX2Plus>
+    <Category:System:Mouse>
+    <Description:Constant MSX2+ - 9>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.NC100>
+    <Category:System:Mouse>
+    <Description:Constant NC100 - 15>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.NC150>
+    <Category:System:Mouse>
+    <Description:Constant NC150 - 16>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.NC200>
+    <Category:System:Mouse>
+    <Description:Constant NC200 - 17>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.Pcw16>
+    <Category:System:Mouse>
+    <Description:Constant Pcw16 - 14>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.Pcw8xxx>
+    <Category:System:Mouse>
+    <Description:Constant Pcw8xxx - 12>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.Pcw9xxx>
+    <Category:System:Mouse>
+    <Description:Constant Pcw9xxx - 13>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.SpectrumNext>
+    <Category:System:Mouse>
+    <Description:Constant Symbos Virtual Machine - 20>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.SymbosVM>
+    <Category:System:Mouse>
+    <Description:Constant Symbos Virtual Machine - 18>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Machine.TurboR>
+    <Category:System:Mouse>
+    <Description:Constant MSX TurboR - 10>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Float.Deg>
+    <Category:Maths>
+    <Description:Set the Float routines to be based on Degrees. See Float.Deg/Float.Rad>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Float.Display>
+    <Category:Maths>
+    <Description:Set Float display. Number of decimal places (-1 Show Exp,-2 Show all). Show '000 commas>
+    <Inputs:DecPlace:Int,Commas:Int>
+    <Output:(None)>
+****
+<Name:Float.Rad>
+    <Category:Maths>
+    <Description:Set the Float routines to be based on Radians. See Float.Deg/Float.Rad>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Float.Randomize>
+    <Category:Maths>
+    <Description:Sets a Randomized seed For Float.Rnd>
+    <Inputs:Value:Float>
+    <Output:(None)>
+****
+<Name:Randomize>
+    <Category:Maths>
+    <Description:Sets the Randomize Seed for use with the RND function.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:Abs>
+    <Category:Maths>
+    <Description:Returns Absolute of integer.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Collision>
+    <Category:Maths>
+    <Description:Returns Collision 0/1 if X1/Y1 is within the given Radius od X2,Y2.>
+    <Inputs:Radius:Int,X1:Int,Y1:Int,X2:Int,Y2:Int>
+    <Output:Int>
+****
+<Name:Distance>
+    <Category:Maths>
+    <Description:Returns distance between two values. Quicker ABS(val1-val2).>
+    <Inputs:Value1:Int,Value2:Int>
+    <Output:Int>
+****
+<Name:Float.ATan>
+    <Category:Maths>
+    <Description:Calculate a ArcTangent of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Cos>
+    <Category:Maths>
+    <Description:Calsulate a Cosine of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.FromInt>
+    <Category:Maths>
+    <Description:Converts a 16Bit Integer value into Float value.>
+    <Inputs:Int:Int>
+    <Output:Float>
+****
+<Name:Float.FromLong>
+    <Category:Maths>
+    <Description:Converts a 32Bit Long value into Float value.>
+    <Inputs:Long:Long>
+    <Output:Float>
+****
+<Name:Float.Log>
+    <Category:Maths>
+    <Description:Calculate a Log of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Log10>
+    <Category:Maths>
+    <Description:Calculate a Log10 of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Pi>
+    <Category:Maths>
+    <Description:Returns the float value of PI>
+    <Inputs:(None)>
+    <Output:Float>
+****
+<Name:Float.Rnd>
+    <Category:Maths>
+    <Description:Calculate a random float value between zero and Input value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Sin>
+    <Category:Maths>
+    <Description:Calculate a Sine of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Sqr>
+    <Category:Maths>
+    <Description:Calculate a square root of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Float.Tan>
+    <Category:Maths>
+    <Description:Calculate a Tangent of a float value.>
+    <Inputs:Value:Float>
+    <Output:Float>
+****
+<Name:Int.Abs>
+    <Category:Maths>
+    <Description:Returns Absolute of integer.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Int.Collision>
+    <Category:Maths>
+    <Description:Returns Collision 0/1 if X1/Y1 is within the given Radius od X2,Y2.>
+    <Inputs:Radius:Int,X1:Int,Y1:Int,X2:Int,Y2:Int>
+    <Output:Int>
+****
+<Name:Int.Distance>
+    <Category:Maths>
+    <Description:Returns distance between two values. Quicker ABS(val1-val2).>
+    <Inputs:Value1:Int,Value2:Int>
+    <Output:Int>
+****
+<Name:Int.FromFloat>
+    <Category:Maths>
+    <Description:Converts a Float value into 16Bit Integer value.>
+    <Inputs:Float:Float>
+    <Output:Int>
+****
+<Name:Int.FromLong>
+    <Category:Maths>
+    <Description:Converts a 32Bit Long value into 16Bit Integer value.>
+    <Inputs:Long:Long>
+    <Output:Int>
+****
+<Name:Int.Neg>
+    <Category:Maths>
+    <Description:Changes sign of 16Bit Integer value.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Int.Sgn>
+    <Category:Maths>
+    <Description:Returns the Sign of an 16Bit Integer value.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:IntF>
+    <Category:Maths>
+    <Description:Adds a fractional value to Int/Frac variables. Needs Variables Addr.>
+    <Inputs:IntAddr:Int,FracAddr:Int,Value:Int>
+    <Output:Int>
+****
+<Name:IntSin>
+    <Category:Maths>
+    <Description:Returns a Sin from a value of 0-255.>
+    <Inputs:Value:Int>
+    <Output:Int>
+****
+<Name:Long.FromInt>
+    <Category:Maths>
+    <Description:Converts a 16Bit Integer value into 32Bit Long value.>
+    <Inputs:Int:Int>
+    <Output:Long>
+****
+<Name:Long.Neg>
+    <Category:Maths>
+    <Description:Changes the sign for Long value.>
+    <Inputs:Value:Long>
+    <Output:Long>
+****
+<Name:Max>
+    <Category:Maths>
+    <Description:Returns the larger of two numbers.>
+    <Inputs:First:Int,Second:Int>
+    <Output:Int>
+****
+<Name:Min>
+    <Category:Maths>
+    <Description:Returns the smaller of two numbers.>
+    <Inputs:First:Int,Second:Int>
+    <Output:Int>
+****
+<Name:Neg>
+    <Category:Maths>
+    <Description:Changes sign of Int value.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Not>
+    <Category:Maths>
+    <Description:Inverts Boolean result from true/false.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Range>
+    <Category:Maths>
+    <Description:Returns the value inside Range given a minimum, max and current value. Only Positive Integers>
+    <Inputs:Min:Int,Max:Int,Value:Int>
+    <Output:Int>
+****
+<Name:Rnd>
+    <Category:Maths>
+    <Description:Returns an Integer which is a generated Random number between 0 and specified value.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Sgn>
+    <Category:Maths>
+    <Description:Returns the Sgn of an Integer.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl1>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 1 bit left or multiply by 2.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl10>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 10 bits left or multiply by 1024.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl11>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 11 bits left or multiply by 2048.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl12>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 12 bits left or multiply by 4096.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl2>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 2 bits left or multiply by 4.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl3>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 3 bits left or multiply by 8.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl4>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 4 bits left or multiply by 16.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl5>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 5 bits left or multiply by 32.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl6>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 6 bits left or multiply by 64.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl7>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 7 bits left or multiply by 128.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl8>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 8 bits left or multiply by 256.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shl9>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 9 bits left or multiply by 512.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr1>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 1 bit right or Divide by 2.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr12>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 12 bits right or Divide by 4096.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr2>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 2 bits right or Divide by 4.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr3>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 3 bits right or Divide by 8.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr4>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 4 bits right or Divide by 16.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr5>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 5 bits right or Divide by 32.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr6>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 6 bits right or Divide by 64.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr7>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 7 bits right or Divide by 128.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr8>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 8 bits right or Divide by 256.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Shr9>
+    <Category:Maths>
+    <Description:Returns Integer of Shift Integer 9 bits right or Divide by 512.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Sqr>
+    <Category:Maths>
+    <Description:Converts an Integer to its square root.>
+    <Inputs:Int:Int>
+    <Output:Int>
+****
+<Name:Asc>
+    <Category:Strings>
+    <Description:Returns the Integer ASCII code for the first character of given String.>
+    <Inputs:String:String>
+    <Output:Int>
+****
+<Name:Base64.Decode>
+    <Category:Strings>
+    <Description:Return Normalised string from Base64 version of string.>
+    <Inputs:String:String>
+    <Output:String>
+****
+<Name:Base64.Encode>
+    <Category:Strings>
+    <Description:Return Base64 version of string.>
+    <Inputs:String:String>
+    <Output:String>
+****
+<Name:CInt>
+    <Category:Strings>
+    <Description:Returns the Integer value of given numeric String.>
+    <Inputs:String:String>
+    <Output:Int>
+****
+<Name:Chr>
+    <Category:Strings>
+    <Description:Returns the string character of the given ascii value>
+    <Inputs:Ascii:Int>
+    <Output:String>
+****
+<Name:CtText.Colour>
+    <Category:Strings>
+    <Description:Returns String for ControlText for Colour Pen(0..15),Paper(0..16).>
+    <Inputs:Pen:Int,Paper:Int>
+    <Output:String>
+****
+<Name:CtText.Graphic>
+    <Category:Strings>
+    <Description:Returns String for ControlText for Colour Pen(0..15),Paper(0..16).>
+    <Inputs:Sheet:Int,Tile:Int>
+    <Output:String>
+****
+<Name:CtText.Remove>
+    <Category:Strings>
+    <Description:Removes AdTx control codes from a string.>
+    <Inputs:AdTxString:String>
+    <Output:String>
+****
+<Name:CtText.Underline>
+    <Category:Strings>
+    <Description:Returns String for ControlText for Underline on(1)/off(0).>
+    <Inputs:Int:Int>
+    <Output:String>
+****
+<Name:FindStr>
+    <Category:Strings>
+    <Description:Return start char position of searched string from a source string.>
+    <Inputs:Source:String,Find:String,Start:Int>
+    <Output:Int>
+****
+<Name:Hex>
+    <Category:Strings>
+    <Description:Returns a Hexidecimal String converted a given Integer value.>
+    <Inputs:Int:Int>
+    <Output:String>
+****
+<Name:LCase>
+    <Category:Strings>
+    <Description:Returns an lower case version of the given string.>
+    <Inputs:String:String>
+    <Output:String>
+****
+<Name:Left>
+    <Category:Strings>
+    <Description:Returns string of length from Left side of source.>
+    <Inputs:String:String,Length:Int>
+    <Output:String>
+****
+<Name:Len>
+    <Category:Strings>
+    <Description:Returns the Integer character length of the given String.>
+    <Inputs:String:String>
+    <Output:Int>
+****
+<Name:Mid>
+    <Category:Strings>
+    <Description:Returns part a string from start with the given length.>
+    <Inputs:String:String,Start:Int,Length:Int>
+    <Output:String>
+****
+<Name:Replace>
+    <Category:Strings>
+    <Description:Return string with found elements changed for new.>
+    <Inputs:Source:String,Find:String,Replace:String>
+    <Output:String>
+****
+<Name:Right>
+    <Category:Strings>
+    <Description:Returns string of length from Right side of sourc string.>
+    <Inputs:String:String,Length:Int>
+    <Output:String>
+****
+<Name:Str>
+    <Category:Strings>
+    <Description:Returns String converted from the given Integer value.>
+    <Inputs:Int:Int>
+    <Output:String>
+****
+<Name:String.Buffer.Free>
+    <Category:Strings>
+    <Description:Return Integer of size in bytes of free String Buffer space.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:String.Free>
+    <Category:Strings>
+    <Description:Return Integer of size in bytes of free String space.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:String.FromFloat>
+    <Category:Strings>
+    <Description:Returns String version of a Float value.>
+    <Inputs:Float:Float>
+    <Output:String>
+****
+<Name:String.FromInt>
+    <Category:Strings>
+    <Description:Returns String converted from the given Integer value.>
+    <Inputs:Int:Int>
+    <Output:String>
+****
+<Name:String.FromLong>
+    <Category:Strings>
+    <Description:Returns String version of a Long Integer.>
+    <Inputs:Long:Long>
+    <Output:String>
+****
+<Name:String.Memory>
+    <Category:Strings>
+    <Description:Return Integer of size in bytes of useable String space.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:StringBuffer>
+    <Category:Strings>
+    <Description:Return String buffer Position>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:UCase>
+    <Category:Strings>
+    <Description:Returns an upper case version of the given string.>
+    <Inputs:String:String>
+    <Output:String>
+****
+<Name:ValidString>
+    <Category:Strings>
+    <Description:Takes a string and removes invalid characters.>
+    <Inputs:Source:String>
+    <Output:String>
+****
+<Name:Drive.GetList>
+    <Category:Drive>
+    <Description:Perform an OS call to return Drive Info.  See =Drive.Letter(x), =Drive.Name(x).>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Drive.Clusters>
+    <Category:Drive>
+    <Description:Return Drive number of clusters as a Long value following Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Long>
+****
+<Name:Drive.Count>
+    <Category:Drive>
+    <Description:Returns the number of Drives found following a Drive.GetList.Drives are 0..Count-1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Error>
+    <Category:Drive>
+    <Description:Return Drive Error following Drive operation.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem>
+    <Category:Drive>
+    <Description:Return Drive FileSystem following Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FreeSectors>
+    <Category:Drive>
+    <Description:Return Drive number of free sectors as a Long value following Drive.GetFreeSpace>
+    <Inputs:(None)>
+    <Output:Long>
+****
+<Name:Drive.GetFreeSpace>
+    <Category:Drive>
+    <Description:Returns the DriveInfo of specified drive number following a Drive.GetList>
+    <Inputs:DriveLetter:String>
+    <Output:Int>
+****
+<Name:Drive.GetInfo>
+    <Category:Drive>
+    <Description:Returns the DriveInfo of specified drive number following a Drive.GetList>
+    <Inputs:DriveLetter:String>
+    <Output:Int>
+****
+<Name:Drive.Letter>
+    <Category:Drive>
+    <Description:Returns the Drive Letter A..Z of specified drive number following a Drive.GetList>
+    <Inputs:DriveNo:Int>
+    <Output:String>
+****
+<Name:Drive.Medium>
+    <Category:Drive>
+    <Description:Return Drive Medium following Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.MediumRemovable>
+    <Category:Drive>
+    <Description:Returns if the Drive Medium is removable 0 or 1 following Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Name>
+    <Category:Drive>
+    <Description:Returns the Drive Name of specified drive number following a Drive.GetList>
+    <Inputs:DriveNo:Int>
+    <Output:String>
+****
+<Name:Drive.SectorsPerCluster>
+    <Category:Drive>
+    <Description:Return Drive number of Sectors per Clusterfollowing Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Status>
+    <Category:Drive>
+    <Description:Return Drive Status following Drive.GetInfo>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Abort>
+    <Category:Drive>
+    <Description:Constant for Status error (8) Abort while Volume access.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.DeviceNotExist>
+    <Category:Drive>
+    <Description:Constant for Status error (11) Device does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.DeviceNotReady>
+    <Category:Drive>
+    <Description:Constant for Status error (26) Device not ready.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.DirNotEmpty>
+    <Category:Drive>
+    <Description:Constant for Status error (27) Directory is not empty.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.DirectoryFull>
+    <Category:Drive>
+    <Description:Constant for Status error (23) Directory full.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.FileNotExist>
+    <Category:Drive>
+    <Description:Constant for Status error (13) File does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.FileOrganisation>
+    <Category:Drive>
+    <Description:Constant for Status error (18) Error in file organisation.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Filehandler>
+    <Category:Drive>
+    <Description:Constant for Status error (10) No free filehandler.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Invalid>
+    <Category:Drive>
+    <Description:Constant for Status error (15) Invalid path or filename.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.InvalidDestDevice>
+    <Category:Drive>
+    <Description:Constant for Status error (28) Invalid Destination device.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.InvalidName>
+    <Category:Drive>
+    <Description:Constant for Status error (19) Invalid destination name.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.MediaDamaged>
+    <Category:Drive>
+    <Description:Constant for Status error (3) Media Damaged.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.MediaFull>
+    <Category:Drive>
+    <Description:Constant for Status error (24) Media full.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.MediaWriteProtect>
+    <Category:Drive>
+    <Description:Constant for Status error (25) Media Write protected.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.NoAccess>
+    <Category:Drive>
+    <Description:Constant for Status error (14) Access forbidden.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.NoHandler>
+    <Category:Drive>
+    <Description:Constant for Status error (16) Filehandler does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.NoPartition>
+    <Category:Drive>
+    <Description:Constant for Status error (4) Partition does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.NotExist>
+    <Category:Drive>
+    <Description:Constant for Status error (0) Drive does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.NotInitialized>
+    <Category:Drive>
+    <Description:Constant for Status error (2) Device not initialised.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Ok>
+    <Category:Drive>
+    <Description:Constant for Status error (1) OK which means no Error reported.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.PathExist>
+    <Category:Drive>
+    <Description:Constant for Status error (20) Path already exists.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.PathNotExist>
+    <Category:Drive>
+    <Description:Constant for Status error (12) Path does not exist.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Positioning>
+    <Category:Drive>
+    <Description:Constant for Status error (7) Error While positioning.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.SectorFind>
+    <Category:Drive>
+    <Description:Constant for Status error (6) Error while sector Read/Write.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.SlotOccupied>
+    <Category:Drive>
+    <Description:Constant for Status error (17) Device slot already occupied.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Unsupported>
+    <Category:Drive>
+    <Description:Constant for Status error (5) Unsupported Media or Partition.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.Volume>
+    <Category:Drive>
+    <Description:Constant for Status error (9) Unknown Volume Error.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.WrongAttr>
+    <Category:Drive>
+    <Description:Constant for Status error (22) Wrong Attribute.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Device.Error.WrongCommand>
+    <Category:Drive>
+    <Description:Constant for Status error (21) Wrong sub command code.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.AmsdosData>
+    <Category:Drive>
+    <Description:Constant (1) of Drive.FileSystem being AmsdosData.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.AmsdosSystem>
+    <Category:Drive>
+    <Description:Constant (2) of Drive.FileSystem being AmsdosSystem.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.Fat12>
+    <Category:Drive>
+    <Description:Constant (16) of Drive.FileSystem being Fat12.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.Fat16>
+    <Category:Drive>
+    <Description:Constant (17) of Drive.FileSystem being Fat16.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.Fat32>
+    <Category:Drive>
+    <Description:Constant (18) of Drive.FileSystem being Fat32.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.FileSystem.PCW180k>
+    <Category:Drive>
+    <Description:Constant (3) of Drive.FileSystem being PCW 180k.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Medium.AmsdosFloppy>
+    <Category:Drive>
+    <Description:Constant (1) of Drive.Medium being Floppy Disc single side Amsdos.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Medium.Fat12Floppy>
+    <Category:Drive>
+    <Description:Constant (2) of Drive.Medium being Floppy Disc double side Fat12.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Medium.IDE>
+    <Category:Drive>
+    <Description:Constant (16) of Drive.Medium being IDE hard Disc Fat16 or Fat32.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Medium.RamDisc>
+    <Category:Drive>
+    <Description:Constant (8) of Drive.Medium being Ram Disc.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.NotExistStatus.>
+    <Category:Drive>
+    <Description:Constant of Drive.Status being not existing.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Status.Corrupt>
+    <Category:Drive>
+    <Description:Constant of Drive.Status being corrupt.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Status.NotInitialized>
+    <Category:Drive>
+    <Description:Constant of Drive.Status being not initialized.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Drive.Status.Ready>
+    <Category:Drive>
+    <Description:Constant of Drive.Status being ready.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:CGrid.Set>
+    <Category:Draw>
+    <Description:Sets value of CGrid 0..31/0..31>
+    <Inputs:GridX:Int,GridY:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:Circle>
+    <Category:Draw>
+    <Description:Draws a circle from point X/Y of given radius and colour.>
+    <Inputs:XPos:Int,YPos:Int,Radius:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:DrawBuffer.Image>
+    <Category:Draw>
+    <Description:Sets the given Image/Canvas to be the Drawing Buffer.>
+    <Inputs:Image:Int>
+    <Output:(None)>
+****
+<Name:FCircle>
+    <Category:Draw>
+    <Description:Draws a filled circle from point X/Y of given radius and colour.>
+    <Inputs:XPos:Int,YPos:Int,Radius:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:FRectangle>
+    <Category:Draw>
+    <Description:Draws a horizontal line from X/Y of given length and colour.>
+    <Inputs:XPos:Int,YPos:Int,HLen:Int,VLen:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:FTriangle>
+    <Category:Draw>
+    <Description:Draws a filled triangle from three X/Y of a given colour.>
+    <Inputs:XPos1:Int,YPos1:Int,XPos2:Int,YPos2:Int,XPos3:Int,Ypos3:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:HLine>
+    <Category:Draw>
+    <Description:Draws a horizontal line from X/Y of given length and colour.>
+    <Inputs:XPos:Int,YPos:Int,HLen:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:Line>
+    <Category:Draw>
+    <Description:Draws a line from X1/Y1 too X2/Y2 in given colour.>
+    <Inputs:XPos1:Int,YPos1:Int,XPos2:Int,YPos2:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:Pixel.Plot>
+    <Category:Draw>
+    <Description:Draws a pixel of given colour to X/Y position on the current Drawing Buffer.>
+    <Inputs:XPos:Int,YPos:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:Pixel.Read>
+    <Category:Draw>
+    <Description:Returns the pixel colour of X/Y position on the current Drawing Buffer.>
+    <Inputs:XPos:Int,YPos:Int>
+    <Output:(None)>
+****
+<Name:VLine>
+    <Category:Draw>
+    <Description:Draws a vertical line from X/Y of given length and colour.>
+    <Inputs:XPos:Int,YPos:Int,VLen:Int,Colour:Int>
+    <Output:(None)>
+****
+<Name:CGrid.SbPx>
+    <Category:Draw>
+    <Description:Gets a CanvasGrid value from a given X/Y Subpixel input.>
+    <Inputs:XPos:Int,YPos:Int>
+    <Output:Int>
+****
+<Name:IO.Out>
+    <Category:Input>
+    <Description:Send a value to a given IO Port.>
+    <Inputs:Port:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:KeyMul.Read>
+    <Category:Input>
+    <Description:Reads 6 key scans set by KeyMul.Set. Use KeyMul.Get to check results.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:KeyMul.Set>
+    <Category:Input>
+    <Description:Sets 6 scan codes for KeyMul.Read. For games where speed is needed.>
+    <Inputs:Scan1:Int,Scan2:Int,Scan3:Int,Scan4:Int,Scan5:Int,Scan6:Int>
+    <Output:(None)>
+****
+<Name:IO.In>
+    <Category:Input>
+    <Description:Reads data from a IO Port.>
+    <Inputs:Port:Int>
+    <Output:Int>
+****
+<Name:Key>
+    <Category:Input>
+    <Description:Returns Integer checking for specified input scan code. 1/Pressed1 or 0/Not Pressed.>
+    <Inputs:Scan:Int>
+    <Output:Int>
+****
+<Name:Key.Alt>
+    <Category:Input>
+    <Description:Returns Integer checking for ALT being 1/Pressed or 0/Not Pressed.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Caps>
+    <Category:Input>
+    <Description:Returns Integer checking for Caps being 1/Pressed or 0/Not Pressed.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Control>
+    <Category:Input>
+    <Description:Returns Integer checking for CTRL being 1/Pressed or 0/Not Pressed.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Pressed>
+    <Category:Input>
+    <Description:Returns the last user non-control event keypress. Note: Is zero'd after use.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Shift>
+    <Category:Input>
+    <Description:Returns Integer checking for Shift being 1/Pressed or 0/Not Pressed.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Get>
+    <Category:Input>
+    <Description:Returns result from KeyMul.Read. Bit0..5 for each Key, use KeyMul.Scan1..KeyMul.Scan6.>
+    <Inputs:ScanNo:Int>
+    <Output:Int>
+****
+<Name:KeyMul.Scan1>
+    <Category:Input>
+    <Description:Constant (1) to check with Key.Mul.Get result for Scan1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Scan2>
+    <Category:Input>
+    <Description:Constant (2) to check with Key.Mul.Get result for Scan2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Scan3>
+    <Category:Input>
+    <Description:Constant (4) to check with Key.Mul.Get result for Scan3.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Scan4>
+    <Category:Input>
+    <Description:Constant (8) to check with Key.Mul.Get result for Scan4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Scan5>
+    <Category:Input>
+    <Description:Constant (16) to check with Key.Mul.Get result for Scan5.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:KeyMul.Scan6>
+    <Category:Input>
+    <Description:Constant (32) to check with Key.Mul.Get result for Scan6.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.0>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 0.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.1>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.2>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.3>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 3.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.4>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.5>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 5.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.6>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 6.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.7>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 7.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.8>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 8.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.9>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for 9.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.A>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for A.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Alt>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Alt.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.At>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for At.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.B>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for B.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.BackSlash>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for BackSlash.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.C>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for C.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Capslock>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Capslock.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.CloseSqBrk>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for CloseSqBrk.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Clr>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Clr.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Colon>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Colon.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Comma>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Comma.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Control>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.CursorDown>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Cursor Down.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.CursorLeft>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Cursor Left.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.CursorRight>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Cursor Right.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.CursorUp>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Cursor Up.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.D>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for D.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Del>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Del.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.E>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for E.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.ESC>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for ESC.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Enter>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Enter.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F0>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F0.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F1>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F2>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F3>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F3.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F4>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F4.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F5>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F5.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F6>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F6.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F7>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F7.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F8>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F8.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.F9>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for F9.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Fire1>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Fire 1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Fire2>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Fire 2.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.ForwardSlash>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for ForwardSlash.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.FullStop>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for FullStop.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.G>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for G.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.H>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for H.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Hat>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Hat.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.I>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for I.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.J>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for J.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.JoyDown>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Joystick Down.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.JoyLeft>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Joystick Left.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.JoyRight>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Joystick Right.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.JoyUp>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Joystick Up.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.K>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for K.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.L>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for L.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.M>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for M.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Minus>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Minus.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.N>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for N.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.O>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for O.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.OpenSqBrk>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for OpenSqBrk.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.P>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for P.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Q>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Q.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.R>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for R.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Return>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Return.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.S>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for S.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.SemiColon>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for SemiColon.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Shift>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Shift.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Space>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Space.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.T>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for T.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Tab>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Tab.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.U>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for U.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.V>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for V.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.W>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for W.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.X>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for X.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Y>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Y.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Key.Code.Z>
+    <Category:Input:KeyScan>
+    <Description:Constant Key Scan code for Z.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].Byte.Set>
+    <Category:Memory>
+    <Description:Write a byte to memory allocation Memory1.>
+    <Inputs:Position:Int,Byte:Int>
+    <Output:(None)>
+****
+<Name:[MemoryName].Create>
+    <Category:Memory>
+    <Description:Create a memory allocation in Memory1 of a number of bytes. Type is 0 (64k),1 (16k Data),2 (16k Transfer)>
+    <Inputs:Bytes:Int,Type:Int>
+    <Output:(None)>
+****
+<Name:[MemoryName].Free>
+    <Category:Memory>
+    <Description:Clears a memory allocation in Memory1 so data is no longer taken>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[MemoryName].Int.Set>
+    <Category:Memory>
+    <Description:Write an int to memory allocation Memory1 at position.>
+    <Inputs:Position:Int,Data:Int>
+    <Output:(None)>
+****
+<Name:[MemoryName].String.Set>
+    <Category:Memory>
+    <Description:Stores a string at memory position.>
+    <Inputs:Position:Int,String:String>
+    <Output:(None)>
+****
+<Name:[MemoryName]>
+    <Category:Memory>
+    <Description:Returns memory container Memory1 ID>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].Addr>
+    <Category:Memory>
+    <Description:Returns the start address of memory data.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].Bank>
+    <Category:Memory>
+    <Description:Returns the Bank in which memory data sits.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].Byte.Get>
+    <Category:Memory>
+    <Description:Reads a byte from a given position in memory allocation Memory1.>
+    <Inputs:Position:Int>
+    <Output:Int>
+****
+<Name:[MemoryName].Int.Get>
+    <Category:Memory>
+    <Description:Reads an Int from a given position within memory allocation Memory1.>
+    <Inputs:Position:Int>
+    <Output:Int>
+****
+<Name:[MemoryName].Size>
+    <Category:Memory>
+    <Description:Returns size in bytes of memory assigned.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].Status>
+    <Category:Memory>
+    <Description:Is the bank currently in use 0/1.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MemoryName].String.Get>
+    <Category:Memory>
+    <Description:Reads String from memory location given length Memory1.>
+    <Inputs:Position:Int,Length:Int>
+    <Output:String>
+****
+<Name:Net.Initialise>
+    <Category:Network>
+    <Description:Initialise Network ability through running network daemon.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Event.Net>
+    <Category:Network>
+    <Description:Return then Net event type of last net event occurance.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Net.Port>
+    <Category:Network>
+    <Description:Return the port of net event.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Net.Received.Byte>
+    <Category:Network>
+    <Description:Returns single Byte from net event.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Net.Received.PartString>
+    <Category:Network>
+    <Description:Return string from net event>
+    <Inputs:Length:Int>
+    <Output:String>
+****
+<Name:Event.Net.Received.Size>
+    <Category:Network>
+    <Description:Return size of Net received data.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Net.Received.String>
+    <Category:Network>
+    <Description:Return string from net event>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:Event.Net.Result>
+    <Category:Network>
+    <Description:Return then Net event type of last net event occurance.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Net.Socket>
+    <Category:Network>
+    <Description:Return the event socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.DNS.Resolve>
+    <Category:Network>
+    <Description:Returns The IP location of a Web URL>
+    <Inputs:Url:String>
+    <Output:String>
+****
+<Name:Net.DNS.Verify>
+    <Category:Network>
+    <Description:Returns verification of a Web URL. 0=invalid, 1=IP, 2=Domain.>
+    <Inputs:Url:String>
+    <Output:Int>
+****
+<Name:Net.Handle>
+    <Category:Network>
+    <Description:Return then Net event type of last net event occurance.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.Initialised>
+    <Category:Network>
+    <Description:Has the network daemon been initialised.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Close>
+    <Category:Network:TCP>
+    <Description:Close TCP Network Socket.>
+    <Inputs:Socket:Int>
+    <Output:(None)>
+****
+<Name:Net.TCP.Flush>
+    <Category:Network:TCP>
+    <Description:Flush TCP Network Socket.>
+    <Inputs:Socket:Int>
+    <Output:(None)>
+****
+<Name:Net.TCP.Send>
+    <Category:Network:TCP>
+    <Description:Send string over TCP Network Socket.>
+    <Inputs:Socket:Int,Send:String>
+    <Output:(None)>
+****
+<Name:Net.TCP.Send.Byte>
+    <Category:Network:TCP>
+    <Description:Send single Byte over TCP Network Socket.>
+    <Inputs:Socket:Int,Byte:Int>
+    <Output:(None)>
+****
+<Name:Net.TCP.Send.Int>
+    <Category:Network:TCP>
+    <Description:Send single Int over TCP Network Socket.>
+    <Inputs:Socket:Int,Int:Int>
+    <Output:(None)>
+****
+<Name:Net.TCP.Send.String>
+    <Category:Network:TCP>
+    <Description:Send string over TCP Network Socket.>
+    <Inputs:Socket:Int,Send:String>
+    <Output:(None)>
+****
+<Name:Net.TCP.Client.Open>
+    <Category:Network:TCP>
+    <Description:Opens a client TCP and looks for server returning a Handle.>
+    <Inputs:IP:String,Port:Int>
+    <Output:Int>
+****
+<Name:Net.TCP.Server>
+    <Category:Network:TCP>
+    <Description:Return true if this is a TCP server.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Server.Open>
+    <Category:Network:TCP>
+    <Description:Opens a server TCP listening port returning a Handle.>
+    <Inputs:Port:Int>
+    <Output:Int>
+****
+<Name:Net.TCP.Status>
+    <Category:Network:TCP>
+    <Description:Return the status of a Network Socket.>
+    <Inputs:Socket:Int>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.Closed>
+    <Category:Network:TCP>
+    <Description:Constant for connected status of Net Socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.Closing>
+    <Category:Network:TCP>
+    <Description:Constant for connected status of Net Socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.Connected>
+    <Category:Network:TCP>
+    <Description:Constant for connected status of Net Socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.DataRecieved>
+    <Category:Network:TCP>
+    <Description:Constant for connected status of Net Socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.Listening>
+    <Category:Network:TCP>
+    <Description:Constant for listening status of Net Socket.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Net.TCP.Status.Unavailable>
+    <Category:Network:TCP>
+    <Description:Constant for unavailable socket number.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MapEngine>
+    <Category:G9K>
+    <Description:Set Map Engine to be Off-0 or On-1.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:Update.Display>
+    <Category:G9K>
+    <Description:Updates Scroll & Sprites, so things like palette changes can occur after a screen refresh.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:VWait>
+    <Category:G9K>
+    <Description:Waits for the G9K V-Sync.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Game.Counter>
+    <Category:G9K>
+    <Description:Value clicks up every Game Cycle. (0-32767)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:OnScreen>
+    <Category:G9K>
+    <Description:Returns if Sprite Position is on Screen or not, and puts coords in Sprite.Pos.LastX/LastY>
+    <Inputs:X:Int,Y:Int>
+    <Output:Int>
+****
+<Name:Copy.Dest.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Sets Destination X/Y of current copy interrupt slot.>
+    <Inputs:DestX:Int,DestY:Int>
+    <Output:(None)>
+****
+<Name:Copy.Size.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Sets width and height in pixels of current copy interrupt slot.>
+    <Inputs:Width:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:Copy.Source.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Sets Source X/Y of current copy interrupt slot.>
+    <Inputs:SourceX:Int,SourceY:Int>
+    <Output:(None)>
+****
+<Name:Disable.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Disable G9K interrupt for other I/O operations. Should be used while loading etc>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Enable.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Enable G9K interrupt for quigs g9k engine. Should be disabled while loading and other I/O operations.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:New.Slot.G9KInterrupt>
+    <Category:G9K:Interrupt>
+    <Description:Creates a New copy interrupt slot.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Copy.Meta.LayerA>
+    <Category:G9K:Layer>
+    <Description:Copy MetaTile to LayerA at position Tile X,Y. Tile X,Y is calculated as (pixel_position / 8).>
+    <Inputs:MetaAddr:Int,X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Copy.Meta.LayerB>
+    <Category:G9K:Layer>
+    <Description:Copy MetaTile to LayerB at position Tile X,Y. Tile X,Y is calculated as (pixel_position / 8).>
+    <Inputs:MetaAddr:Int,X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Draw.LayerA>
+    <Category:G9K:Layer>
+    <Description:Draws LayerA at the Scroll X,Y position of LayerA>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Draw.LayerB>
+    <Category:G9K:Layer>
+    <Description:Draws LayerB at the Scroll X,Y position of LayerB>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Attr.MapA>
+    <Category:G9K:Map>
+    <Description:Returns Attribute value from fore map pixel pos X & Y>
+    <Inputs:X:Int,Y:Int>
+    <Output:Int>
+****
+<Name:Height.MapA>
+    <Category:G9K:Map>
+    <Description:Returns pixel heigh of G9k fore game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Height.MapB>
+    <Category:G9K:Map>
+    <Description:Returns pixel heigh of G9k back game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Load.MapA>
+    <Category:G9K:Map>
+    <Description:Loads a .qma Map File into Fore Map Area. Returns (0-Fail / 1-Success).>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Load.MapB>
+    <Category:G9K:Map>
+    <Description:Loads a .qmb Map File into Back Map Area. Returns (0-Fail / 1-Success).>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Meta.MapA>
+    <Category:G9K:Map>
+    <Description:Returns Fore Metatile address for map position X + (Y * MetaWidth).>
+    <Inputs:MapPos:Int>
+    <Output:Int>
+****
+<Name:Meta.MapB>
+    <Category:G9K:Map>
+    <Description:Returns Back Metatile address for map position X + (Y * MetaWidth).>
+    <Inputs:MapPos:Int>
+    <Output:Int>
+****
+<Name:MetaHeight.MapA>
+    <Category:G9K:Map>
+    <Description:Returns metatile height of G9k fore game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MetaHeight.MapB>
+    <Category:G9K:Map>
+    <Description:Returns metatile height of G9k back game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MetaWidth.MapA>
+    <Category:G9K:Map>
+    <Description:Returns metatile width of G9k fore game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MetaWidth.MapB>
+    <Category:G9K:Map>
+    <Description:Returns metatile width of G9k back game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Size.MapA>
+    <Category:G9K:Map>
+    <Description:Returns size in bytes of G9k fore game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Size.MapB>
+    <Category:G9K:Map>
+    <Description:Returns size in bytes of G9k back game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Width.MapA>
+    <Category:G9K:Map>
+    <Description:Returns pixel width of G9k fore game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Width.MapB>
+    <Category:G9K:Map>
+    <Description:Returns pixel width of G9k back game map>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Meta.Int.Set>
+    <Category:G9K:MetaTile>
+    <Description:Set an int piece of data at Meta address>
+    <Inputs:Addr:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:Meta.Count>
+    <Category:G9K:MetaTile>
+    <Description:Returns the number of MetaTiles loaded.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Meta.Load>
+    <Category:G9K:MetaTile>
+    <Description:Loads a .qmt Metafile into Map Area. Returns (0-Fail / 1-Success).>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Meta.Size>
+    <Category:G9K:MetaTile>
+    <Description:Returns the size in bytes of MetaTile data.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Scroll.LayerA>
+    <Category:G9K:Scroll>
+    <Description:Sets LayerB Scroll position to X,Y pixel. This is the (0-32767),(0-32767) position on the MapA you wish to display from.>
+    <Inputs:X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Scroll.LayerB>
+    <Category:G9K:Scroll>
+    <Description:Sets LayerB Scroll position to X,Y pixel. This is the (0-32767),(0-32767) position on the MapB you wish to display from.>
+    <Inputs:X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Scroll.LayerA.X>
+    <Category:G9K:Scroll>
+    <Description:Returns the LayerA scroll X Position. (0-32767)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Scroll.LayerA.Y>
+    <Category:G9K:Scroll>
+    <Description:Returns the LayerA scroll Y Position. (0-32767)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Scroll.LayerB.X>
+    <Category:G9K:Scroll>
+    <Description:Returns the LayerB scroll X Position. (0-32767)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Scroll.LayerB.Y>
+    <Category:G9K:Scroll>
+    <Description:Returns the LayerB scroll Y Position. (0-32767)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Clear.MGroup>
+    <Category:G9K:Sprite>
+    <Description:Updates Sprite off screen so invisble.>
+    <Inputs:Sprite:Int,Count:Int>
+    <Output:(None)>
+****
+<Name:Disable.Sprites>
+    <Category:G9K:Sprite>
+    <Description:Turn Off the G9K Sprites.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Display.MSprite>
+    <Category:G9K:Sprite>
+    <Description:Sets properties for drawing map sprites. Palette (0-3),Visible (0-Norm, 1-Off, 2-Behind Fore, 3-Off)>
+    <Inputs:Palette:Int,Visible:Int>
+    <Output:(None)>
+****
+<Name:Display.Sprite>
+    <Category:G9K:Sprite>
+    <Description:Set sprite display properties (0, 1, 2 & 3).>
+    <Inputs:Sprite:Int,Setting:Int>
+    <Output:(None)>
+****
+<Name:Draw.Block>
+    <Category:G9K:Sprite>
+    <Description:Set the X/Y Position of sprite 0-124 for width and height>
+    <Inputs:Sprite:Int,X:Int,Y:Int,W:Int,H:Int>
+    <Output:(None)>
+****
+<Name:Draw.MGroup>
+    <Category:G9K:Sprite>
+    <Description:Draw a Sprite Group at a map coordinate.>
+    <Inputs:Group:Int,SprNo:Int>
+    <Output:(None)>
+****
+<Name:Draw.MSprite>
+    <Category:G9K:Sprite>
+    <Description:Draw a Sprite at a map coordinate.>
+    <Inputs:Sprite:Int,Pattern:Int>
+    <Output:(None)>
+****
+<Name:Draw.Sprite>
+    <Category:G9K:Sprite>
+    <Description:Set the X/Y Position of sprite 0-124.>
+    <Inputs:Sprite:Int,X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Enable.Sprites>
+    <Category:G9K:Sprite>
+    <Description:Turn on the G9K Sprites.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Palette.Sprite>
+    <Category:G9K:Sprite>
+    <Description:Set the Palette 0-3 of sprite 0-124.>
+    <Inputs:Sprite:Int,Palette:Int>
+    <Output:(None)>
+****
+<Name:Pattern.Sprite>
+    <Category:G9K:Sprite>
+    <Description:Set the Pattern of sprite 0-124.>
+    <Inputs:Sprite:Int,Pattern:Int>
+    <Output:(None)>
+****
+<Name:Set.Sprites>
+    <Category:G9K:Sprite>
+    <Description:Sets the Sprite data which will be sent to vdp from Start.Note we only have 120 sprites. The smaller the range the faster the copying will be >
+    <Inputs:Start:Int,Count:Int>
+    <Output:(None)>
+****
+<Name:Update.Sprites>
+    <Category:G9K:Sprite>
+    <Description:Sends the Sprite data within range to G9k. Note this is normally automatically done by the engine, but it can be forced by the user.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:BackColour>
+    <Category:G9K:Palette>
+    <Description:Set the palette used for backdrop.>
+    <Inputs:Palette:Int>
+    <Output:(None)>
+****
+<Name:Ink>
+    <Category:G9K:Palette>
+    <Description:Set the RGB value for one of the 256 Ink Slots.>
+    <Inputs:InkNo:Int,R:Int,G:Int,B:Int>
+    <Output:(None)>
+****
+<Name:Ink.Palette>
+    <Category:G9K:Palette>
+    <Description:Copies 16 inks starting at InkNo into specified palette.>
+    <Inputs:Palette:Int,InkNo:Int>
+    <Output:(None)>
+****
+<Name:Palette>
+    <Category:G9K:Palette>
+    <Description:Set one of the palettes 0-63 with a RGB value.>
+    <Inputs:Palette:Int,R:Int,G:Int,B:Int>
+    <Output:(None)>
+****
+<Name:Palette.LayerA>
+    <Category:G9K:Palette>
+    <Description:Turn Fore layer to Palette 0-3>
+    <Inputs:Palette:Int>
+    <Output:(None)>
+****
+<Name:Palette.LayerB>
+    <Category:G9K:Palette>
+    <Description:Turn Back layer to Palette 0-3>
+    <Inputs:Palette:Int>
+    <Output:(None)>
+****
+<Name:Fade.Ink>
+    <Category:G9K:Palette>
+    <Description:Works out value of fade between two inks (0..15) of fade level (0..127)>
+    <Inputs:Ink1:Int,Ink2:Int,Fade:Int>
+    <Output:Int>
+****
+<Name:Ink.Blue>
+    <Category:G9K:Palette>
+    <Description:Gets Blue Value of an Ink number>
+    <Inputs:InkNo:Int>
+    <Output:Int>
+****
+<Name:Ink.Green>
+    <Category:G9K:Palette>
+    <Description:Gets Green Value of an Ink number>
+    <Inputs:InkNo:Int>
+    <Output:Int>
+****
+<Name:Ink.Red>
+    <Category:G9K:Palette>
+    <Description:Gets Red Value of an Ink number>
+    <Inputs:InkNo:Int>
+    <Output:Int>
+****
+<Name:Animate.Patterns.Off>
+    <Category:G9K:Pattern>
+    <Description:Turn on the automatic animated pattern copy>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Animate.Patterns.On>
+    <Category:G9K:Pattern>
+    <Description:Turn on the automatic animated pattern copy>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Copy.Pattern.LayerA>
+    <Category:G9K:Pattern>
+    <Description:Copy an Pattern A onto LayerA at position Tile X,Y. Tile X,Y is calculated as (pixel_position / 8).>
+    <Inputs:Pattern:Int,X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Copy.Pattern.LayerB>
+    <Category:G9K:Pattern>
+    <Description:Copy an Pattern A onto LayerA at position Tile X,Y. Tile X,Y is calculated as (pixel_position / 8)>
+    <Inputs:Pattern:Int,X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Load.Pattern.A>
+    <Category:G9K:Pattern>
+    <Description:Load a Pattern Sheet into A area for LayerA/MapA starting at given offset (multiple of 32) pattern number. Returns the number of patterns loaded. Plus a palette offset.>
+    <Inputs:Filename:String,Offset:Int,PalOffset:Int>
+    <Output:Int>
+****
+<Name:Load.Pattern.B>
+    <Category:G9K:Pattern>
+    <Description:Load a Pattern Sheet into B area for LayerB/MapB starting at given offset (multiple on 32) pattern number. Returns the number of patterns loaded. Plus a palette offset.>
+    <Inputs:Filename:String,Offset:Int,PalOffset:Int>
+    <Output:Int>
+****
+<Name:Text.LayerA>
+    <Category:G9K:Text>
+    <Description:Print a String to Fore layer>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:Text.LayerB>
+    <Category:G9K:Text>
+    <Description:Print a String to Back layer>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:TextFont.LayerA>
+    <Category:G9K:Text>
+    <Description:Sets the first pattern of Fore layer font.>
+    <Inputs:Pattern:Int>
+    <Output:(None)>
+****
+<Name:TextFont.LayerB>
+    <Category:G9K:Text>
+    <Description:Sets the first pattern of Back layer font.>
+    <Inputs:Pattern:Int>
+    <Output:(None)>
+****
+<Name:TextPos.LayerA>
+    <Category:G9K:Text>
+    <Description:Set the position X (0..63),Y (0..63) on Fore layer for printing.>
+    <Inputs:X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:TextPos.LayerB>
+    <Category:G9K:Text>
+    <Description:Set the position X (0..63),Y (0..63) on Back layer for printing.>
+    <Inputs:X:Int,Y:Int>
+    <Output:(None)>
+****
+<Name:Printer.Byte>
+    <Category:Printer>
+    <Description:Send a single byte to printer. Returns Integer 0/Success or 1/Timeout or Print error.>
+    <Inputs:Byte:Int>
+    <Output:Int>
+****
+<Name:Printer.String>
+    <Category:Printer>
+    <Description:Send a string to printer. Returns Integer 0/Success or 1/Timeout or Print error.>
+    <Inputs:String:String>
+    <Output:Int>
+****
+<Name:Printer.Test>
+    <Category:Printer>
+    <Description:Test printer. Returns Integer 0/success, -1/busy, 1/Not supported.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Play>
+    <Category:Sound>
+    <Description:Plays an effect from a Handle at volume (0..255)>
+    <Inputs:Handle:Int,Effect:Int,Volume:Int>
+    <Output:(None)>
+****
+<Name:Sound.FX.PlayOPL4>
+    <Category:Sound>
+    <Description:Plays an effect from a Handle at volume (0..255), pitch.>
+    <Inputs:Handle:Int,Effect:Int,Volume:Int,Pitch:Int>
+    <Output:(None)>
+****
+<Name:Sound.FX.Release>
+    <Category:Sound>
+    <Description:Realeases an effects handle.>
+    <Inputs:Handle:Int>
+    <Output:(None)>
+****
+<Name:Sound.FX.Stop>
+    <Category:Sound>
+    <Description:Stops an effect from a Handle playing.>
+    <Inputs:Handle:Int,Effect:Int>
+    <Output:(None)>
+****
+<Name:Sound.Music.Continue>
+    <Category:Sound>
+    <Description:Continues Music from a Handle playing.>
+    <Inputs:Handle:Int>
+    <Output:(None)>
+****
+<Name:Sound.Music.Play>
+    <Category:Sound>
+    <Description:Plays a song from the start of Music Handle.>
+    <Inputs:Handle:Int,Song:Int>
+    <Output:(None)>
+****
+<Name:Sound.Music.Release>
+    <Category:Sound>
+    <Description:Realeases Music handle.>
+    <Inputs:Handle:Int>
+    <Output:(None)>
+****
+<Name:Sound.Music.Stop>
+    <Category:Sound>
+    <Description:Stops Music from a Handle playing.>
+    <Inputs:Handle:Int>
+    <Output:(None)>
+****
+<Name:Sound.Music.Volume>
+    <Category:Sound>
+    <Description:Sets Music handle volume (0..255).>
+    <Inputs:Handle:Int,Volume:Int>
+    <Output:(None)>
+****
+<Name:Sound.RemoteOn>
+    <Category:Sound>
+    <Description:Sound daemon is no longer always running but called by user.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:Sound.FX.LoadOPL4>
+    <Category:Sound>
+    <Description:Loads a OPL4 FX file and returns Handle. 255 is error loading.>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Sound.FX.LoadPSG>
+    <Category:Sound>
+    <Description:Loads a PSG FX file and returns Handle. 255 is error loading.>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Sound.Hardware>
+    <Category:Sound>
+    <Description:Returns the sound daemon hardware available (Bit 0=Psg), (Bit1=Opl4).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.Init>
+    <Category:Sound>
+    <Description:Initializes the Sound Daemon. Returns (0=Not found), (1=Running).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.Master.FX.Volume>
+    <Category:Sound>
+    <Description:Returns the sound effects FX volume level.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.Master.Music.Volume>
+    <Category:Sound>
+    <Description:Returns the master music volume level.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.Music.LoadOPL4>
+    <Category:Sound>
+    <Description:Loads a OPL4 music file and returns Handle. 255 is error loading.>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Sound.Music.LoadPSG>
+    <Category:Sound>
+    <Description:Loads a PSG music file and returns Handle. 255 is error loading.>
+    <Inputs:Filename:String>
+    <Output:Int>
+****
+<Name:Sound.OPL4.Blocks>
+    <Category:Sound>
+    <Description:Returns the number of 64k ram blocks available to the OPL4 hardware.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.Pref.Hardware>
+    <Category:Sound>
+    <Description:Returns the sound daemon hardware preference (0=None available), (1=PSG) or (2=OPL4).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Alert1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Alert 1 (7).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Alert2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Alert 2 (8).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Beep1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Beep1 (3).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Beep2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Beep2 (4).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Click1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Click1 (1).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Click2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Click2  (2).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Explosion>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Explosion (18).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Lose>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Lose (20).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.PopUp>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Pop Up (13).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.RaiseDown>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Raise Down (12).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.RaiseUp>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Raise Up (11).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Ring1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Ring 1 (5).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Ring2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Ring 2 (6).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Shoot>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Shoot (17).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Shrink>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Shrink (14).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Slide1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Slide 1 (9).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Slide2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Slide 2 (10).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Step>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Step (19).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Tic1>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Tic 1 (15).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Tic2>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Tic 2 (16).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Sound.FX.Sys.Win>
+    <Category:Sound:FX>
+    <Description:Constant Sound FX Win (21).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[SheetName].EncodeTile2Img>
+    <Category:Sheet>
+    <Description:Converts a Sheet Tile to a new encoding. Only for 16>4 colour conversion>
+    <Inputs:Tile:Int,EncodeValue:Int>
+    <Output:(None)>
+****
+<Name:[SheetName].Free>
+    <Category:Sheet>
+    <Description:Free the memory used by sheet Sheet1 once finished with>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[SheetName].Load>
+    <Category:Sheet>
+    <Description:Loads a Sheet file into Sheet1>
+    <Inputs:SheetFile:String>
+    <Output:(None)>
+****
+<Name:[SheetName]>
+    <Category:Sheet>
+    <Description:Returns sheet container Sheet1 ID>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[SheetName].Colour.Depth>
+    <Category:Sheet>
+    <Description:Return colour depth of Sheet1 sheet. (0)-4 colour (1)-16 colour.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[SheetName].Size>
+    <Category:Sheet>
+    <Description:Return memory size used by Sheet1 sheet container.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[SheetName].Status>
+    <Category:Sheet>
+    <Description:Return status of Sheet1 sheet container (0) Empty / (1) In use / >(99) loading Error.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[SheetName].Tiles>
+    <Category:Sheet>
+    <Description:Return number of tiles in Sheet1 sheet container.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Control>
+    <Category:Event>
+    <Description:Return the last events control number>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Form>
+    <Category:Event>
+    <Description:Return the last events form number>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.KeyPressed>
+    <Category:Event>
+    <Description:Returns the last user non-control event keypress.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.MouseX>
+    <Category:Event>
+    <Description:Return the MouseX value when last event occurred>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.MouseY>
+    <Category:Event>
+    <Description:Return the MouseY value when last event occurred>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason>
+    <Category:Event>
+    <Description:Return the last events reason for happening>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type>
+    <Category:Event>
+    <Description:Return the last events reason for happening>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.KeyClick>
+    <Category:Event>
+    <Description:Constant for key click/modify.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.MouseLeftClick>
+    <Category:Event>
+    <Description:Constant for Mouse left button click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.MouseLeftDClick>
+    <Category:Event>
+    <Description:Constant for Mouse left button double click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.MouseMiddleClick>
+    <Category:Event>
+    <Description:Constant for Mouse middle button click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.MouseRightClick>
+    <Category:Event>
+    <Description:Constant for Mouse right button click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Reason.MouseWheel>
+    <Category:Event>
+    <Description:Constant for mouse wheel move.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type.CloseButton>
+    <Category:Event>
+    <Description:Constant for Close Button or Alt-F4 being clicked.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type.Content>
+    <Category:Event>
+    <Description:Constant for control of a conentent has been clicked.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type.KeyPressed>
+    <Category:Event>
+    <Description:Constant for key click/modify.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type.Menu>
+    <Category:Event>
+    <Description:Constant for Menu Entry being clicked.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Event.Type.ToolBar>
+    <Category:Event>
+    <Description:Constant for control on Toolbar has been clicked.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox>
+    <Category:Gui:MsgBox>
+    <Description:Display the MsgBox.>
+    <Inputs:Line:String,Line:String,Line:String,Title:Int,Buttons:Int,Icon:Int>
+    <Output:Int>
+****
+<Name:MsgBox.Buttons.Ok>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Button.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Buttons.YesNo>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Button.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Buttons.YesNoCancel>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Button.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Icon.Default>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Icon.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Icon.Empty>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Icon.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Icon.User>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Icon.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.CancelClose>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox was exited via Cancel or Close click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.Failed>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox failing to Open as already in use.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.No>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox was exited via No click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.Ok>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox was exited via OK click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.Open>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox being Open. Should be an Impossible result.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Result.Yes>
+    <Category:Gui:MsgBox>
+    <Description:Constant of MsgBox was exited via Yes click.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Title.Confirmation>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Tile.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Title.Error>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Tile.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Title.Info>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Tile.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Title.Normal>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Tile.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:MsgBox.Title.Warning>
+    <Category:Gui:MsgBox>
+    <Description:Constant for MsgBox Tile.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Form.Close>
+    <Category:Gui:Form>
+    <Description:>
+    <Inputs:Form:Int>
+    <Output:(None)>
+****
+<Name:Form.Menu.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Menu on the Form 1..8.>
+    <Inputs:Form:Int>
+    <Output:(None)>
+****
+<Name:Form.Modal.On>
+    <Category:Gui:Form>
+    <Description:Redraws the Menu on the Form 1..8.>
+    <Inputs:Form:Int,ParentForm:Int>
+    <Output:(None)>
+****
+<Name:Form.Open>
+    <Category:Gui:Form>
+    <Description:>
+    <Inputs:Form:Int>
+    <Output:(None)>
+****
+<Name:Form.Pos.Set>
+    <Category:Gui:Form>
+    <Description:Changes & Redraws the X & Y Position of Form.>
+    <Inputs:Form:Int,Width:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:Form.Size.Set>
+    <Category:Gui:Form>
+    <Description:Changes & Redraws the Width & Height of Form.>
+    <Inputs:Form:Int,Width:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:Form.Status.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Status bar on the given Form 1..8.>
+    <Inputs:Form:Int>
+    <Output:(None)>
+****
+<Name:Form.Title.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Title bar on the given Form 1..8.>
+    <Inputs:Form:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Close>
+    <Category:Gui:Form>
+    <Description:Closes the given Form and removes it from desktop.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Control.Paper.Set>
+    <Category:Gui:Form>
+    <Description:Sets the given Form Paper to desired colour 0..15.>
+    <Inputs:Paper:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Control.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws all Controls on the given Form >
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Focus.Set>
+    <Category:Gui:Form>
+    <Description:Sets the Forms focus to a control display number.>
+    <Inputs:Display:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Height.Set>
+    <Category:Gui:Form>
+    <Description:Alters the form Height without refresh.>
+    <Inputs:Height:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Left.Set>
+    <Category:Gui:Form>
+    <Description:Alters the Form Left position without refresh.>
+    <Inputs:Left:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Menu.Active.Set>
+    <Category:Gui:Form>
+    <Description:Set then Active (0-Off, 1-On) value for Form Menu Item.>
+    <Inputs:Item:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Menu.Check.Set>
+    <Category:Gui:Form>
+    <Description:Set the Check (0-Off, 1 -On) value for Form Menu Item.>
+    <Inputs:Item:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Menu.Icon.On>
+    <Category:Gui:Form>
+    <Description:Set the Icon (0-Off, 1-On) value for Form Menu Item.>
+    <Inputs:Item:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Menu.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Menu on given Form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Menu.Text.Set>
+    <Category:Gui:Form>
+    <Description:Set Form Menu Item text to given string.>
+    <Inputs:Item:Int,String:String>
+    <Output:(None)>
+****
+<Name:[FormName].Modal>
+    <Category:Gui:Form>
+    <Description:Set the form to modal so cant return to input parent form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Open>
+    <Category:Gui:Form>
+    <Description:Opens the given Form and displays on the desktop.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].PopUp>
+    <Category:Gui:Form>
+    <Description:Set the form to be a popup which returns to parent form when clicked off.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Pos.Set>
+    <Category:Gui:Form>
+    <Description:Changes & Redraws the X & Y position of the given Form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Size.Set>
+    <Category:Gui:Form>
+    <Description:Changes & Redraws the Width & Height of the given Form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Status.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Status Bar Text on given Form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Status.Text.Set>
+    <Category:Gui:Form>
+    <Description:Set the Status Bar text for the given Form.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[FormName].Text.Set>
+    <Category:Gui:Form>
+    <Description:Set the caption Text for the given Form.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[FormName].Title.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws the Title bar on the given Form.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Tool.Paper.Set>
+    <Category:Gui:Form>
+    <Description:Sets the given Form Paper to desired colour 0..15.>
+    <Inputs:Paper:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Tool.Refresh>
+    <Category:Gui:Form>
+    <Description:Redraws all Tools on the given Form >
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FormName].Top.Set>
+    <Category:Gui:Form>
+    <Description:Alters the form Top pooition without refresh>
+    <Inputs:Top:Int>
+    <Output:(None)>
+****
+<Name:[FormName].Width.Set>
+    <Category:Gui:Form>
+    <Description:Alters the form Width without refresh.>
+    <Inputs:Width:Int>
+    <Output:(None)>
+****
+<Name:[FormName]>
+    <Category:Gui:Form>
+    <Description:Returns the unique ID/Address value of the given Form data.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Ctrl.Count>
+    <Category:Gui:Form>
+    <Description:Returns the number of controls on Form1 form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Ctrl.ID>
+    <Category:Gui:Form>
+    <Description:Returns the control ID for the display position on Form1 form.>
+    <Inputs:Display:Int>
+    <Output:Int>
+****
+<Name:[FormName].Focus.Get>
+    <Category:Gui:Form>
+    <Description:Get the display ID of the control on a form that has focus (Note not Tool controls).>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Height.Get>
+    <Category:Gui:Form>
+    <Description:Return the pixel height of the given Form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Left.Get>
+    <Category:Gui:Form>
+    <Description:Return the left pixel position of the given Form on the desktop.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Menu>
+    <Category:Gui:Form>
+    <Description:Returns the unique ID/Address value of the Form's Menu Data.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Menu.Active.Get>
+    <Category:Gui:Form>
+    <Description:Get Int result from Form Menu Item active.>
+    <Inputs:Item:Int>
+    <Output:Int>
+****
+<Name:[FormName].Menu.Check.Get>
+    <Category:Gui:Form>
+    <Description:Get Int result from Form Menu Item check.>
+    <Inputs:Item:Int>
+    <Output:Int>
+****
+<Name:[FormName].Menu.Text.Get>
+    <Category:Gui:Form>
+    <Description:Get string result of Form Menu Item text.>
+    <Inputs:Item:Int>
+    <Output:String>
+****
+<Name:[FormName].State>
+    <Category:Gui:Form>
+    <Description:Return state value of the given Form 0/closed, 1/normal, 2/maximized, 3/minimized, +128 centered.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Status.Text.Get>
+    <Category:Gui:Form>
+    <Description:Get status text string of form Form1>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[FormName].Status.Text.Len>
+    <Category:Gui:Form>
+    <Description:Get character length of status text of form Form1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Text.Get>
+    <Category:Gui:Form>
+    <Description:Get caption text of form Form1>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[FormName].Text.Len>
+    <Category:Gui:Form>
+    <Description:Get character length of caption text of form Form1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Tool.Height>
+    <Category:Gui:Form>
+    <Description:Returns the control ID For the display position on Form1 form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Top.Get>
+    <Category:Gui:Form>
+    <Description:Return the top pixel position of the given Form on the desktop.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FormName].Width.Get>
+    <Category:Gui:Form>
+    <Description:Return the pixel width of the given Form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Colour.Set>
+    <Category:Gui:Label>
+    <Description:Sets the Pen & Paper colour 0..15, and filled background toggle of Label control.>
+    <Inputs:Pen:Int,Paper:Int,Filled:Int>
+    <Output:(None)>
+****
+<Name:[LabelName].Hidden.Set>
+    <Category:Gui:Label>
+    <Description:Sets control Label1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[LabelName].Position.Set>
+    <Category:Gui:Label>
+    <Description:Places the control Label1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[LabelName].Refresh>
+    <Category:Gui:Label>
+    <Description:Redraws control Label1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[LabelName].Size.Set>
+    <Category:Gui:Label>
+    <Description:Sizes the control Label1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[LabelName].Text.RSet>
+    <Category:Gui:Label>
+    <Description:Set the String Text For Label control Label1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[LabelName].Text.Set>
+    <Category:Gui:Label>
+    <Description:Set the string text for Label control Label1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[LabelName]>
+    <Category:Gui:Label>
+    <Description:Control Label1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Display>
+    <Category:Gui:Label>
+    <Description:Returns Display position of control Label1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Filled.Get>
+    <Category:Gui:Label>
+    <Description:Returns 0 or 1 depending on if the Label control's background paper is filled>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Height.Get>
+    <Category:Gui:Label>
+    <Description:Get the height value of Label1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Left.Get>
+    <Category:Gui:Label>
+    <Description:Get the left value of Label1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Paper.Get>
+    <Category:Gui:Label>
+    <Description:Get the paper colour (0-3) of the label control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Pen.Get>
+    <Category:Gui:Label>
+    <Description:Get the pen colour (0-3) of the label control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Text.Get>
+    <Category:Gui:Label>
+    <Description:Get caption text of Label1Control>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[LabelName].Top.Get>
+    <Category:Gui:Label>
+    <Description:Get the top value of Label1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Type>
+    <Category:Gui:Label>
+    <Description:Returns symbos type for this control Label1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[LabelName].Width.Get>
+    <Category:Gui:Label>
+    <Description:Get the width value of Label1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Form1>
+    <Category:Gui:TextLine>
+    <Description:Places the control TextLine1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[TextLineName].Hidden.Set>
+    <Category:Gui:TextLine>
+    <Description:Sets control TextLine1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[TextLineName].Position.Set>
+    <Category:Gui:TextLine>
+    <Description:Places the control TextLine1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[TextLineName].Refresh>
+    <Category:Gui:TextLine>
+    <Description:Redraws control TextLine1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[TextLineName].Size.Set>
+    <Category:Gui:TextLine>
+    <Description:Sizes the control TextLine1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[TextLineName].Text.Set>
+    <Category:Gui:TextLine>
+    <Description:Set the string text for TextLine control TextLine1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[TextLineName]>
+    <Category:Gui:TextLine>
+    <Description:Control TextLine1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Display>
+    <Category:Gui:TextLine>
+    <Description:Returns Display position of control TextLine1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Height.Get>
+    <Category:Gui:TextLine>
+    <Description:Get the height value of TextLine1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Left.Get>
+    <Category:Gui:TextLine>
+    <Description:Get the left value of TextLine1 Textline control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Text.Cursor>
+    <Category:Gui:TextLine>
+    <Description:Get the position of the cursor in the TextLine1 Textline Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Text.Get>
+    <Category:Gui:TextLine>
+    <Description:Get caption text of TextLine1Control>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[TextLineName].Text.Len.Max>
+    <Category:Gui:TextLine>
+    <Description:Get the maximum character length allocated for TextLine1 Textline control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Top.Get>
+    <Category:Gui:TextLine>
+    <Description:Get the top value of TextLine1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Type>
+    <Category:Gui:TextLine>
+    <Description:Returns symbos type for this control TextLine1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TextLineName].Width.Get>
+    <Category:Gui:TextLine>
+    <Description:Get the width value of TextLine1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Frame.Text.Set>
+    <Category:Gui:Frame>
+    <Description:Sets a string of the frame control text.>
+    <Inputs:Control:Int,Text:String>
+    <Output:(None)>
+****
+<Name:Ctrl.Label.Text.Set>
+    <Category:Gui:Frame>
+    <Description:Sets a string of the label control text.>
+    <Inputs:Control:Int,Text:String>
+    <Output:(None)>
+****
+<Name:[FrameName].Hidden.Set>
+    <Category:Gui:Frame>
+    <Description:Set Frame1 frame control to be Visible(0) or Invisible(1). Requires form redraw.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[FrameName].Position.Set>
+    <Category:Gui:Frame>
+    <Description:Position Frame1 frame control at left & top pixel on form.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[FrameName].Refresh>
+    <Category:Gui:Frame>
+    <Description:Redraw Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[FrameName].Size.Set>
+    <Category:Gui:Frame>
+    <Description:Resizes the Frame1 frame control with pixel width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[FrameName].Text.RSet>
+    <Category:Gui:Frame>
+    <Description:Set the caption Text For Frame1 frame control.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[FrameName].Text.Set>
+    <Category:Gui:Frame>
+    <Description:Set the caption text for Frame1 frame control.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:Ctrl.Frame.Text.Get>
+    <Category:Gui:Frame>
+    <Description:Get the String text of frame control.>
+    <Inputs:Control:Int>
+    <Output:String>
+****
+<Name:Ctrl.Frame.Text.Len>
+    <Category:Gui:Frame>
+    <Description:Get text length of frame control.>
+    <Inputs:Control:Int>
+    <Output:Int>
+****
+<Name:Ctrl.Frame.Type>
+    <Category:Gui:Frame>
+    <Description:Constant for Symbos Frame control Type.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Label.Text.Get>
+    <Category:Gui:Frame>
+    <Description:Get the String text of label control.>
+    <Inputs:Control:Int>
+    <Output:String>
+****
+<Name:Ctrl.Label.Text.Len>
+    <Category:Gui:Frame>
+    <Description:Get text length of label control.>
+    <Inputs:Control:Int>
+    <Output:Int>
+****
+<Name:Ctrl.Label.Type>
+    <Category:Gui:Frame>
+    <Description:Constant for Symbos Label control Type.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName]>
+    <Category:Gui:Frame>
+    <Description:Control Frame1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Display>
+    <Category:Gui:Frame>
+    <Description:Return display position of Frame1 frame control on form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Height.Get>
+    <Category:Gui:Frame>
+    <Description:Return the height value of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Left.Get>
+    <Category:Gui:Frame>
+    <Description:Return the left position value of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Text.Get>
+    <Category:Gui:Frame>
+    <Description:Return caption text of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[FrameName].Text.Len>
+    <Category:Gui:Frame>
+    <Description:Return character length of caption text of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Top.Get>
+    <Category:Gui:Frame>
+    <Description:Return the top position value of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Type>
+    <Category:Gui:Frame>
+    <Description:Return symbos type for Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[FrameName].Width.Get>
+    <Category:Gui:Frame>
+    <Description:Return the width value of Frame1 frame control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Hidden.Set>
+    <Category:Gui:Button>
+    <Description:Sets control Button1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[ButtonName].Position.Set>
+    <Category:Gui:Button>
+    <Description:Places the control Button1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[ButtonName].Refresh>
+    <Category:Gui:Button>
+    <Description:Redraws control Button1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[ButtonName].Size.Set>
+    <Category:Gui:Button>
+    <Description:Sizes the control Button1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[ButtonName].Text.RSet>
+    <Category:Gui:Button>
+    <Description:Set the caption Text For button control Button1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[ButtonName].Text.Set>
+    <Category:Gui:Button>
+    <Description:Set the caption text for button control Button1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:Ctrl.Button.Text.Set>
+    <Category:Gui:Button>
+    <Description:Sets a button control text>
+    <Inputs:Control:Int,Text:String>
+    <Output:(None)>
+****
+<Name:[ButtonName]>
+    <Category:Gui:Button>
+    <Description:Control Button1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Display>
+    <Category:Gui:Button>
+    <Description:Returns display position of Button1 button control on form.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Height.Get>
+    <Category:Gui:Button>
+    <Description:Get the height value of Button1 button control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Left.Get>
+    <Category:Gui:Button>
+    <Description:Get the left value of Button1 button control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Text.Get>
+    <Category:Gui:Button>
+    <Description:Get caption text of Button1 button control.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[ButtonName].Text.Len>
+    <Category:Gui:Button>
+    <Description:Get length of caption text of Button1 button control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Top.Get>
+    <Category:Gui:Button>
+    <Description:Get the top value of Button1 button control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Type>
+    <Category:Gui:Button>
+    <Description:Returns symbos type for Button1 button1 control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ButtonName].Width.Get>
+    <Category:Gui:Button>
+    <Description:Get the width value of Button1 button control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Button.Text.Get>
+    <Category:Gui:Button>
+    <Description:Get text of label control.>
+    <Inputs:Control:Int>
+    <Output:String>
+****
+<Name:Ctrl.Button.Text.Len>
+    <Category:Gui:Button>
+    <Description:Get text length of label control.>
+    <Inputs:Control:Int>
+    <Output:Int>
+****
+<Name:Ctrl.Button.Type>
+    <Category:Gui:Button>
+    <Description:Returns symbos type for Button control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Radio.Text.Set>
+    <Category:Gui:Radio>
+    <Description:Sets a radio control text>
+    <Inputs:Control:Int,Text:String>
+    <Output:(None)>
+****
+<Name:[RadioName].Hidden.Set>
+    <Category:Gui:Radio>
+    <Description:Sets control Radio1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[RadioName].Position.Set>
+    <Category:Gui:Radio>
+    <Description:Places the control Radio1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[RadioName].Refresh>
+    <Category:Gui:Radio>
+    <Description:Redraws control Radio1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[RadioName].Selected.Set>
+    <Category:Gui:Radio>
+    <Description:Set the radio control Radio1 to be selected>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[RadioName].Size.Set>
+    <Category:Gui:Radio>
+    <Description:Sizes the control Radio1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[RadioName].Text.RSet>
+    <Category:Gui:Radio>
+    <Description:>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[RadioName].Text.Set>
+    <Category:Gui:Radio>
+    <Description:>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:Ctrl.Radio.Text.Get>
+    <Category:Gui:Radio>
+    <Description:Get text of label control.>
+    <Inputs:Control:Int>
+    <Output:String>
+****
+<Name:Ctrl.Radio.Text.Len>
+    <Category:Gui:Radio>
+    <Description:Get text length of label control.>
+    <Inputs:Control:Int>
+    <Output:Int>
+****
+<Name:Ctrl.Radio.Type>
+    <Category:Gui:Radio>
+    <Description:Returns symbos type for Radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName]>
+    <Category:Gui:Radio>
+    <Description:Control Radio1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Display>
+    <Category:Gui:Radio>
+    <Description:Returns Display position of Radio1 radio control on form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Height.Get>
+    <Category:Gui:Radio>
+    <Description:Get the height value of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Left.Get>
+    <Category:Gui:Radio>
+    <Description:Get the left value of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Selected.Get>
+    <Category:Gui:Radio>
+    <Description:Check if radio Radio1 is selected 1 or 0 not selected>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Text.Get>
+    <Category:Gui:Radio>
+    <Description:Get caption text of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[RadioName].Text.Len>
+    <Category:Gui:Radio>
+    <Description:Get length of caption text of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Top.Get>
+    <Category:Gui:Radio>
+    <Description:Get the top value of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Type>
+    <Category:Gui:Radio>
+    <Description:Returns symbos type for Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[RadioName].Width.Get>
+    <Category:Gui:Radio>
+    <Description:Get the width value of Radio1 radio control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Colour.Set>
+    <Category:Gui:Check>
+    <Description:Sets the Pen & Paper colour 0-3 of Check1 check control.>
+    <Inputs:Pen:Int,Paper:Int>
+    <Output:(None)>
+****
+<Name:[CheckName].Hidden.Set>
+    <Category:Gui:Check>
+    <Description:Sets control Check1 to be Visible-0 or Invisible-1. Requires form redraw.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[CheckName].Position.Set>
+    <Category:Gui:Check>
+    <Description:Places the Check1 check control at pixel left & topof form.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[CheckName].Refresh>
+    <Category:Gui:Check>
+    <Description:Redraws control Check1 check control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[CheckName].Size.Set>
+    <Category:Gui:Check>
+    <Description:Sizes the Check1 check control with pixel width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[CheckName].Text.RSet>
+    <Category:Gui:Check>
+    <Description:Set the Text String of Check1 check control.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[CheckName].Text.Set>
+    <Category:Gui:Check>
+    <Description:Set the text string of Check1 check control.>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[CheckName].Tick.Set>
+    <Category:Gui:Check>
+    <Description:Set 0/1 for Check1 check control ticked or not.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:Ctrl.Check.Text.Set>
+    <Category:Gui:Check>
+    <Description:Sets a check control text>
+    <Inputs:Control:Int,Text:String>
+    <Output:(None)>
+****
+<Name:[CheckName]>
+    <Category:Gui:Check>
+    <Description:Control Check1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Display>
+    <Category:Gui:Check>
+    <Description:Returns Display position of control Check1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Height.Get>
+    <Category:Gui:Check>
+    <Description:Get the height value of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Left.Get>
+    <Category:Gui:Check>
+    <Description:Get the left value of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Paper>
+    <Category:Gui:Check>
+    <Description:Get the paper colour (0-3) of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Pen>
+    <Category:Gui:Check>
+    <Description:Get the pen colour (0-3) of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Text.Get>
+    <Category:Gui:Check>
+    <Description:Get text of Check1 check control.>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[CheckName].Text.Len>
+    <Category:Gui:Check>
+    <Description:Get character length caption text of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Ticked>
+    <Category:Gui:Check>
+    <Description:Returns a boolean 0/1 for Checkbox being ticked.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Top.Get>
+    <Category:Gui:Check>
+    <Description:Get the top value of Check1check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Type>
+    <Category:Gui:Check>
+    <Description:Returns symbos type for this control Check1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CheckName].Width.Get>
+    <Category:Gui:Check>
+    <Description:Get the width value of Check1 check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Check.Text.Get>
+    <Category:Gui:Check>
+    <Description:Get text of check control.>
+    <Inputs:Control:Int>
+    <Output:String>
+****
+<Name:Ctrl.Check.Text.Len>
+    <Category:Gui:Check>
+    <Description:Get text length of check control.>
+    <Inputs:Control:Int>
+    <Output:Int>
+****
+<Name:Ctrl.Check.Type>
+    <Category:Gui:Check>
+    <Description:Returns symbos type for Check control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Hidden.Set>
+    <Category:Gui:TabFrame>
+    <Description:Sets control Tab1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[TabFrameName].Position.Set>
+    <Category:Gui:TabFrame>
+    <Description:Places the control Tab1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[TabFrameName].Refresh>
+    <Category:Gui:TabFrame>
+    <Description:Redraws control Tab1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[TabFrameName].Selected.Set>
+    <Category:Gui:TabFrame>
+    <Description:Sets selected tab 0-7 of Tab1>
+    <Inputs:Tab:Int>
+    <Output:(None)>
+****
+<Name:[TabFrameName].Size.Set>
+    <Category:Gui:TabFrame>
+    <Description:Sizes the control Tab1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[TabFrameName].Text.Set>
+    <Category:Gui:TabFrame>
+    <Description:Set the string text for specified tab 0-7 of Tab1>
+    <Inputs:Tab:Int,Text:String>
+    <Output:(None)>
+****
+<Name:[TabFrameName]>
+    <Category:Gui:TabFrame>
+    <Description:Control Tab1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Display>
+    <Category:Gui:TabFrame>
+    <Description:Returns Display position of control Tab1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Height.Get>
+    <Category:Gui:TabFrame>
+    <Description:Get the height value of Tab1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Left.Get>
+    <Category:Gui:TabFrame>
+    <Description:Get the left value of Tab1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Selected.Get>
+    <Category:Gui:TabFrame>
+    <Description:Returns currently selected tab 0-7 of Tab1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Tabs>
+    <Category:Gui:TabFrame>
+    <Description:Returns the number of tabs in Tab1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Text.Get>
+    <Category:Gui:TabFrame>
+    <Description:Get text of specified tab 0-7 on Tab1>
+    <Inputs:Tab:Int>
+    <Output:String>
+****
+<Name:[TabFrameName].Top.Get>
+    <Category:Gui:TabFrame>
+    <Description:Get the top value of Tab1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Type>
+    <Category:Gui:TabFrame>
+    <Description:Returns symbos type for this control Tab1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[TabFrameName].Width.Get>
+    <Category:Gui:TabFrame>
+    <Description:Get the width value of Tab1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Hidden.Set>
+    <Category:Gui:VSpinner>
+    <Description:Set VSpinner1 vspinner control to be visible(0) or invisible(1).>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Max.Set>
+    <Category:Gui:VSpinner>
+    <Description:Set maximum value of (0-32767) for VSpinner1 vspinner control.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Position.Set>
+    <Category:Gui:VSpinner>
+    <Description:Position VSpinner1 vspinner control at form origin left & top.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Refresh>
+    <Category:Gui:VSpinner>
+    <Description:Redraw VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Size.Set>
+    <Category:Gui:VSpinner>
+    <Description:Resize VSpinner1 vspinner control with width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Step.Set>
+    <Category:Gui:VSpinner>
+    <Description:Set Step value from (0-255) for VSpinner1 vspinner control .>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName].Value.Set>
+    <Category:Gui:VSpinner>
+    <Description:Set value of (0-32767) for VSpinner1 vspinner control. Must be less than Maximum.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VSpinnerName]>
+    <Category:Gui:VSpinner>
+    <Description:Control VSpinner1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Display>
+    <Category:Gui:VSpinner>
+    <Description:Return display position of VSpinner1 vspinner control of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Height.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return the height value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Left.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return the left value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Max.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Step.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return the Step value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Top.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return the top value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Type>
+    <Category:Gui:VSpinner>
+    <Description:Return symbos type for this control VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Value.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VSpinnerName].Width.Get>
+    <Category:Gui:VSpinner>
+    <Description:Return the width value of VSpinner1 vspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Hidden.Set>
+    <Category:Gui:HSpinner>
+    <Description:Set HSpinner1 hspinner control to be visible(0) or invisible(1).>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Max.Set>
+    <Category:Gui:HSpinner>
+    <Description:Set maximum value of (0-32767) for HSpinner1 hspinner control.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Position.Set>
+    <Category:Gui:HSpinner>
+    <Description:Position HSpinner1 hspinner control at form origin left & top.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Refresh>
+    <Category:Gui:HSpinner>
+    <Description:Redraw HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Size.Set>
+    <Category:Gui:HSpinner>
+    <Description:Resize HSpinner1 hspinner control with width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Step.Set>
+    <Category:Gui:HSpinner>
+    <Description:Set Step value from (0-255) for HSpinner1 hspinner control .>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName].Value.Set>
+    <Category:Gui:HSpinner>
+    <Description:Set value of (0-32767) for HSpinner1 hspinner control. Must be less than Maximum.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HSpinnerName]>
+    <Category:Gui:HSpinner>
+    <Description:Control HSpinner1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Display>
+    <Category:Gui:HSpinner>
+    <Description:Return display position of HSpinner1 hspinner control of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Height.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return the height value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Left.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return the left value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Max.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Step.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return the Step value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Top.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return the top value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Type>
+    <Category:Gui:HSpinner>
+    <Description:Return symbos type for this control HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Value.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HSpinnerName].Width.Get>
+    <Category:Gui:HSpinner>
+    <Description:Return the width value of HSpinner1 hspinner control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Hidden.Set>
+    <Category:Gui:VScroll>
+    <Description:Set VScroll1 vscroll control to be visible(0) or invisible(1).>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName].Max.Set>
+    <Category:Gui:VScroll>
+    <Description:Set maximum value of (0-32767) for VScroll1 vscroll control.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName].Position.Set>
+    <Category:Gui:VScroll>
+    <Description:Position VScroll1 vscroll control at form origin left & top.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName].Refresh>
+    <Category:Gui:VScroll>
+    <Description:Redraw VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[VScrollName].Size.Set>
+    <Category:Gui:VScroll>
+    <Description:Resize VScroll1 vscroll control with width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName].Step.Set>
+    <Category:Gui:VScroll>
+    <Description:Set Step value from (0-255) for VScroll1 vscroll control .>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName].Value.Set>
+    <Category:Gui:VScroll>
+    <Description:Set value of (0-32767) for VScroll1 vscroll control. Must be less than Maximum.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[VScrollName]>
+    <Category:Gui:VScroll>
+    <Description:Control VScroll1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Display>
+    <Category:Gui:VScroll>
+    <Description:Return display position of VScroll1 vscroll control of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Height.Get>
+    <Category:Gui:VScroll>
+    <Description:Return the height value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Left.Get>
+    <Category:Gui:VScroll>
+    <Description:Return the left value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Max.Get>
+    <Category:Gui:VScroll>
+    <Description:Return value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Step.Get>
+    <Category:Gui:VScroll>
+    <Description:Return the Step value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Top.Get>
+    <Category:Gui:VScroll>
+    <Description:Return the top value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Type>
+    <Category:Gui:VScroll>
+    <Description:Return symbos type for this control VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Value.Get>
+    <Category:Gui:VScroll>
+    <Description:Return value of VScroll1 vScroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[VScrollName].Width.Get>
+    <Category:Gui:VScroll>
+    <Description:Return the width value of VScroll1 vscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Hidden.Set>
+    <Category:Gui:HScroll>
+    <Description:Set HScroll1 hscroll control to be visible(0) or invisible(1).>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName].Max.Set>
+    <Category:Gui:HScroll>
+    <Description:Set maximum value of (0-32767) for HScroll1 hscroll control.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName].Position.Set>
+    <Category:Gui:HScroll>
+    <Description:Position HScroll1 hscroll control at form origin left & top.>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName].Refresh>
+    <Category:Gui:HScroll>
+    <Description:Redraw HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[HScrollName].Size.Set>
+    <Category:Gui:HScroll>
+    <Description:Resize HScroll1 hscroll control with width & height.>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName].Step.Set>
+    <Category:Gui:HScroll>
+    <Description:Set Step value from (0-255) for HScroll1 hscroll control .>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName].Value.Set>
+    <Category:Gui:HScroll>
+    <Description:Set value of (0-32767) for HScroll1 hscroll control. Must be less than Maximum.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[HScrollName]>
+    <Category:Gui:HScroll>
+    <Description:Control HScroll1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Display>
+    <Category:Gui:HScroll>
+    <Description:Return display position of HScroll1 hscroll control of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Height.Get>
+    <Category:Gui:HScroll>
+    <Description:Return the height value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Left.Get>
+    <Category:Gui:HScroll>
+    <Description:Return the left value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Max.Get>
+    <Category:Gui:HScroll>
+    <Description:Return value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Step.Get>
+    <Category:Gui:HScroll>
+    <Description:Return the Step value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Top.Get>
+    <Category:Gui:HScroll>
+    <Description:Return the top value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Type>
+    <Category:Gui:HScroll>
+    <Description:Return symbos type for this control HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Value.Get>
+    <Category:Gui:HScroll>
+    <Description:Return value of HScroll1 hScroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[HScrollName].Width.Get>
+    <Category:Gui:HScroll>
+    <Description:Return the width value of HScroll1 hscroll control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Hidden.Set>
+    <Category:Gui:Paint>
+    <Description:Sets control Paint1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[PaintName].Pen.Set>
+    <Category:Gui:Paint>
+    <Description:Set the Paint controls pen value 0..15>
+    <Inputs:Pen:Int>
+    <Output:(None)>
+****
+<Name:[PaintName].Position.Set>
+    <Category:Gui:Paint>
+    <Description:Places the control Paint1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[PaintName].Refresh>
+    <Category:Gui:Paint>
+    <Description:Redraws control Paint1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[PaintName].Size.Set>
+    <Category:Gui:Paint>
+    <Description:Sizes the control Paint1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[PaintName]>
+    <Category:Gui:Paint>
+    <Description:Control Paint1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Display>
+    <Category:Gui:Paint>
+    <Description:Returns Display position of control Paint1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Height.Get>
+    <Category:Gui:Paint>
+    <Description:Get the height value of Paint1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Left.Get>
+    <Category:Gui:Paint>
+    <Description:Get the left value of Paint1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Palette>
+    <Category:Gui:Paint>
+    <Description:Returns paint palette type 0=(4 Colour) / 1=(16 Colour)>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Pen.Get>
+    <Category:Gui:Paint>
+    <Description:Returns the Paint controls pen value 0..15>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Top.Get>
+    <Category:Gui:Paint>
+    <Description:Get the top value of Paint1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Type>
+    <Category:Gui:Paint>
+    <Description:Returns symbos type for this control Paint1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[PaintName].Width.Get>
+    <Category:Gui:Paint>
+    <Description:Get the width value of Paint1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Hidden.Set>
+    <Category:Gui:Box>
+    <Description:Sets control Box1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[BoxName].Position.Set>
+    <Category:Gui:Box>
+    <Description:Places the control Box1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[BoxName].Refresh>
+    <Category:Gui:Box>
+    <Description:Redraws control Box1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[BoxName].Size.Set>
+    <Category:Gui:Box>
+    <Description:Sizes the control Box1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[BoxName]>
+    <Category:Gui:Box>
+    <Description:Control Box1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Display>
+    <Category:Gui:Box>
+    <Description:Returns Display position of control Box1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Height.Get>
+    <Category:Gui:Box>
+    <Description:Get the height value of Box1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Left.Get>
+    <Category:Gui:Box>
+    <Description:Get the left value of Box1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Top.Get>
+    <Category:Gui:Box>
+    <Description:Get the top value of Box1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Type>
+    <Category:Gui:Box>
+    <Description:Returns symbos type for this control Box1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[BoxName].Width.Get>
+    <Category:Gui:Box>
+    <Description:Get the width value of Box1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:Ctrl.Image.Tile.Set>
+    <Category:Gui:Image>
+    <Description:Set tile graphic from a sheet to an Image control>
+    <Inputs:Control:Int,Sheet:Int,Tile:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Hidden.Set>
+    <Category:Gui:Image>
+    <Description:Set control Image1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Position.Set>
+    <Category:Gui:Image>
+    <Description:Places the control Image1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Refresh>
+    <Category:Gui:Image>
+    <Description:Redraws control Image1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[ImageName].RefreshArea>
+    <Category:Gui:Image>
+    <Description:Redraws and specified area of control Image1>
+    <Inputs:X:Int,Y:Int,W:Int,H:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Size.Set>
+    <Category:Gui:Image>
+    <Description:Sizes the control Image1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Tile.Set>
+    <Category:Gui:Image>
+    <Description:Set the content of the image Image1 to a tile on specified sheet>
+    <Inputs:SheetRef:Int,Tile:Int>
+    <Output:(None)>
+****
+<Name:[ImageName].Transparency.Set>
+    <Category:Gui:Image>
+    <Description:Set control Image1 ink 0 to be Normal-0 or Transparent-1.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:Ctrl.Image.Type>
+    <Category:Gui:Image>
+    <Description:Return symbos type for ImgBox control.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName]>
+    <Category:Gui:Image>
+    <Description:Control Image1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Display>
+    <Category:Gui:Image>
+    <Description:Returns Display position of control Image1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Encode.Get>
+    <Category:Gui:Image>
+    <Description:Returns the encode data for the canvas/image... must have been drawn to have correct info>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Height.Get>
+    <Category:Gui:Image>
+    <Description:Get the height value of Image1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Left.Get>
+    <Category:Gui:Image>
+    <Description:Get the left value of Image1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Top.Get>
+    <Category:Gui:Image>
+    <Description:Get the top value of Image1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Type>
+    <Category:Gui:Image>
+    <Description:Returns symbos type for this control Image1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ImageName].Width.Get>
+    <Category:Gui:Image>
+    <Description:Get the width value of Image1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Hidden.Set>
+    <Category:Gui:Progress>
+    <Description:Sets control Progress1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[ProgressName].Position.Set>
+    <Category:Gui:Progress>
+    <Description:Places the control Progress1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[ProgressName].Refresh>
+    <Category:Gui:Progress>
+    <Description:Redraws control Progress1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[ProgressName].Size.Set>
+    <Category:Gui:Progress>
+    <Description:Sizes the control Progress1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[ProgressName].Value.Set>
+    <Category:Gui:Progress>
+    <Description:Set Progress value between 0-255 for Progress1 control.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[ProgressName]>
+    <Category:Gui:Progress>
+    <Description:Control Progress1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Display>
+    <Category:Gui:Progress>
+    <Description:Returns Display position of control Progress1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Height.Get>
+    <Category:Gui:Progress>
+    <Description:Get the height value of Progress1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Left.Get>
+    <Category:Gui:Progress>
+    <Description:Get the left value of Progress1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Top.Get>
+    <Category:Gui:Progress>
+    <Description:Get the top value of Progress1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Type>
+    <Category:Gui:Progress>
+    <Description:Returns symbos type for this control Progress1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Value.Get>
+    <Category:Gui:Progress>
+    <Description:Return value of Progress Progress1 between 0-255.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[ProgressName].Width.Get>
+    <Category:Gui:Progress>
+    <Description:Get the width value of Progress1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Create>
+    <Category:Gui:Canvas>
+    <Description:Creates a Canvas with the given dimensions & colour encoding 0/4 Colour, 1/16 Colour.>
+    <Inputs:Width:Int,Height:Int,Encode:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Fill>
+    <Category:Gui:Canvas>
+    <Description:Fills the Canvas with colour (0..15)... Requires Refresh.>
+    <Inputs:Colour:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Hidden.Set>
+    <Category:Gui:Canvas>
+    <Description:Sets the Canvas to be 0/Visible Or 1/Invisible.>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Refresh>
+    <Category:Gui:Canvas>
+    <Description:Redraws the Canvas control.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[CanvasName].Sprite.Image>
+    <Category:Gui:Canvas>
+    <Description:Sets Sprite (0..7) image from specified Sheet & Tile.>
+    <Inputs:SpriteNo:Int,SheetRef:Int,Tile:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Sprite.Off>
+    <Category:Gui:Canvas>
+    <Description:Makes a canvas sprite (0..7) visible.>
+    <Inputs:SpriteNo:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Sprite.On>
+    <Category:Gui:Canvas>
+    <Description:Makes a canvas sprite (0..7) visible.>
+    <Inputs:SpriteNo:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Sprite.Size>
+    <Category:Gui:Canvas>
+    <Description:Sets Sprite (0..7) size with given pixel width & height.>
+    <Inputs:SpriteNo:Int,Width:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Sprite.Transparent>
+    <Category:Gui:Canvas>
+    <Description:Makes a canvas sprite (0..7) visible.>
+    <Inputs:SpriteNo:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Tile.RDraw>
+    <Category:Gui:Canvas>
+    <Description:Draws a Tile of Ref/Tile Number to given X & Y on a canvas and displays it.>
+    <Inputs:SheetRef:Int,Tile:Int,XPos:Int,YPos:Int,Width:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[CanvasName].Update>
+    <Category:Gui:Canvas>
+    <Description:Moves and updates all the Sprites on the given canvas.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[CanvasName]>
+    <Category:Gui:Canvas>
+    <Description:Control Canvas1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Display>
+    <Category:Gui:Canvas>
+    <Description:>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Encode.Get>
+    <Category:Gui:Canvas>
+    <Description:Returns the encode data for the canvas/image... must have been drawn to have correct info>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Height.Get>
+    <Category:Gui:Canvas>
+    <Description:Get the height value of Canvas1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Left.Get>
+    <Category:Gui:Canvas>
+    <Description:Get the left value of Canvas1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Top.Get>
+    <Category:Gui:Canvas>
+    <Description:Get the top value of Canvas1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CanvasName].Width.Get>
+    <Category:Gui:Canvas>
+    <Description:Get the width value of Canvas1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Colour.Set>
+    <Category:Gui:CtrlLabel>
+    <Description:Sets the Pen & Paper colour 0-15 of control CtrLabel1>
+    <Inputs:Pen:Int,Paper:Int>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Hidden.Set>
+    <Category:Gui:CtrlLabel>
+    <Description:Sets control CtrLabel1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Position.Set>
+    <Category:Gui:CtrlLabel>
+    <Description:Places the control CtrLabel1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Refresh>
+    <Category:Gui:CtrlLabel>
+    <Description:Redraws control CtrLabel1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Size.Set>
+    <Category:Gui:CtrlLabel>
+    <Description:Sizes the control CtrLabel1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Text.RSet>
+    <Category:Gui:CtrlLabel>
+    <Description:Set the String Text For Label control CtrLabel1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[CtrLabelName].Text.Set>
+    <Category:Gui:CtrlLabel>
+    <Description:Set the string text for Label control CtrLabel1>
+    <Inputs:Text:String>
+    <Output:(None)>
+****
+<Name:[CtrLabelName]>
+    <Category:Gui:CtrlLabel>
+    <Description:Control CtrLabel1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Display>
+    <Category:Gui:CtrlLabel>
+    <Description:Returns Display position of control CtrLabel1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Height.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the height value of CtrLabel1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Left.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the left value of CtrLabel1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Paper.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the paper colour (0-15) of the control CtrLabel1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Pen.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the pen colour (0-15) of the control CtrLabel1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Text.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get caption text of CtrLabel1Control>
+    <Inputs:(None)>
+    <Output:String>
+****
+<Name:[CtrLabelName].Top.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the top value of CtrLabel1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Type>
+    <Category:Gui:CtrlLabel>
+    <Description:Returns symbos type for this control CtrLabel1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[CtrLabelName].Width.Get>
+    <Category:Gui:CtrlLabel>
+    <Description:Get the width value of CtrLabel1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Columns.Align.Set>
+    <Category:Gui:MList>
+    <Description:Set the column alignment type value of MList1Control>
+    <Inputs:Column:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Columns.Width.Set>
+    <Category:Gui:MList>
+    <Description:Set the column width value of MList1Control>
+    <Inputs:Column:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Hidden.Set>
+    <Category:Gui:MList>
+    <Description:Sets control MList1 to be Visible-0 or Invisible-1>
+    <Inputs:Int:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Index.Set>
+    <Category:Gui:MList>
+    <Description:Sets selection index of MList1 list.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Int.Set>
+    <Category:Gui:MList>
+    <Description:Set Integer of designated column & row of MList1. Must be a Int column.>
+    <Inputs:Column:Int,Row:Int,Int:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Long.Set>
+    <Category:Gui:MList>
+    <Description:Set Long of designated column & row of MList1. Must be a Long column.>
+    <Inputs:Column:Int,Row:Int,Int:Long>
+    <Output:(None)>
+****
+<Name:[MListName].Position.Set>
+    <Category:Gui:MList>
+    <Description:Places the control MList1 at pixel left & top>
+    <Inputs:Left:Int,Top:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Refresh>
+    <Category:Gui:MList>
+    <Description:Redraws control MList1>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[MListName].Rows.Set>
+    <Category:Gui:MList>
+    <Description:Set the number of visible rows in MList1 list.>
+    <Inputs:Row:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Selected.Set>
+    <Category:Gui:MList>
+    <Description:Set selection status (0/1) of designated row on MList1 control.>
+    <Inputs:Row:Int,Value:Int>
+    <Output:(None)>
+****
+<Name:[MListName].Size.Set>
+    <Category:Gui:MList>
+    <Description:Sizes the control MList1 with pixel width & height>
+    <Inputs:Size:Int,Height:Int>
+    <Output:(None)>
+****
+<Name:[MListName].SortColumn>
+    <Category:Gui:MList>
+    <Description:Sets the Column (0..15) and the sort order 0/Ascending 1/Descending.>
+    <Inputs:Column:Int,Order:Int>
+    <Output:(None)>
+****
+<Name:[MListName].SortOnRefresh>
+    <Category:Gui:MList>
+    <Description:Sets flag so that on next Refresh this control will be sorted. Reset after Refresh occurs.>
+    <Inputs:(None)>
+    <Output:(None)>
+****
+<Name:[MListName].Text.Set>
+    <Category:Gui:MList>
+    <Description:Set text of designated column & row of MList1.>
+    <Inputs:Column:Int,Row:Int,String:String>
+    <Output:(None)>
+****
+<Name:[MListName].Title.Set>
+    <Category:Gui:MList>
+    <Description:Set Column title string of designated column of MList1.>
+    <Inputs:Column:Int,String:String>
+    <Output:(None)>
+****
+<Name:[MListName].TopRow.Set>
+    <Category:Gui:MList>
+    <Description:Gets the First Row thats displayed in a MList1 list.>
+    <Inputs:Value:Int>
+    <Output:(None)>
+****
+<Name:[MListName]>
+    <Category:Gui:MList>
+    <Description:Control MList1 ID handler>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Columns.Align.Get>
+    <Category:Gui:MList>
+    <Description:Get the column alignment type (0:Left,1:Right,2:Middle) of MList1Control>
+    <Inputs:Column:Int>
+    <Output:Int>
+****
+<Name:[MListName].Columns.Get>
+    <Category:Gui:MList>
+    <Description:Number of columns in MList1 list.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Columns.Width.Get>
+    <Category:Gui:MList>
+    <Description:Get the column width value of MList1Control>
+    <Inputs:Column:Int>
+    <Output:Int>
+****
+<Name:[MListName].Display>
+    <Category:Gui:MList>
+    <Description:Returns Display position of control MList1 of form>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Height.Get>
+    <Category:Gui:MList>
+    <Description:Get the height value of MList1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Index.Get>
+    <Category:Gui:MList>
+    <Description:Get index line of MList1 control list>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Left.Get>
+    <Category:Gui:MList>
+    <Description:Get the left value of MList1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Rows.Get>
+    <Category:Gui:MList>
+    <Description:Current number of rows in MList1 list>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Rows.Max>
+    <Category:Gui:MList>
+    <Description:Maximum number of rows in MList1 list>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Selected.Get>
+    <Category:Gui:MList>
+    <Description:Get selection status (0/1) of designated row on MList1 control.>
+    <Inputs:Row:Int>
+    <Output:Int>
+****
+<Name:[MListName].Text.Get>
+    <Category:Gui:MList>
+    <Description:Get text of designated column & row on MList1 control.>
+    <Inputs:Column:Int,Row:Int>
+    <Output:String>
+****
+<Name:[MListName].Title.Get>
+    <Category:Gui:MList>
+    <Description:Get column title string of MList1 control.>
+    <Inputs:Column:Int>
+    <Output:String>
+****
+<Name:[MListName].Top.Get>
+    <Category:Gui:MList>
+    <Description:Get the top value of MList1Control>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].TopRow.Get>
+    <Category:Gui:MList>
+    <Description:Gets the First Row thats displayed in a MList1 list.>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Type>
+    <Category:Gui:MList>
+    <Description:Returns symbos type for this control MList1>
+    <Inputs:(None)>
+    <Output:Int>
+****
+<Name:[MListName].Width.Get>
+    <Category:Gui:MList>
+    <Description:Get the width value of MList1Control>
+    <Inputs:(None)>
+    <Output:Int>

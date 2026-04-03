@@ -1,0 +1,2594 @@
+// Quigs Application
+// Name: SymbOS EMAIL 2020
+// Coder: Edoz
+
+// 28-08-2018 / Version: 0.1
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+// Declare variables
+
+// String Maniplulator VARS
+
+Var MyString:String
+Var PartString:String
+Var a:Int=0
+Var filterIn:String
+Var Storehead:Int
+
+Var logo:Sheet							//	screen grapics
+Var smallicons:Sheet						//	screen grapics
+Var bigicons:Sheet						//	screen grapics
+
+Var MySaveFile:File
+Var MyLoadFile:File
+Var MyCopyFile:File
+Var MyLogFile:File
+Var MyAttachment:File
+
+
+Var Form1open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form2open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form3open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form4open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form5open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form6open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var Form7open:Int=0						//	Value if the form is open Yes=1 or No=0
+Var FirstTimeSettings:Int=0					//	Detect if setup is needed yes=0 no=1
+
+Var LastForm1SizeX:Int=1					//	Last know resolution of the FORM
+Var LastForm1SizeY:Int=1					//	Last know resolution of the FORM
+Var LastForm2SizeX:Int=1					//	Last know resolution of the FORM
+Var LastForm2SizeY:Int=1					//	Last know resolution of the FORM
+
+Var UpdateForm1:Int=0					//	Refresh FORM1 yes=1 no=0
+Var UpdateForm2:Int=0					//	Refresh FORM2 yes=1 no=0
+Var UpdateForm3:Int=0
+
+Var download:Int=0
+Var filter:Int=0
+Var debug:Int=0
+Var CurrentTab:Int=0
+Var CurrentRadio:Int=0
+
+
+Var MailStore:String						//	Directory Path to mailstore folders
+Var MailStoreFile(5):String					//	Directory names for mailstore
+Var MailStoreOkay:Int=0					//	Directory exists yes=1 no=0
+
+Var debugCounter:Int=0					//	Give extra TEXT output for troubleshooting
+Var attachfilenumber:Int=0					//	Number of attachments of email
+
+Var ProgressB1:Int=0
+Var ProgressB2:Int=0
+
+Var FileIndexID:Int=0						//	Unique ID, used for fileindex
+Var InboxIndexID:Int=0					//      Index ID for Inbox
+Var OutboxIndexID:Int=0					//      Index ID for Outbox
+Var SentIndexID:Int=0						//      Index ID for Sent
+Var DeletedIndexID:Int=0					//      Index ID for Delete
+
+Var openemailtype:Int=0
+
+Var FieldCheck:Int=0						//	Used to see if user did a proper imput on a textbox
+Var c1:Int=0							//	General counter
+Var c2:Int=0							//	General counter
+Var c3:Int=0							//	General counter
+Var c4:Int=0							//	General counter
+Var c5:Int=0							//	General counter for sending only
+Var c6:Int=0							//	General counter for sending only
+Var st:Int=0
+Var c7:Int=0
+Var pos1:Int=0
+Var pos2:Int=0
+
+Var MultipleReceivers:Int=0						//	Detect more CC or TO receivers in pop3
+
+Var CurrentFolder:Int=0					//	Current Folder in VIEW of USER
+Var SwitchBackFolder:Int=0
+Var SwitchBackFolderTEMP:Int=0
+Var TimeStamp:String
+Var TimeDate:String
+Var TimeHour:String
+
+Var TempStoreFrom:String  					//	Used to store a ITEM into memory
+Var TempStoreTO:String  					//	Used to store a ITEM into memory
+Var tempStoreCC:String
+Var tempStoreCCorg:String
+Var tempStoreSubject:String 					// 	User to store a ITEM into memory
+Var TempStoreDate:String  					//	Used to store a ITEM into memory
+Var TempStoreFileIndex:String  				//	Used to store a ITEM into memory
+Var tempAttachments:String
+Var TempStoreTEXT:String  					//	Used to store a ITEM into memory
+Var TempPop3Date:String    					//	Used to store a ITEM into memory
+Var TempPop3To:String    					//	Used to store a ITEM into memory
+Var TempPop3From:String    					//	Used to store a ITEM into memory
+Var TempPop3cc:String    					//	Used to store a ITEM into memory
+Var TempPop3Subject:String    				//	Used to store a ITEM into memory
+Var TempPop3EmailStore:Int	    				//	Used to store a ITEM into memory
+
+Var MIMEboundary:String
+Var boundaryID1:Int
+Var boundaryID2:Int
+Var boundaryset:Int
+
+
+Var buffer:String
+Var receivedLeftOVer:String
+Var over:Int=0
+Var temp:String
+Var RXTXCounter:Int=0
+
+// As LISTBOX now in VAR
+Var UpdateRecordType:Int=0
+Var ListEmailLastClick:Int=0
+Var ContactDestination:Int=0					//	0=TO	1=CC
+Var OpenContactFirsttime:Int=0
+
+// NETWORK
+Var networkTrigger:Int=0
+Var DomainSMTPip:String
+Var DomainIMAPip:String
+Var DomainPOP3ip:String
+Var DomainSMTPPort:Int=0
+Var DomainIMAPport:Int=0
+Var DomainPOP3port:Int=0
+Var ConnectTry(2):Int=0	//0=SMTP 1=IMAP 2=COUNTNET
+Var ConnectType:Int=0						// 0 = Normal 	1=TEST connection
+Var StringToSend:String
+Var ErrorDuringTransmit:Int=0
+Var socket:Int=0
+Var Protocol:String
+Var ReceiveString:String
+Var InMessage:String	//netwok processed string
+Var InSendLoop:Int=0
+Var StringToStore:String=""
+Var StringToStoreCollector:String=""
+Var mailstatus:Int=0
+Var PopStoreStatus:Int=0 	//fase of string store in grab email
+Var PopStatus:Int=0 //status in POP3 mail receive protocol
+Var TotalPop:Int=0//Total of pop3 message to download
+Var currentPop:Int=0//current message for download
+Var LastPopCount:Int=0
+Var looppop:Int=0
+Var connectionhost:String // to display server name in messtring
+
+Var MesForm:Int=0						//	Error displayed on FORM number
+Var MesType:Int=0						//	Type of ERROR Error message to display
+Var MesSection:Int=0
+Var MessageString:String
+Var MessageDisplay:String
+Var ExtraText:Int
+
+Var MemMes1(6):String=["Email item incorrect or missing","Username incorrect or missing","Password incorrect or missing","IMAP/POP3 host or port incorrect or missing","New Message [Untiteld]"," "]
+Var MemMes2(5):String=["SMTP host Or port incorrect or missing","Mail DB store incorrect or missing","Incorrect value for sync. value","Error In filesystem. Error : ","This email was sent from my SymbOS 8bit Home- Computer!!"]
+Var MemMes3(5):String=["Attached to local mail DB store : ","Could not access local DB store : ","Authentication Failed","Unable to reach mailserver","No emails in the outbox to send"]
+Var MemMes4(5):String=["Selected contact : ","Email format incorrect","No network hardware found or driver loaded","Authentication Failed","Start sending outbox emails to server."]
+Var MemMes5(4):String=["Are you sure you want To move this item?","Only 32 Contacts are allowed","To many emails for this folder (max 64) : ","Please fill In all required fields"]
+Var MemMes6(4):String=["Connected To email server","Trying to connect to email server : ","Sending and receiving task complete","Protocol Err. 503 Bad sequence of protocol"]
+Var MemMes7(4):String=["SymbOS Email  [ INBOX ]","SymbOS Email [ OUTBOX ]","SymbOS Email  [ SENT ITEMS ]","SymbOS Email  [ DELETED ITEMS ]"]
+Var memMes8(1):String=["General Error"] //pop up only
+Var MemMes9(19):String=[" ","FINISHED","TCP socket OPEN","TRY POP3","TRY SMTP","SMTP ERROR","POP ERROR","IMAP ERROR","LOGIN TRY","LOGIN FAILURE","LOGIN OK","NO NEW EMAILS","SERVER NEEDS CREDENTIALS","UPLOADING EMAILS","UPLOAD ATTACHMENT","DOWNLOADING EMAILS","DOWNLOAD ATTACHMENT","CHECK","POP3 In USE"]
+// End declares
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+Function DisplayStatus:Void(ExtraText)
+	
+	frm5Status.Text.Set ("STATUS: Send/Recv. emails ...   " + "[" + MemMes9(ExtraText) + "]")
+	frm5Status.Refresh
+EndF
+
+Function RefreshStatus:Void
+	frm5statusbar.Value.Set ((c5*st)+10)
+	frm5statusbar.Refresh
+	c5=c5+1
+EndF
+
+
+// message / error handler												Message handler
+Function Message:Void(MesForm,MesSection,MesType,MessageString)
+	If MesSection=1 Then
+		MessageDisplay=MemMes1(MesType)
+	EndIf
+	If MesSection=2 Then
+		MessageDisplay=MemMes2(MesType)
+	EndIf
+	If MesSection=3 Then
+		MessageDisplay=MemMes3(MesType)
+	EndIf
+	If MesSection=4 Then
+		MessageDisplay=MemMes4(MesType)
+	EndIf
+	If MesSection=5 Then
+		MessageDisplay=MemMes5(MesType)
+	EndIf
+	If MesSection=6 Then
+		MessageDisplay=MemMes6(MesType)
+	EndIf
+	If MesSection=7 Then
+		MessageDisplay=MemMes7(MesType)
+	EndIf
+	
+	If MesForm=1 Then
+		Form1.Status.Text.Set(MessageDisplay + MessageString)
+		Form1.Status.Refresh
+	EndIf
+	If MesForm=2 Then
+		Form2.Status.Text.Set(MessageDisplay + MessageString)
+		Form2.Status.Refresh
+	EndIf
+	If MesForm=3 Then
+		Form3.Status.Text.Set(MessageDisplay + MessageString)
+		Form3.Status.Refresh
+	EndIf
+	If MesForm=4 Then
+		Form4.Status.Text.Set(MessageDisplay + MessageString)
+		Form4.Status.Refresh
+	EndIf
+	If MesForm=5 Then
+		Form5.Status.Text.Set(MessageDisplay + MessageString)
+		Form5.Status.Refresh
+	EndIf
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// MAIN FORM EVENT														MAIN LOOP
+
+Function Main:Void()
+	If RXTXCounter=>2 Then
+		RXTXCounter=0
+		RXPaint.Pen.Set(Colour.Green)
+		TXPaint.Pen.Set(Colour.DarkRed)
+		PRPaint.Pen.Set(Colour.DarkBlue)
+		
+		RXPaint.Refresh
+		TXPaint.Refresh
+		PRPaint.Refresh
+	EndIf
+	
+	If FirstTimeSettings=0   Then
+		Form1.Tool.Refresh
+		ReadSettingsFromFile.event
+	EndIf
+	
+	If FirstTimeSettings=1 Then
+		frmSettings.Event
+	EndIf
+	
+	If FirstTimeSettings=2 Then //last step read contact list and open inbox
+		FirstTimeSettings=3
+		If OpenContactFirsttime=0 Then
+			OpenContactFirsttime=1
+			ClearContactsList
+			
+			If File.Exist(MailStore+"contacts.mdf")
+			MyLoadFile.Open(MailStore+"contacts.mdf")
+			c1 = CInt (MyLoadFile.ReadString)
+			
+			For c2=0 To c1
+				frm4Contacts.Rows.Set (frm4Contacts.Rows.Get)
+				frm4Contacts.Text.Set (0,frm4Contacts.Rows.Get,MyLoadFile.ReadString)
+				frm4Contacts.Text.Set (1,frm4Contacts.Rows.Get,MyLoadFile.ReadString)
+				frm4Contacts.Rows.Set (frm4Contacts.Rows.Get+1)
+			Next
+			frm4Contacts.Refresh
+			MyLoadFile.Close
+		EndIf
+		frm4Contacts.Index.Set (-1)
+	EndIf
+	
+	OpenInbox.Event
+EndIf
+
+If Form1open=0 Then
+	Form1open=1
+	Form1.Control.Refresh
+	Form1.Tool.Refresh
+EndIf
+
+If UpdateForm1=1 Then
+	UpdateForm1=0
+	frmListEmail.Size.Set((LastForm1SizeX-38),(LastForm1SizeY-1))
+	frmPaintTool.Size.Set((LastForm1SizeX+10),26)
+	frmPaintSidebar.Size.Set(34,(LastForm1SizeY+200))
+	
+	frmListEmail.Columns.Width.Set(0,(LastForm1SizeX/4))
+	frmListEmail.Columns.Width.Set(1,(LastForm1SizeX/4))
+	frmListEmail.Columns.Width.Set(2,(LastForm1SizeX/3))
+	frmListEmail.Columns.Width.Set(3,15)
+	frmListEmail.Columns.Width.Set(4,15)
+	
+	Form1.Control.Refresh
+	Form1.Tool.Refresh
+EndIf
+
+If UpdateForm2=1 Then
+	UpdateForm2=0
+	frm2TextEmail.Size.Set ((LastForm2SizeX-2),(LastForm2SizeY-71))
+	
+	frm2PaintTool.Size.Set((LastForm2SizeX+10),14)
+	frm2PaintTool2.Size.Set((LastForm2SizeX+10),41)
+	frm2PaintFill1.Size.Set(LastForm2SizeX-3,2)
+	Form2.Control.Refresh
+	Form2.Tool.Refresh
+EndIf
+
+//InsendTCP loop
+
+If InSendLoop=1 Then
+	InSendLoop	=2
+	SendNextEmail.event
+EndIf
+If InSendLoop=3 Then
+	SendNextEmail.event
+EndIf
+
+If networkTrigger=1 Then
+	networkTrigger=2
+	Makestring
+EndIf
+
+
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// FORM RESIZE EVENTS													RESIZE
+
+Function Form1.Resize.Event:Void()
+	If Form1.State = 2 Then//Maximize
+		LastForm1SizeX=(Screen.Resolution.X -7)
+		LastForm1SizeY=(Screen.Resolution.Y -68)
+		UpdateForm1=1
+	Else
+		If LastForm1SizeX <> Form1.Width.Get Or LastForm1SizeY <> Form1.Height.Get  Then
+			If UpdateForm1=0 Then
+				LastForm1SizeX=Form1.Width.Get
+				LastForm1SizeY=Form1.Height.Get
+				UpdateForm1=1
+			EndIf
+		EndIf
+	EndIf
+	
+EndF
+
+Function Form2.Resize.Event:Void()
+	If Form2.State = 2 Then//Maximize
+		LastForm2SizeX=(Screen.Resolution.X -7)
+		LastForm2SizeY=(Screen.Resolution.Y -57)
+		UpdateForm2=1
+	Else
+		If LastForm2SizeX <> Form2.Width.Get Or LastForm2SizeY <> Form2.Height.Get  Then
+			If UpdateForm2=0 Then
+				LastForm2SizeX=Form2.Width.Get
+				LastForm2SizeY=Form2.Height.Get
+				UpdateForm2=1
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// FORM OPEN EVENTS													OPEN EVENTS
+
+Function Form1.Open.Event:Void()
+	
+	Net.Initialise
+	
+	
+	
+	//attachments disable
+	
+	frm2Attachment.Hidden.Set(0)
+	frm2DeleteAttachment.Hidden.Set(0)
+	
+	If Screen.Colour()  > 4 Then
+		logo.Load App.Path+"maildat0.qs2"
+		smallicons.Load App.Path+"maildat1.qs2"
+		bigicons.Load App.Path+"maildat2.qs2"
+	Else
+		logo.Load App.Path+"maildat0.qs1"
+		smallicons.Load App.Path+"maildat1.qs1"
+		bigicons.Load App.Path+"maildat2.qs1"
+		frmPaintTool.Pen.Set (Colour.DarkRed)
+		frmPaintSidebar.Pen.Set(Colour.DarkRed)
+		frm2PaintTool.Pen.Set(Colour.DarkRed)
+		frm6PaintTop.Pen.Set(Colour.DarkRed)
+	EndIf
+	
+	MailStoreFile(0) = "Inbox"
+	MailStoreFile(1) = "Outbox"
+	MailStoreFile(2) = "Deleted"
+	MailStoreFile(3) = "Sent"
+	MailStoreFile(4) = "ATTACHED"
+	
+	If logo.Status > 0 Then
+		Ctrl.Image.Tile.Set frmPictureLogo,logo,0
+		Ctrl.Image.Tile.Set frm6ImgLogo,logo,0
+	Else
+		Message (1,2,3,"Images")	// Error while Loading
+	EndIf
+	
+	If bigicons.Status > 0 Then
+		Ctrl.Image.Tile.Set frmNewEmail,bigicons,4
+		Ctrl.Image.Tile.Set frmDeleteEmail,bigicons,6
+		Ctrl.Image.Tile.Set FrmReplyEmail,bigicons,0
+		Ctrl.Image.Tile.Set frmReplyAllEmail,bigicons,1
+		Ctrl.Image.Tile.Set frmForwardEmail,bigicons,2
+		Ctrl.Image.Tile.Set frmSendReceive,bigicons,8
+		Ctrl.Image.Tile.Set frmAdressBook,bigicons,3
+		Ctrl.Image.Tile.Set frmSettings,bigicons,9
+		Ctrl.Image.Tile.Set frmInbox,bigicons,5
+		Ctrl.Image.Tile.Set frmOutbox,bigicons,10
+		Ctrl.Image.Tile.Set frmSendItem,bigicons,7
+		Ctrl.Image.Tile.Set frmDeletedItems,bigicons,11
+	Else
+		Message (1,2,3,"Images")	// Error while Loading
+	EndIf
+	
+	If smallicons.Status > 0 Then
+		Ctrl.Image.Tile.Set frmAttachment,smallicons,17
+		Ctrl.Image.Tile.Set Frm2Send,smallicons,16
+		Ctrl.Image.Tile.Set Frm2Cut,smallicons,3
+		Ctrl.Image.Tile.Set frm2Copy,smallicons,4
+		Ctrl.Image.Tile.Set frm2Paste,smallicons,5
+		Ctrl.Image.Tile.Set frm2Attachment,smallicons,17
+		Ctrl.Image.Tile.Set frm3SettingsPicture,smallicons,8
+		Ctrl.Image.Tile.Set frm2DeleteAttachment,smallicons,7
+		Ctrl.Image.Tile.Set frm2Save,smallicons,13
+		Ctrl.Image.Tile.Set Frm2Relply,smallicons,0
+		Ctrl.Image.Tile.Set frm2ReplyAll,smallicons,1
+		Ctrl.Image.Tile.Set frm2Forward,smallicons,2
+	Else
+		Message  (1,2,3,"Images")	// Error while Loading
+	EndIf
+	
+	OpenInbox.Event
+	CloseWait
+EndF
+
+Function OpenNewEmail.Event:Void()
+	If MailStoreOkay=1 Then
+		Message (2,1,5,"")
+		OpenEmail.event(0)
+	Else
+		Message(1,3,1,"[" + MailStore + "]")  //Could not acces mailstore
+	EndIf
+EndF
+
+
+Function frm2Reply.Event:Void()
+	Form2.Close
+	Frm2Send.Hidden.Set(1)
+	Frm2LblSend.Hidden.Set(1)
+	OpenEmail.event(2)
+EndF
+
+Function frm2ReplyAll.Event:Void()
+	Form2.Close
+	Frm2Send.Hidden.Set(1)
+	Frm2LblSend.Hidden.Set(1)
+	OpenEmail.event(3)
+EndF
+
+Function frm2Forward.event:Void()
+	Form2.Close
+	Frm2Send.Hidden.Set(1)
+	Frm2LblSend.Hidden.Set(1)
+	OpenEmail.event(4)
+EndF
+
+
+Function OpenEmail.event:Void(openemailtype)
+	
+	OpenWait
+	
+	// 0=new
+	// 1=open
+	// 2=reply
+	// 3=replyAll
+	// 4=Forward
+	
+	attachfilenumber=0
+	
+	If openemailtype=0 Then
+		If Form2open=0 Then
+			Form2open=1
+			Frm2Send.Hidden.Set(1)
+			Frm2LblSend.Hidden.Set(1)
+			Form2.Text.Set  (MemMes1(4)) 						//TXT:New email
+			Frm2TexFrom.Text.Set (frm3Email.Text.Get)
+			Frm2TexFrom.Refresh
+			Frm2TexTo.Text.Set("")
+			Frm2TexTo.Refresh
+			Frm2TexCc.Text.Set("")
+			Frm2TexCc.Refresh
+			Frm2TexSubject.Text.Set("")
+			Frm2TexSubject.Refresh
+			frm2TextEmail.Text.Set	(Chr(13)+Chr(10)+ "This email was sent from a Z80 SymbOS workstation!") 	//TXT: Sent from SymbOS ... etc
+			frm2TextEmail.Refresh
+			Frm2Relply.Hidden.Set(0)
+			frm2ReplyAll.Hidden.Set(0)
+			frm2Forward.Hidden.Set(0)
+			frm2Save.Hidden.Set(0)
+			Form2.Open
+		EndIf
+	EndIf
+	
+	If openemailtype>0  Then ;Alle types
+		If Form2open=0 Then
+			Form2open=1
+			Frm2Relply.Hidden.Set(1)
+			frm2ReplyAll.Hidden.Set(1)
+			frm2Forward.Hidden.Set(1)
+			frm2Save.Hidden.Set(0)
+			
+			If openemailtype=1 Then
+				Frm2LblSend.Hidden.Set(0)
+				Frm2Send.Hidden.Set(0)
+			Else
+				Frm2LblSend.Hidden.Set(1)
+				Frm2Send.Hidden.Set(1)
+			EndIf
+			
+			//Adding attachents to the list
+			
+			frm2DropFilename.List.Insert(attachfilenumber,frmListEmail.Text.Get(4,frmListEmail.Index.Get))
+			frm2DropFilename.Refresh
+			
+			If File.Exist(MailStore+ MailStoreFile (CurrentFolder) + "\" +frmListEmail.Text.Get(3,frmListEmail.Index.Get) + ".eml")
+			
+			MyLoadFile.Open (MailStore+ MailStoreFile (CurrentFolder) + "\" +frmListEmail.Text.Get(3,frmListEmail.Index.Get) + ".eml")
+			
+			If MyLoadFile.Status > 0 Then
+				Form2.Status.Text.Set("Local store time: " + MyLoadFile.ReadString +  " " + MyLoadFile.ReadString)
+				Form2.Status.Refresh
+				
+				Frm2TexFrom.Text.Set(frmListEmail.Text.Get(0,frmListEmail.Index.Get))
+				Frm2TexFrom.Refresh
+				
+				Frm2TexTo.Text.Set (MyLoadFile.ReadString)
+				Frm2TexTo.Refresh
+				Frm2TexCc.Text.Set(MyLoadFile.ReadString)
+				Frm2TexCc.Refresh
+				
+				If Frm2TexCc.Text.Get = " " Or Frm2TexCc.Text.Get = "<  >" Then
+					Frm2TexCc.Text.Set ("")
+				EndIf
+				Frm2TexCc.Refresh
+				
+				If openemailtype=2 Then
+					Frm2TexTo.Text.Set (MyLoadFile.ReadString) // FROM into TO
+					Frm2TexTo.Refresh
+					Frm2TexFrom.Text.Set (frm3Email.Text.Get)
+					Frm2TexFrom.Refresh
+					
+				Else
+					TempStoreFrom=	MyLoadFile.ReadString // Do nothing
+				EndIf
+				
+				If openemailtype=4 Then
+					Frm2TexSubject.Text.Set("FW: " +MyLoadFile.ReadString)
+					Frm2TexTo.Text.Set ("")
+					Frm2TexTo.Refresh
+					Frm2TexCc.Refresh
+					Frm2TexFrom.Text.Set (frm3Email.Text.Get)
+					Frm2TexFrom.Refresh
+					
+				EndIf
+				If openemailtype=2 Then
+					Frm2TexSubject.Text.Set("RE: " +MyLoadFile.ReadString)
+				EndIf
+				If openemailtype=3 Then
+					Frm2TexSubject.Text.Set("RE ALL: " +MyLoadFile.ReadString)
+					Frm2TexFrom.Text.Set (frm3Email.Text.Get)
+					Frm2TexFrom.Refresh
+					
+				EndIf
+				If openemailtype=1 Then
+					Frm2TexSubject.Text.Set(MyLoadFile.ReadString)
+				EndIf
+				
+				Frm2TexSubject.Refresh
+				frm2TextEmail.Text.Set ("")
+				
+				While Not(MyLoadFile.EOF)
+					If openemailtype=2 Or openemailtype=3 Or openemailtype=4 Then
+						frm2TextEmail.Text.Set (frm2TextEmail.Text.Get +">" + MyLoadFile.ReadString)
+					Else
+						frm2TextEmail.Text.Set (frm2TextEmail.Text.Get +MyLoadFile.ReadString)
+					EndIf
+				Wend
+				
+				frm2TextEmail.Refresh
+				Form2.Text.Set ("Email : " + Mid(Frm2TexSubject.Text.Get,1,45) + "...")
+				
+				If openemailtype=2 Or openemailtype=4 Then
+					Frm2TexCc.Text.Set("")
+				EndIf
+			EndIf
+			
+			MyLoadFile.Close
+			
+			If CurrentFolder=1 Or CurrentFolder=3 Then //outbox and sent items are always sent from user.
+				Frm2TexFrom.Text.Set (frm3Email.Text.Get)
+				Frm2TexFrom.Refresh
+			EndIf
+			
+			Form2.Open
+			// FOCUS SHOULD BE SET TO TEXTBOX OR ELSE FREEEZE...
+		Else
+			
+		EndIf
+	EndIf
+EndIf
+
+CloseWait
+
+EndF
+
+Function OpenWait:Void()
+	WaitTXT.Hidden.Set(1)
+	frm7StatusBar.Hidden.Set(1)
+	frm7StatusBar.Value.Set(5)
+	frm7StatusBar.Refresh
+	WaitTXT.Refresh
+EndF
+
+Function CloseWait:Void()
+	WaitTXT.Hidden.Set(0)
+	frm7StatusBar.Hidden.Set(0)
+	frm7StatusBar.Value.Set(100)
+	frm7StatusBar.Refresh
+	WaitTXT.Refresh
+	
+EndF
+
+Function frmSettings.Event:Void()
+	If Form3open=0 Then
+		ReadSettingsFromFile.event
+		Form3open=1
+		Form3.Open
+	EndIf
+EndF
+
+
+Function SelectTo.Event:Void()
+	ContactDestination=0
+	OpenAddressBook.Event
+EndF
+
+Function SelectCC.Event:Void()
+	ContactDestination=1
+	OpenAddressBook.Event
+EndF
+
+Function OpenAddressBook.Event:Void()
+	If MailStoreOkay=1 Then
+		Message (4,1,5,"")  //TXT Clear
+		If Form4open=0 Then
+			Form4open=1
+			Form4.Open
+		EndIf
+	EndIf
+EndF
+
+Function OpenSync.event:Void()
+	
+	c5=0
+	c6=0
+	download=0
+	
+	If MailStoreOkay=1 Then
+		If Form5open=0 Then
+			Form5open=1
+			Form5.Open
+			c7=0 //Counter to check items in folder in doTraffic
+			LastPopCount=0 // Used to delete emails from pop server
+			ErrorDuringTransmit=0
+			
+			frm5statusbar.Value.Set (20)
+			frm5statusbar.Refresh
+			
+			OpenOutbox.Event
+			
+			c6=frmListEmail.Rows.Get -1
+			
+			If c6=-1 Then
+				frm5Status.Text.Set (MemMes3(4)) 						//TXT Now emails in the outbox
+				frm5Status.Refresh
+				
+				startReceiving.event
+			Else
+				c5=0
+				st=255/(c6+1)
+				frm5Status.Text.Set (MemMes4(4))						//TXT Start sending emails
+				frm5Status.Refresh
+				
+				SendNextEmail.event
+				
+			EndIf
+		EndIf
+	EndIf
+EndF
+
+
+Function startReceiving.event:Void()
+	
+	ConnectTry(1)=0 //no connection
+	Protocol = "POP3"
+	DisplayStatus(2) //Try POP
+	ConnectToPOP3Server
+	
+EndF
+
+
+Function SendNextEmail.event:Void()
+	
+	If c5>c6  Then
+		// Send receive complete
+		
+		If InSendLoop=2 Then
+			NetSend("QUIT")
+		Else
+			
+			DisplayStatus(1) //completed
+			
+			Message(5,6,2,"") // Sending / Receiving completed
+			InSendLoop	=0
+			
+			frm5statusbar.Value.Set (255)
+			frm5statusbar.Refresh
+			
+			startReceiving.event
+		EndIf
+	Else
+		
+		If InSendLoop=2 Then
+			
+			RefreshStatus
+			SendEmails
+		Else
+			Protocol = "SMTP"
+			ConnectTry(0)=0 //no connection
+			ConnectTry(1)=0 //no connection
+			ConnectTry(2)=0 //net counter for 535 Authentication
+			
+			RefreshStatus
+			ConnectToSMTPServer
+		EndIf
+	EndIf
+	
+EndF
+
+
+
+Function About.Event:Void()
+	If MailStoreOkay=1 Then
+		If Form6open=0 Then
+			Form6open=1
+			frm6Dbinfo.Text.Set("DbInfo [f"+Str(FileIndexID)+" i"+Str(InboxIndexID)+" o"+Str(OutboxIndexID)+" s"+Str(SentIndexID)+" d"+Str(DeletedIndexID)+ "] StFree :" +Str(String.Free) + " StMem :" + Str(String.Memory)
+			frm6Dbinfo.Refresh
+			frm6LblMemory.Text.Set("Free buffer memory: " + Str(String.Buffer.Free))
+			Form6.Open
+		EndIf
+	EndIf
+EndF
+
+
+Function OpenInbox.Event:Void()
+	Form1.Text.Set (MemMes7(0))			//TXT Inbox
+	Form1.Title.Refresh
+	CurrentFolder=0
+	ReadIndex.event(0) 	//read indexes for LISTBOX Inbjox
+EndF
+
+
+Function OpenOutbox.Event:Void()
+	Form1.Text.Set (MemMes7(1))			//TXT outbox
+	Form1.Title.Refresh
+	CurrentFolder=1
+	ReadIndex.event(1) 	//read indexes for LISTBOX OUTBOX
+EndF
+
+
+Function OpenSendItems.Event:Void()
+	Form1.Text.Set (MemMes7(2))			//TXT Sent Items
+	Form1.Title.Refresh
+	CurrentFolder=3
+	ReadIndex.event(3) 	//read indexes for LISTBOX Sent
+EndF
+
+
+Function OpenDeletedItems.Event:Void()
+	Form1.Text.Set (MemMes7(3))			//TXT deleted items
+	Form1.Title.Refresh
+	CurrentFolder=2
+	ReadIndex.event(2) 	//read indexes for LISTBOX OUTBOX Delete
+EndF
+
+
+Function MailClick.Event:Void() // Open the EMAIL
+	
+	If Event.Reason = Event.Reason.MouseLeftDClick  Then
+		If frmListEmail.Index.Get => 0 Then
+			OpenEmail.event(1)
+		EndIf
+	EndIf
+	
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// FORM CLOSE EVENTS												CLOSE EVENTS
+
+Function Form1.Close.Event:Void()
+	
+	MySaveFile.New (MailStore+"contacts.mdf")
+	
+	If MySaveFile.Status > 0 Then
+		
+		MySaveFile.WriteString(Str(frm4Contacts.Rows.Get-1))
+		
+		For c1=0 To frm4Contacts.Rows.Get
+			If frm4Contacts.Text.Get(0,c1)>"" Then
+				MySaveFile.WriteString(frm4Contacts.Text.Get(0,c1)) ;Name
+				MySaveFile.WriteString(frm4Contacts.Text.Get(1,c1)) ;Email
+			EndIf
+		Next
+	EndIf
+	MySaveFile.Close
+	
+	logo.Free
+	smallicons.Free
+	bigicons.Free
+EndF
+
+
+Function frm3Cancel.Event:Void()
+	Form3.Close
+EndF
+
+
+Function Form2.Close.Event:Void()
+	Form2open=0
+EndF
+
+
+Function Form3.Close.Event:Void()
+	Form3open=0
+EndF
+
+
+Function Form4.Close.Event:Void()
+	Form4open=0
+EndF
+
+
+Function Form5.Close.Event:Void()
+	
+	Form5open=0
+	CloseConection.event
+	Message (5,1,5,"") // TXT Clear
+	
+EndF
+
+
+Function Form6.Close.Event:Void()
+	Form6open=0
+EndF
+
+Function Form7.Close.Event:Void()
+	Form7open=0
+EndF
+
+Function CDateTime:Void
+	
+	TimeDate=Str(Time.Year.Get) + "-" + Right("0"+ Str(Time.Month.Get)+"-",3) +  Right("0"+ Str(Time.Day.Get),2)
+	TimeHour=Right("0"+ Str(Time.Hour.Get)+":",3) + Right("0"+ Str(Time.Minute.Get)+":",3) + Right("0"+ Str(Time.Second.Get),2)
+	TimeStamp=TimeDate + " " + TimeHour
+	
+EndF
+
+
+Function frm2SendEmail.Event:Void()
+	
+	If frm2TextEmail.Text.Get =  "" Or  Frm2TexTo.Text.Get = ""  Or Frm2TexSubject.Text.Get = "" Then
+		Message (2,5,3,"") //TXT fill-in all fields
+	Else
+		
+		If Form2open=1 Then
+			
+			SwitchBackFolderTEMP=CurrentFolder
+			OpenOutbox.Event
+			// save to disk
+			FileIndexID=FileIndexID+1
+			
+			MySaveFile.New (MailStore + "OUTBOX\"+Str(FileIndexID) + ".eml")
+			If MySaveFile.Status > 0 Then
+				CDateTime
+				
+				MySaveFile.WriteString(TimeDate)
+				MySaveFile.WriteString(TimeHour)
+				MySaveFile.WriteString (Frm2TexTo.Text.Get)
+				
+				If Frm2TexCc.Text.Get = "" Then
+					MySaveFile.WriteString	(" ")
+				Else
+					MySaveFile.WriteString	(Frm2TexCc.Text.Get)
+				EndIf
+				
+				MySaveFile.WriteString(frm3Email.Text.Get) //from
+				MySaveFile.WriteString	(Frm2TexSubject.Text.Get) //subject
+				MySaveFile.WriteString	(frm2TextEmail.Text.Get) // email
+				
+			EndIf
+			
+			Message (1,5,1,"") //clear
+			MySaveFile.Close
+			
+			
+			// ADD IT TO THE OUTBOX LIST AND FILE
+			OutboxIndexID=OutboxIndexID+1
+			
+			frmListEmail.Text.Set (0,frmListEmail.Rows.Get,Frm2TexTo.Text.Get) //TO
+			frmListEmail.Text.Set (1,frmListEmail.Rows.Get,Frm2TexSubject.Text.Get) //SUBJECT
+			frmListEmail.Text.Set (2,frmListEmail.Rows.Get,TimeStamp) //DATETIME
+			frmListEmail.Text.Set (3,frmListEmail.Rows.Get,Str(FileIndexID)) //FILEINDEX
+			frmListEmail.Text.Set(4,frmListEmail.Rows.Get,Str(attachfilenumber)) // Attachments
+			
+			frmListEmail.Rows.Set (frmListEmail.Rows.Get+1)
+			frmListEmail.Refresh
+			
+			SaveIndex.event(1) 	//save indexes for LISTBOX OUTBOX=1
+			WriteMailStore	//save index for all to disk
+			
+			Form2.Close
+			SwitchBackToFolder.event(SwitchBackFolderTEMP)
+		EndIf
+		
+	EndIf
+	
+EndF
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// Save  INDEX															INDEX SAVE
+
+Function SaveIndex.event:Void(UpdateRecordType)
+	
+	
+	OpenWait
+	
+	
+	MySaveFile.New (MailStore + MailStoreFile(UpdateRecordType) +".mdf")
+	
+	If MySaveFile.Status > 0 Then
+		
+		MySaveFile.WriteString(Str(frmListEmail.Rows.Get-1))
+		
+		For c1=0 To frmListEmail.Rows.Get
+			If frmListEmail.Text.Get(0,c1)>"" Then
+				MySaveFile.WriteString(frmListEmail.Text.Get(0,c1)) ;from Or To
+			EndIf
+			If frmListEmail.Text.Get(1,c1)>"" Then
+				MySaveFile.WriteString(frmListEmail.Text.Get(1,c1)) ;Subject
+			EndIf
+			If frmListEmail.Text.Get(2,c1)>"" Then
+				MySaveFile.WriteString(frmListEmail.Text.Get(2,c1)) ;DateTime
+			EndIf
+			If frmListEmail.Text.Get(3,c1)<>"" Then
+				MySaveFile.WriteString(frmListEmail.Text.Get(3,c1)) ;DiskIndex
+			EndIf
+			If frmListEmail.Text.Get(4,c1)<>"" Then
+				MySaveFile.WriteString(frmListEmail.Text.Get(4,c1)) ;Attachements
+			EndIf
+			
+		Next
+	EndIf
+	MySaveFile.Close
+	
+	CloseWait
+	
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// READ  INDEX														READ INDEX
+Function ReadIndex.event:Void(UpdateRecordType)
+	If MailStoreOkay=1 Then
+		OpenWait
+		
+		ClearEmailListBox
+		
+		If UpdateRecordType=1 Or  UpdateRecordType=3 Then
+			frmListEmail.Title.Set (0,"To")
+		Else
+			frmListEmail.Title.Set (0,"From")
+		EndIf
+		
+		If File.Exist(MailStore + MailStoreFile(UpdateRecordType) +".mdf")
+		
+		MyLoadFile.Open (MailStore + MailStoreFile(UpdateRecordType) +".mdf")
+		If MyLoadFile.Status > 0 Then
+			
+			
+			c4=CInt(MyLoadFile.ReadString)
+			c7=c4 //Check value during connection
+			ProgressB1	= 255 /(c4+1)
+			If c7=>63 Then
+				c7=63
+				Message(1,5,2,"") //Mailbox is full
+			Else
+				For c1=0 To c4
+					frm7StatusBar.Value.Set(frm7StatusBar.Value.Get  +ProgressB1)
+					frm7StatusBar.Refresh
+					frmListEmail.Text.Set (0,c1,MyLoadFile.ReadString) //from or To
+					frmListEmail.Text.Set (1,c1,MyLoadFile.ReadString) //Subject
+					frmListEmail.Text.Set (2,c1,MyLoadFile.ReadString) //DateTime
+					frmListEmail.Text.Set (3,c1,MyLoadFile.ReadString) //DiskIndex
+					frmListEmail.Text.Set (4,c1,MyLoadFile.ReadString) //attachments
+				Next
+				
+				frmListEmail.Rows.Set (c1)
+			EndIf
+		EndIf
+		MyLoadFile.Close
+	EndIf
+	frmListEmail.Index.Set (-1)
+	frmListEmail.Refresh
+	
+	CloseWait
+EndIf
+
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// Save  Settings to DSK	SETTINGS										SAVE TO DISK
+
+Function SaveSetings.Event:Void()
+	
+	FieldCheck=0
+	//CHECK if fields are correctly.
+	
+	If frm3Email.Text.Get="" Or frm3UserName.Text.Get="" Or frm3MailStore.Text.Get=""  Or  frm3ImapHost.Text.Get="" Or frm3IMAPPort.Text.Get="" Or frm3SMTPHost.Text.Get="" Or frm3SMTPPort.Text.Get=""  Then
+		Message (3,5,3,"") //Fields not empty
+		FieldCheck=1
+	EndIf
+	
+	If frm3POP3Host.Text.Get="" Or frm3POP3Port.Text.Get=""  Or frm3MailStore.Text.Get="" Then
+		Message (3,5,3,"") //Fields not empty
+		FieldCheck=1
+	EndIf
+	
+	
+	If FieldCheck=0 Then
+		
+		MySaveFile.New (App.Path+"symemail.ini")
+		If MySaveFile.Status > 0 Then
+			
+			WriteFileItems
+			
+			MailStore=frm3MailStore.Text.Get
+			FirstTimeSettings=0
+		EndIf
+		MySaveFile.Close
+		CheckEmailStore
+		
+		
+		// Create new store when there is no store
+		If MailStoreOkay=0 Then
+			
+			For c1=0 To 4
+				Directory.New(MailStore + MailStoreFile(c1))
+				
+				If Directory.Result <> 1 Then
+					Message(3,2,3," Error") 	// error in filesystem
+				EndIf
+			Next
+			
+			FileIndexID=0
+			InboxIndexID=0
+			OutboxIndexID=0
+			SentIndexID=0
+			DeletedIndexID=0
+			
+			WriteMailStore
+		Else
+			Message(1,3,0,frm3Email.Text.Get)	//connected to mailstore
+		EndIf
+		
+		Form3.Close
+	EndIf
+	
+EndF
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// Read Settings to DSK											READ FROM DISK
+
+Function ReadSettingsFromFile.event:Void()
+	
+	If File.Exist(App.Path+"symemail.ini")
+	
+	MyLoadFile.Open (App.Path+"symemail.ini")
+	
+	If MyLoadFile.Status > 0 Then
+		
+		ReadFileItems
+		
+		CurrentRadio = MyLoadFile.ReadInt
+		
+		If CurrentRadio=1 Then
+			frm3RadioPOP.Selected.Set
+		Else
+			frm3RadioIMAP.Selected.Set
+		EndIf
+		
+		FirstTimeSettings=2
+	EndIf
+	
+	MyLoadFile.Close
+	
+	Form3.Control.Refresh
+	
+	
+Else
+	FirstTimeSettings=1
+EndIf
+
+CheckEmailStore
+
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//CHECK MAIL STORE												CHECK MAIL STORE
+
+Function CheckEmailStore:Void()
+	
+	//Check local Mail store
+	MailStoreOkay =0
+	MailStore=frm3MailStore.Text.Get
+	If Directory.Exist (MailStore+ "INBOX")>0 Then
+		If Directory.Exist(MailStore+ "OUTBOX")>0  Then
+			If Directory.Exist(MailStore+ "SENT")>0  Then
+				If Directory.Exist(MailStore+ "DELETED")>0 Then
+					If Directory.Exist(MailStore+ "ATTACHED")>0 Then
+						If File.Exist(MailStore + "index.mdf")
+						
+						MyLoadFile.Open (MailStore + "index.mdf")
+						
+						If MyLoadFile.Status > 0 Then
+							
+							FileIndexID=MyLoadFile.ReadInt
+							InboxIndexID=MyLoadFile.ReadInt
+							OutboxIndexID=MyLoadFile.ReadInt
+							SentIndexID=MyLoadFile.ReadInt
+							DeletedIndexID=MyLoadFile.ReadInt
+							
+							MyLoadFile.Close
+							MailStoreOkay=1
+							Message(1,3,0,frm3Email.Text.Get)	//connected to mailstore
+							//	OpenInbox.Event
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndIf
+
+If MailStoreOkay=0 Then
+	Message(1,3,1,frm3Email.Text.Get)	//could NOT connected to mailstore
+	frm7StatusBar.Hidden.Set(0)
+	WaitTXT.Hidden.Set(0)
+	
+	frm7StatusBar.Refresh
+	WaitTXT.Refresh
+	
+	Form3.Open
+	
+EndIf
+
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//LOAD AND SAVE PROFILES												LOAD OTHER PROFILE
+
+
+Function ReadFileItems:Void
+	
+	frm3Email.Text.Set (MyLoadFile.ReadString)
+	frm3UserName.Text.Set (MyLoadFile.ReadString)
+	frm3Password.Text.Set (MyLoadFile.ReadString)
+	frm3ImapHost.Text.Set (MyLoadFile.ReadString)
+	frm3IMAPPort.Text.Set (MyLoadFile.ReadString)
+	frm3SMTPHost.Text.Set (MyLoadFile.ReadString)
+	frm3SMTPPort.Text.Set (MyLoadFile.ReadString)
+	frm3POP3Host.Text.Set (MyLoadFile.ReadString)
+	frm3POP3Port.Text.Set (MyLoadFile.ReadString)
+	frm3MailStore.Text.Set(MyLoadFile.ReadString)
+	frm3POPIMAPUsername.Text.Set(MyLoadFile.ReadString)
+	frm3POPIMAPPassword.Text.Set(MyLoadFile.ReadString)
+	frm3ImapHost.Text.Set(MyLoadFile.ReadString)
+	frm3IMAPPort.Text.Set(MyLoadFile.ReadString)
+	frm3POP3Host.Text.Set(MyLoadFile.ReadString)
+	frm3POP3Port.Text.Set(MyLoadFile.ReadString)
+	CheckMAXLine.Text.Set(MyLoadFile.ReadString)
+	
+	frm3SMTPAuth.Tick.Set	(MyLoadFile.ReadInt)
+	frm3PopIMAPAuth.Tick.Set(MyLoadFile.ReadInt)
+	//	frm3RadioPOP.Selected.Set(MyLoadFile.ReadInt)
+	CheckMIME.Tick.Set(MyLoadFile.ReadInt)
+	CheckDeleteAll.Tick.Set(MyLoadFile.ReadInt)
+	CheckHeaders.Tick.Set(MyLoadFile.ReadInt)
+	CheckKeep.Tick.Set(MyLoadFile.ReadInt)
+	CheckFilter.Tick.Set(MyLoadFile.ReadInt)
+	CheckBase64SMTP.Tick.Set(MyLoadFile.ReadInt)
+	CheckBase64POP.Tick.Set(MyLoadFile.ReadInt)
+	
+	
+	
+EndF
+
+
+Function WriteFileItems:Void
+	
+	MySaveFile.WriteString (frm3Email.Text.Get)
+	MySaveFile.WriteString (frm3UserName.Text.Get)
+	MySaveFile.WriteString (frm3Password.Text.Get)
+	MySaveFile.WriteString (frm3ImapHost.Text.Get)
+	MySaveFile.WriteString (frm3IMAPPort.Text.Get)
+	MySaveFile.WriteString (frm3SMTPHost.Text.Get)
+	MySaveFile.WriteString (frm3SMTPPort.Text.Get)
+	MySaveFile.WriteString (frm3POP3Host.Text.Get)
+	MySaveFile.WriteString (frm3POP3Port.Text.Get)
+	MySaveFile.WriteString (frm3MailStore.Text.Get)
+	MySaveFile.WriteString (frm3POPIMAPUsername.Text.Get)
+	MySaveFile.WriteString (frm3POPIMAPPassword.Text.Get)
+	MySaveFile.WriteString (frm3ImapHost.Text.Get)
+	MySaveFile.WriteString (frm3IMAPPort.Text.Get)
+	MySaveFile.WriteString (frm3POP3Host.Text.Get)
+	MySaveFile.WriteString (frm3POP3Port.Text.Get)
+	MySaveFile.WriteString (CheckMAXLine.Text.Get)
+	
+	MySaveFile.WriteInt (frm3SMTPAuth.Ticked)
+	MySaveFile.WriteInt (frm3PopIMAPAuth.Ticked)
+	//	MySaveFile.WriteInt (frm3RadioPOP.Selected.Get)
+	MySaveFile.WriteInt (CheckMIME.Ticked)
+	MySaveFile.WriteInt (CheckDeleteAll.Ticked)
+	MySaveFile.WriteInt (CheckHeaders.Ticked)
+	MySaveFile.WriteInt (CheckKeep.Ticked)
+	MySaveFile.WriteInt (CheckFilter.Ticked)
+	MySaveFile.WriteInt (CheckBase64SMTP.Ticked)
+	MySaveFile.WriteInt (CheckBase64POP.Ticked)
+	
+	
+EndF
+
+
+//BUGS on MSX2
+
+Function LoadConfig.Event:Void()
+	If File.Select.Open("","pro")=File.Select.OK Then
+		
+		MyLoadFile.Open (File.Select.File)
+		
+		If MyLoadFile.Status > 0 Then
+			
+			ReadFileItems
+			
+			CurrentRadio = MyLoadFile.ReadInt
+			
+			If CurrentRadio=1 Then
+				frm3RadioPOP.Selected.Set
+			Else
+				frm3RadioIMAP.Selected.Set
+			EndIf
+			
+			FirstTimeSettings=2
+		EndIf
+		
+		MyLoadFile.Close
+		Form3.Control.Refresh
+		
+	EndIf
+EndF
+
+Function SaveConfig.Event:Void()
+	If File.Select.Save("","pro")=File.Select.OK Then
+		
+		MySaveFile.New (File.Select.File)
+		If MySaveFile.Status > 0 Then
+			
+			WriteFileItems
+			
+		EndIf
+		MySaveFile.Close
+	EndIf
+	
+EndF
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//SET INDEXES												WRITE INDEX TO MAILSTORE
+Function WriteMailStore:Void()
+	
+	MySaveFile.New(MailStore + "index.mdf")
+	
+	If MySaveFile.Status > 0 Then
+		
+		MySaveFile.WriteInt(FileIndexID)
+		MySaveFile.WriteInt(InboxIndexID)
+		MySaveFile.WriteInt(OutboxIndexID)
+		MySaveFile.WriteInt(SentIndexID)
+		MySaveFile.WriteInt(DeletedIndexID)
+		
+	EndIf
+	
+	MySaveFile.Close
+	CheckEmailStore
+	
+	
+EndF
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//small routines														SMALL routines
+Function SaveContact.Event:Void()
+	
+	If frm4FullName.Text.Get ="" Or  frm4Email.Text.Get = "" Then
+		Message(4,1,0,"")
+	Else
+		If frm4Contacts.Rows.Get <31 Then
+			
+			If frm4FullName.Text.Get="" Or frm4Email.Text.Get="" Then
+				Message(4,5,3,"")
+			Else
+				frm4Contacts.Rows.Set (frm4Contacts.Rows.Get)
+				frm4Contacts.Text.Set (0,frm4Contacts.Rows.Get,frm4FullName.Text.Get)
+				frm4Contacts.Text.Set (1,frm4Contacts.Rows.Get,frm4Email.Text.Get)
+				frm4Contacts.Rows.Set (frm4Contacts.Rows.Get+1)
+				frm4Contacts.Index.Set (-1)
+				frm4Contacts.Refresh
+				frm4FullName.Text.Set ("")
+				frm4Email.Text.Set ("")
+				frm4FullName.Refresh
+				frm4Email.Refresh
+			EndIf
+		Else
+			Message(4,5,1,"")
+		EndIf
+	EndIf
+	
+EndF
+
+Function frm4ContactsSelect.event:Void()
+	Message(4,4,0,Str(frm4Contacts.Index.Get))
+EndF
+
+
+Function AttachFile.Event:Void()
+	If File.Select.Open("","*")=File.Select.OK Then
+		frm2DropFilename.List.Insert(attachfilenumber,File.Select.File)
+		frm2DropFilename.Refresh
+		attachfilenumber=attachfilenumber+1
+	EndIf
+	
+EndF
+
+
+Function DeleteAttachFile.Event:Void()
+	frm2DropFilename.List.Remove(frm2DropFilename.Index.Get,"")
+	frm2DropFilename.Refresh
+EndF
+
+
+Function frm3FileSelect.Event:Void()
+	If Directory.Select("")=Directory.Select.OK Then
+		frm3MailStore.Text.Set(Directory.Select.Path)
+		frm3MailStore.Refresh
+	EndIf
+EndF
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+Function ClearEmailListBox:Void()
+	For c2=0 To frmListEmail.Columns.Get-1
+		For c3=0 To frmListEmail.Rows.Max-1
+			frmListEmail.Selected.Set c3,0
+			frmListEmail.Text.Set c2,c3,""
+		Next
+	Next
+	frmListEmail.Rows.Set (0)
+	
+EndF
+
+Function ClearContactsList:Void()
+	For c2=0 To frm4Contacts.Columns.Get-1
+		For c3=0 To frm4Contacts.Rows.Max-1
+			frm4Contacts.Selected.Set c3,0
+			frm4Contacts.Text.Set c2,c3,""
+		Next
+	Next
+	frm4Contacts.Rows.Set (0)
+EndF
+
+
+Function DeleteItem.Event:Void()
+	
+	If MailStoreOkay=1 Then
+		
+		If frmListEmail.Index.Get => 0 Then
+			
+			//wwiting selected item to memory
+			SwitchBackFolderTEMP=CurrentFolder
+			TempStoreFrom = frmListEmail.Text.Get(0,frmListEmail.Index.Get)
+			tempStoreSubject= frmListEmail.Text.Get(1,frmListEmail.Index.Get)
+			TempStoreDate= frmListEmail.Text.Get(2,frmListEmail.Index.Get)
+			TempStoreFileIndex= frmListEmail.Text.Get(3,frmListEmail.Index.Get)
+			tempAttachments = frmListEmail.Text.Get(4,frmListEmail.Index.Get)
+			
+			// open the folder
+			deleteROW.event //deleteline
+			
+			// add to the listbox
+			If CurrentFolder <> 2 Then
+				OpenDeletedItems.Event
+				DeletedIndexID=DeletedIndexID+1
+				
+				FRMListItemsDo
+				
+				File.Move(MailStore+ MailStoreFile(SwitchBackFolderTEMP) + "\" +TempStoreFileIndex + ".eml",MailStore+ "DELETED\")
+				
+				SaveIndex.event(2)
+				WriteMailStore
+			Else
+				File.Delete (MailStore+ "DELETED\" + TempStoreFileIndex + ".eml")
+				
+				SaveIndex.event(2)
+				WriteMailStore
+			EndIf
+			
+			SwitchBackToFolder.event(SwitchBackFolderTEMP)
+		EndIf
+	EndIf
+	
+	
+EndF
+
+
+Function SwitchBackToFolder.event:Void(SwitchBackFolder)
+	
+	// added as test
+	
+	//	If SwitchBackFolder<>CurrentFolder Then
+	
+	If SwitchBackFolder=0 Then
+		OpenInbox.Event
+	EndIf
+	If SwitchBackFolder=1 Then
+		OpenOutbox.Event
+	EndIf
+	If SwitchBackFolder=2 Then
+		OpenDeletedItems.Event
+	EndIf
+	If SwitchBackFolder=3 Then
+		OpenSendItems.Event
+	EndIf
+	//	EndIf
+	
+EndF
+
+
+Function deleteROW.event:Void
+	
+	c1=frmListEmail.Index.Get
+	For c2=c1 To frmListEmail.Rows.Get-1
+		For c3=0 To frmListEmail.Columns.Get-1
+			frmListEmail.Text.Set c3,c2,frmListEmail.Text.Get(c3,c2+1)
+		Next
+	Next
+	frmListEmail.Rows.Set frmListEmail.Rows.Get-1
+	SaveIndex.event(CurrentFolder)
+	
+EndF
+
+
+Function deleteROWAddresbook.event:Void
+	
+	If frm4Contacts.Index.Get => 0 Then
+		
+		c1=frm4Contacts.Index.Get
+		For c2=c1 To frm4Contacts.Rows.Get-1
+			For c3=0 To frm4Contacts.Columns.Get-1
+				frm4Contacts.Text.Set c3,c2,frm4Contacts.Text.Get(c3,c2+1)
+			Next
+		Next
+		frm4Contacts.Rows.Set frm4Contacts.Rows.Get-1
+		frm4Contacts.Index.Set (-1)
+		frm4Contacts.Refresh
+		
+	EndIf
+EndF
+
+
+Function contactsClick.Event:Void()
+	If Event.Reason = Event.Reason.MouseLeftDClick  Then
+		If ContactDestination=0 Then
+			If Frm2TexTo.Text.Get <> "" Then
+				Frm2TexTo.Text.Set(Frm2TexTo.Text.Get + ";")
+			EndIf
+			
+			Frm2TexTo.Text.Set (Frm2TexTo.Text.Get + frm4Contacts.Text.Get(1,frm4Contacts.Index.Get))
+			Frm2TexTo.Refresh
+		Else
+			If Frm2TexCc.Text.Get <> "" Then
+				Frm2TexCc.Text.Set(Frm2TexCc.Text.Get + ";")
+			EndIf
+			
+			Frm2TexCc.Text.Set (Frm2TexCc.Text.Get + frm4Contacts.Text.Get(1,frm4Contacts.Index.Get))
+			Frm2TexCc.Refresh
+		EndIf
+		Form4.Close
+	EndIf
+	
+EndF
+
+
+Function ReplyEmail.Event:Void()
+	If frmListEmail.Index.Get => 0 Then
+		OpenEmail.event(2)
+	EndIf
+EndF
+
+
+Function ReplyAllEmail.Event:Void()
+	If frmListEmail.Index.Get=>0 Then
+		OpenEmail.event(3)
+	EndIf
+EndF
+
+
+Function ForwaredEmail.Event:Void()
+	If frmListEmail.Index.Get =>0 Then
+		OpenEmail.event(4)
+	EndIf
+EndF
+
+// \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ NETWORK EVENTS
+
+
+Function ConnectToSMTPServer:Void()
+	DomainSMTPip = frm3SMTPHost.Text.Get
+	connectionhost =DomainSMTPip
+	DomainSMTPPort = CInt(frm3SMTPPort.Text.Get)
+	
+	If Net.Initialised<>255 Then
+		
+		Message(5,6,1,connectionhost) //Try connect
+		socket=Net.TCP.Client.Open (DomainSMTPip,DomainSMTPPort)
+		ConnectTry(0)=1
+		
+	Else
+		Message(5,4,2,"") //NOT HARDWARE FOUND
+	EndIf
+	
+EndF
+
+
+Function ConnectToPOP3Server:Void()
+	
+	DomainPOP3ip =frm3POP3Host.Text.Get
+	connectionhost =DomainPOP3ip
+	DomainPOP3port = CInt (frm3POP3Port.Text.Get)
+	
+	
+	If Net.Initialised<>255 Then
+		
+		Message(5,6,1,connectionhost) //Try connect
+		socket=Net.TCP.Client.Open (DomainPOP3ip,DomainPOP3port)
+		ConnectTry(1)=1
+		
+	Else
+		Message(5,4,2,"") //NOT HARDWARE FOUND
+	EndIf
+	
+EndF
+
+
+Function Net.Event:Void
+	
+	RXPaint.Pen.Set(Colour.BrightGreen)
+	RXPaint.Refresh
+	RXTXCounter=RXTXCounter+1
+	
+	If Event.Net.TCP.Establish=1 Then
+		If ConnectTry(0)=1  Or ConnectTry(1)=1 Then	//First time socket connect SMTP PROTOCOL
+			socket=Event.Net.Socket
+			Message(5,6,0,"")
+			If Protocol = "SMTP" Then
+				ConnectTry(0)=2 //sock
+				DisplayStatus(2) //TCP OPEN
+			Else
+				ConnectTry(1)=2 //socket open
+				DisplayStatus(2) //TCP OPEN
+			EndIf
+			
+			If DebugDump.Ticked = 1 Then
+				
+				If ConnectTry(1)=2 Then
+					MyLogFile.New(MailStore + "POP3.TXT")
+				Else
+					MyLogFile.New(MailStore + "SMTP.TXT")
+				EndIf
+				
+				If MyLogFile.Status > 0 Then
+					MyLogFile.WriteString("***StartLOG***")
+				EndIf
+			EndIf
+		EndIf
+	Else
+		
+		If ConnectTry(0)=1  Or ConnectTry(1)=1 Then
+			
+			CloseConection.event
+			Message (5,3,3,"") //UNABLE TO CONNECT ERROR
+			If Protocol = "SMTP" Then
+				DisplayStatus(5) //SMTP ERROR
+			Else
+				DisplayStatus(6) //POP ERROR
+			EndIf
+		EndIf
+	EndIf
+	
+	If Event.Net.TCP.Received  Then
+		ReceiveString = ""
+		
+		While Event.Net.Received.Size>0
+			ReceiveString = ReceiveString +Event.Net.Received.String
+		Wend
+		
+		If Event.Net.Received.Size=<0 And Len(ReceiveString) >0 Then
+			
+			If networkTrigger=0 Then
+				If DebugDump.Ticked = 1 Then
+					
+					MyLogFile.WriteString("***NETEVENT***(" + Str(Len(ReceiveString)) + ")" +ReceiveString+"***")
+				EndIf
+				
+				networkTrigger=1
+			EndIf
+		EndIf
+	EndIf
+	
+EndF
+
+
+
+
+Function Makestring:Void
+	
+	If DebugDump.Ticked = 1 Then
+		MyLogFile.WriteString("###MAKESTRING# S1 ##")
+	EndIf
+	
+	If CheckFilter.Ticked=1 And Mid(ReceiveString ,1,2) = "X-" Then
+		
+		// DO NOTHING >> It is grap
+		If DebugDump.Ticked = 1 Then
+			MyLogFile.WriteString("###X-GRAB###")
+		EndIf
+		
+	Else
+		
+		
+		ReceiveString = Replace(ReceiveString,Chr(13),"[CR]")
+		ReceiveString = Replace(ReceiveString,Chr(10),"[LF]")
+		ReceiveString = Replace(ReceiveString,Chr(09),"[TAB]")
+		ReceiveString = Replace(ReceiveString,Chr(11),"[HT]")
+		ReceiveString = ValidString(ReceiveString)
+		
+		
+		If DebugDump.Ticked = 1 Then
+			MyLogFile.WriteString("###MAKESTRING# S2 ##")
+		EndIf
+		
+		
+		//ReceiveString = Replace(Replace(Replace(Replace(ReceiveString,Chr(13),"[CR]"),Chr(10),"[LF]"),Chr(9),"[TAB]"),Chr(11),"[HT]")
+		//ReceiveString = ValidString(ReceiveString)
+		If PopStoreStatus=2 Then
+			frm5Status.Text.Set ("Processing Traffic [" + Str(Len(ReceiveString)) + "]")
+			frm5Status.Refresh
+		EndIf
+		
+		PRPaint.Pen.Set(Colour.BrightCyan)
+		PRPaint.Refresh
+		RXTXCounter=RXTXCounter+1
+		
+		
+		While FindStr(ReceiveString,"[CR][LF]",1)  >0
+			
+			If DebugDump.Ticked = 1 Then
+				MyLogFile.WriteString("###PROCESS_STRING###")
+			EndIf
+			
+			
+			InMessage=""
+			over = FindStr(ReceiveString,"[CR][LF]",1)
+			
+			InMessage=Mid(ReceiveString,1,over+7)
+			
+			If DebugDump.Ticked = 1 Then
+				MyLogFile.WriteString("###MAKESTRING###" + Mid(ReceiveString,1,over+7)+ "###")
+			EndIf
+			
+			
+			ReceiveString=Mid(ReceiveString,over+8,9999)
+			
+			If DebugDump.Ticked = 1 Then
+				MyLogFile.WriteString("###DO_TRAFFIC_START###")
+			EndIf
+			
+			DoTraffic
+			
+			If DebugDump.Ticked = 1 Then
+				MyLogFile.WriteString("###DO_TRAFFIC_STOP###")
+			EndIf
+			
+			
+		Wend
+		
+		If DebugDump.Ticked = 1 Then
+			MyLogFile.WriteString("###MAKESTRING# EXIT LOOP ##")
+		EndIf
+		
+		//end grap
+	EndIf
+	
+EndF
+
+Function filterString:Void(filterIn)
+	filterIn = Replace(Replace(Replace(Replace(Replace(filterIn,"To: ",""),"cc: ",""),"From: ",""),"Subject: ",""),"[TAB]","")
+	filterIn = Replace(Replace(Replace(Replace(filterIn,">",""),"<",""),",",";")," ","")
+	
+	
+	pos1=1
+	While pos1>0
+		pos1=FindStr(filterIn,Chr(34),1)
+		If pos1>0 Then
+			pos2=FindStr(filterIn,Chr(34),pos1+1)
+			If pos2>0 Then
+				filterIn=Left(filterIn,pos1-1) + Right(filterIn,Len(filterIn)-pos2)
+			EndIf
+		EndIf
+	Wend
+	
+EndF
+
+
+Function DoTraffic:Void
+	
+	
+	If ConnectTry(0)=2  Then  // CONNECTION	WITH SMTP
+		
+		
+		If Mid(InMessage,1,3) = "220" Then  //Server Ready
+			NetSend("HELO symbos.z80.net")
+		EndIf
+		
+		If Mid(InMessage,1,10) ="250 Queued"  Then
+			InSendLoop=1
+		EndIf
+		
+		If Mid(InMessage,1,3) = "221" Then  //Server Exit
+			CloseConection.event
+			InSendLoop=3 // Go to main but sending is complete?
+		EndIf
+		
+		If Mid(InMessage,1,10 )= "250 Hello." Then  //hello
+			If frm3SMTPAuth.Ticked = 1 Then
+				NetSend("AUTH LOGIN")
+				DisplayStatus(8) //LOGIN TRY
+				ConnectTry(2)=0
+			Else
+				InMessage="235"	// SKIP LOGIN and go to Send
+			EndIf
+		EndIf
+		
+		If Mid(InMessage,1,3) = "334" Then  //Server Ready
+			
+			If ConnectTry(2)=1 Then
+				//		NetSend(Base64.Encode(frm3Password.Text.Get))	// Base 64 password
+				NetSend(frm3Password.Text.Get)
+				ConnectTry(2)=2
+			EndIf
+			
+			If ConnectTry(2)=0 Then
+				//		NetSend(Base64.Encode(frm3UserName.Text.Get)) // Base 64 username
+				NetSend(frm3UserName.Text.Get) // Base 64 username
+				ConnectTry(2)=1
+			EndIf
+			
+		EndIf
+		
+		If Mid(InMessage,1,3) = "535" Then  //Server Ready
+			Message(5,4,3,"")	// Authentication failed.
+			DisplayStatus(9) //LOGIN FAIL
+			NetSend("QUIT")
+			
+		EndIf
+		
+		If Mid(InMessage,1,3) = "550" Or Mid(InMessage,1,3) ="530" Then  //Server Ready
+			Message(5,4,3,"")	// Authentication failed.
+			DisplayStatus(11) //NEEDS LOGIN
+			NetSend("QUIT")
+		EndIf
+		
+		If Mid(InMessage,1,3) = "503" Then  //Protocol error 503
+			Message(5,6,3,"")	//Protocol error 503
+			ErrorDuringTransmit=1
+			NetSend("QUIT")
+		EndIf
+		
+		If Mid(InMessage,1,3) = "235" Then  //Login OK
+			Message(5,6,0,"")	// connected
+			DisplayStatus(13) //UPLOAD
+			SendEmails
+		EndIf
+		
+	EndIf
+	
+	///////////////////// POP3 PART
+	
+	If ConnectTry(1)=2  Then  // CONNECTION	WITH POP
+		
+		
+		If Mid(InMessage,1,8) = "+OK POP3" Then
+			DisplayStatus(8) //LOGIN TRY
+			NetSend("user "+frm3POPIMAPUsername.Text.Get)
+		EndIf
+		
+		If Mid(InMessage,1,22) = "+OK Send your password" Then
+			NetSend("pass "+frm3POPIMAPPassword.Text.Get)
+		EndIf
+		
+		If Mid(InMessage,1,28) = "+OK Mailbox locked and ready" Then
+			frm5statusbar.Value.Set (20)
+			frm5statusbar.Refresh
+			NetSend("list")
+			PopStatus=2
+			looppop=0
+			TotalPop=0
+			currentPop=0
+			DisplayStatus(10) //LOGIN OKAY
+		EndIf
+		
+		If PopStatus=2 Then
+			currentPop=currentPop+1
+			frm5statusbar.Value.Set (frm5statusbar.Value.Get+5)
+			frm5statusbar.Refresh
+			
+			DisplayStatus(17) //COUNT
+			
+		EndIf
+		
+		If PopStatus=2  And Mid(InMessage,1,9) = ".[CR][LF]"   Then
+			PopStatus=3
+		EndIf
+		
+		If PopStatus=4 Then
+			
+			If PopStoreStatus=0 Then
+				PopStoreStatus=1
+			EndIf
+			
+			If PopStoreStatus=>1 Then // EMAIL BODY  ITSELF has to be stored to disk  until a end (.) found.
+				If Mid(InMessage,1,9) =".[CR][LF]" Then
+					PopStoreStatus=0
+				Else
+					
+					If MySaveFile.Status > 0 Then
+						StringToStore= InMessage
+						
+						
+						If MultipleReceivers=1 Then
+							TempPop3To=TempPop3To + Replace(StringToStore,"[CR][LF]","")
+							If Right(TempPop3To,1)="," Then
+								MultipleReceivers=1
+							Else
+								MultipleReceivers=0
+							EndIf
+						EndIf
+						
+						If MultipleReceivers=2 Then
+							TempPop3cc=TempPop3cc + Replace(StringToStore,"[CR][LF]","")
+							If Right(TempPop3cc,1)="," Then
+								MultipleReceivers=2
+							Else
+								MultipleReceivers=0
+							EndIf
+						EndIf
+						
+						
+						filter=0
+						If PopStoreStatus<2 Then
+							
+							If Mid (StringToStore,1,5) = "Date:" Then
+								TempPop3Date = Replace(StringToStore,"[CR][LF]","")
+								filter=1
+								If TempPop3Subject="Subject: " Or TempPop3Subject="" Then
+								Else
+									PopStoreStatus=2
+								EndIf
+							EndIf
+							If Mid (StringToStore,1,3) = "To:" Then
+								TempPop3To = Replace(StringToStore,"[CR][LF]","")
+								filter=1
+								If Right(TempPop3To,1)="," Then
+									MultipleReceivers=1
+								EndIf
+								
+							EndIf
+							
+							If Mid (StringToStore,1,5) = "From:" Then
+								TempPop3From = Replace(StringToStore,"[CR][LF]","")
+								filter=1
+							EndIf
+							
+							If Mid (StringToStore,1,3) = "cc:" Then
+								TempPop3cc = Replace(StringToStore,"[CR][LF]","")
+								filter=1
+								If Right(TempPop3cc,1)="," Then
+									MultipleReceivers=2
+								EndIf
+							EndIf
+							
+							If Mid(StringToStore,1,8) = "Subject:" Then
+								TempPop3Subject = Replace(StringToStore,"[CR][LF]","")
+								filter=1
+								If TempPop3Date ="Date: "  Or TempPop3Date="" Then
+								Else
+									PopStoreStatus=2
+								EndIf
+							EndIf
+							
+						EndIf
+						
+						
+						If PopStoreStatus=2 And filter=>1 Then
+							
+							
+							If filter=1 And Storehead=0  Then
+								
+								CDateTime
+								MySaveFile.WriteString(TimeDate)
+								MySaveFile.WriteString(TimeHour)
+								
+								filterString(TempPop3To)
+								MySaveFile.WriteString (filterIn)  // TO
+								
+								If TempPop3cc= "" Then
+									TempPop3cc=" "
+								EndIf
+								
+								filterString(TempPop3cc)
+								MySaveFile.WriteString	(filterIn) //CC
+								
+								filterString(TempPop3From)
+								MySaveFile.WriteString (filterIn) //FROM
+								
+								If Len(TempPop3Subject)< 1 Then
+									TempPop3Subject=" No Subject" + TempPop3Subject
+								EndIf
+								
+								MySaveFile.WriteString	(TempPop3Subject) // Subject
+								//Add Server date and time to the email to the body of the text
+								MySaveFile.WriteString("["+ TempPop3Date +"]" + Chr(13)+Chr(10))
+								MySaveFile.WriteString("->" +Chr(13)+Chr(10))
+								
+								TempPop3EmailStore=1
+								Storehead=1
+							EndIf
+						EndIf
+						
+						If filter=0  And PopStoreStatus=2 And TempPop3EmailStore=1 Then
+							
+							If Mid(StringToStore,1,32) = "Content-Disposition: attachment;" Then
+								If download=>1 Then
+									MyAttachment.WriteString(StringToStoreCollector + StringToStore)
+									MyAttachment.Close
+								EndIf
+								DisplayStatus(16) //Download Attachment messsage
+								download=download+1
+								MyAttachment.New (MailStore + "ATTACHED\ATTACH"+Str(FileIndexID) + ".a" + Str(download))
+								
+							EndIf
+							
+							If download=0 Then
+								// DOWNLOAD 0 MEANS NO ATTACHMENT JUST STORE
+								//EMAIL BODY STORE PART
+								
+								StringToStore=Replace(StringToStore,"[CR]",Chr(13))
+								StringToStore=Replace(StringToStore,"[LF]",Chr(10))
+								
+								// CHECK FOR MIME BOUNDARY
+								If boundaryset=0 And FindStr(StringToStore,"boundary=",1) > 0 Then
+									
+									// First find ID of boundary
+									boundaryID1=FindStr(StringToStore,"boundary=",1)
+									// give pos of first chr(34)
+									boundaryID2	=FindStr(StringToStore,Chr(34),boundaryID1)
+									// place the next chr(34)
+									boundaryID1=FindStr(StringToStore,Chr(34),boundaryID2+1)
+									// 2 is the first "
+									// 1 is the second "
+									boundaryID1 = boundaryID1	- boundaryID2
+									MIMEboundary = Mid(StringToStore,boundaryID2+1,boundaryID1-1)
+									
+									If DebugDump.Ticked = 1 Then
+										MyLogFile.WriteString("@@@@ Boundary:" + MIMEboundary + "@@@@" )
+									EndIf
+									
+									boundaryset=1
+								EndIf
+								
+								
+								// WRITE TO DISK -> ALL DATA ONLY WHEN MIME IS NOT TICKED BY USER (NOT DEFAULT SETTING)
+								If CheckMIME.Ticked = 0 Then
+									//JUST SAVE ALL DATA TO DISK.. INCCLUSING HTML SETTINGS
+									MySaveFile.WriteString	(StringToStore)
+								Else
+									
+									//WRITE TO DISK ONLY IN text/plain AREA! THIS IS THE DEFAULT MIME SETTING. EMAILS WITH HTML GET LOST
+									If boundaryset=2 Then
+										//THE PLAIN PART IN MIME WAS PASSED>SO WE CAN SAVE NOW!
+										
+										If FindStr(StringToStore,MIMEboundary,1) > 0 Then
+											//THE BOUNDARY WAS FOUND>> WILL END THE SAVE
+											boundaryset=3
+											StringToStore = Replace(StringToStore,MIMEboundary,"")
+										EndIf
+										
+										MySaveFile.WriteString	(StringToStore)
+										
+									EndIf
+									//Or FindStr(StringToStore,"quoted-printable",1) > 0
+									If FindStr(StringToStore,"text/plain",1) > 0   Then  //removed and boundaryset=1
+										//text/plain part is active! set to 2.. next cycle we will store!
+										//SEE ABOVE .. IT MEANS THERE IS A MIME BOUNDARY AND THE TEXT PLAIN STRING IS STARTED!
+										boundaryset=2
+									EndIf
+									
+								EndIf
+								
+								
+							Else
+								// IT IS IN DOWNLOAD MODE
+								// SAVE ATTACHMENTS
+								StringToStoreCollector=StringToStoreCollector + StringToStore
+								If Len(StringToStoreCollector)=> 1536 Then
+									MyAttachment.WriteString(StringToStoreCollector)
+									StringToStoreCollector	= ""
+								EndIf
+								
+							EndIf
+							
+						EndIf
+						
+						
+					Else
+						// ERROR writing to DSK
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+		
+		
+		
+		
+		If PopStatus=4 And Mid(InMessage,1,9) = ".[CR][LF]"  Then
+			
+			MySaveFile.Close
+			
+			OpenInbox.Event
+			CDateTime
+			InboxIndexID=InboxIndexID+1
+			frmListEmail.Text.Set (0,frmListEmail.Rows.Get,Replace(TempPop3From,"From: ","")) //TO//FROM?
+			frmListEmail.Text.Set (1,frmListEmail.Rows.Get,Replace(TempPop3Subject,"Subject: ","")) //SUBJECT
+			frmListEmail.Text.Set (2,frmListEmail.Rows.Get,TimeStamp) //DATETIME
+			frmListEmail.Text.Set (3,frmListEmail.Rows.Get,Str(FileIndexID)) //FILEINDEX
+			frmListEmail.Text.Set (4,frmListEmail.Rows.Get,Str(download)) //attachments
+			frmListEmail.Rows.Set (frmListEmail.Rows.Get+1)
+			frmListEmail.Refresh
+			
+			If filter=3 Then
+				MyAttachment.WriteString(StringToStoreCollector + StringToStore)
+				MyAttachment.Close
+				download=0
+			EndIf
+			
+			
+			
+			TempPop3Date=""
+			TempPop3To=""
+			TempPop3From=""
+			TempPop3cc=""
+			TempPop3Subject=""
+			TempPop3EmailStore=0
+			MIMEboundary = ""
+			boundaryset=0
+			Storehead=0
+			
+			SaveIndex.event(0) 	//save indexes for LISTBOX INBBOX=0
+			WriteMailStore	//save index for all to disk
+			
+			getpopmails //Next email?
+			
+		EndIf
+		
+		If PopStatus=3  Then
+			currentPop=currentPop -2
+			TotalPop=currentPop
+			
+			st=255-frm5statusbar.Value.Get
+			st=st/TotalPop
+			
+			getpopmails
+		EndIf
+		
+		If Mid(InMessage,1,35) = "-ERR Your mailbox is already locked" Then
+			ErrorDuringTransmit=1
+			DisplayStatus(18) //POP3 IN USE
+			Message(5,6,2,"")	// SyncDone
+			NetSend("quit")
+			CloseConection.event
+		EndIf
+		
+		If Mid(InMessage,1,34) = "-ERR Invalid user name or password" Then
+			ErrorDuringTransmit=1
+			DisplayStatus(9) //LOGIN FAIL
+			Message(5,6,2,"")	// SyncDone
+			NetSend("quit")
+			CloseConection.event
+		EndIf
+		
+		If Mid(InMessage,1,14) = "+OK 0 messages" Then
+			DisplayStatus(11) //No EMAILS
+			Message(5,6,2,"")	// SyncDone
+			NetSend("quit")
+			CloseConection.event
+		EndIf
+		
+	EndIf
+	networkTrigger=0
+EndF
+
+
+Function getpopmails:Void
+	PopStatus=4
+	//delete function
+	If CheckDeleteAll.Ticked=1 Then
+		While currentPop>0
+			NetSend("dele " + Str(currentPop))
+			currentPop=currentPop-1
+		Wend
+		CheckDeleteAll.Tick.Set(0)
+	EndIf
+	//enddelete
+	
+	If LastPopCount > 0 Then
+		If CheckKeep.Ticked=1 Then
+			NetSend("dele " + Str(LastPopCount))
+		EndIf
+	EndIf
+	
+	currentPop=currentPop-1
+	If currentPop=<0 Then
+		NetSend("quit")
+		CloseConection.event
+		OpenInbox.Event
+	Else
+		DisplayStatus(15) //downloading emails
+		
+		frm5statusbar.Value.Set (frm5statusbar.Value.Get+st)
+		frm5statusbar.Refresh
+		
+		//STORE EMAIL FILE OPEN
+		
+		FileIndexID=FileIndexID+1
+		MySaveFile.New (MailStore + "INBOX\"+Str(FileIndexID) + ".eml")
+		LastPopCount=currentPop
+		
+		If CheckHeaders.Ticked=1 Then
+			NetSend("top "+ Str(currentPop) + " 15")
+		Else
+			NetSend("retr "+ Str(currentPop))
+		EndIf
+	EndIf
+	
+EndF
+
+
+
+Function NetSend:Void(StringToSend)
+	
+	If ErrorDuringTransmit=0 Then
+		
+		TXPaint.Pen.Set(Colour.Red)
+		TXPaint.Refresh
+		RXTXCounter=RXTXCounter+1
+		
+		
+		//	frm5Status.Text.Set ("Send Traffic [" + Str(Len(StringToSend)) + "]")
+		//	frm5Status.Refresh
+		
+		
+		
+		Net.TCP.Send(socket,StringToSend+Chr(13)+Chr(10))
+		If DebugDump.Ticked = 1 Then
+			MyLogFile.WriteString(StringToSend)
+		EndIf
+		
+	Else
+		
+		// THERE IS AN ERROR RECEIVED FROM THE SERVER. STOP EVERYTHING
+		InSendLoop=0
+		CloseConection.event
+		
+	EndIf
+	
+EndF
+
+Function ToCCStringSending:Void
+	While MyString>""
+		a=FindStr(MyString,",",1)
+		If a>0 Then
+			PartString=Mid(MyString,1,a-1)
+			MyString=Mid(MyString,a+1,1000)
+		Else
+			PartString=MyString
+			MyString=""
+		EndIf
+		
+		
+		If PartString = "< >" Then
+		Else
+			NetSend("RCPT TO:" + PartString)			// TO
+		EndIf
+		//Do something with Partstring
+	Wend
+EndF
+
+
+
+Function SendEmails:Void
+	
+	//	SwitchBackFolderTEMP=CurrentFolder
+	OpenOutbox.Event
+	If frmListEmail.Rows.Get =>1  Then
+		
+		// Take the first time from the outbox folder and store it in to mem
+		TempStoreFrom = frmListEmail.Text.Get(0,0)
+		tempStoreSubject= frmListEmail.Text.Get(1,0)
+		TempStoreDate= frmListEmail.Text.Get(2,0)
+		TempStoreFileIndex= frmListEmail.Text.Get(3,0)
+		tempAttachments = "0"
+		TempStoreTEXT= ""
+		// open the emal file and send the data
+		
+		
+		
+		
+		If File.Exist(MailStore+ MailStoreFile (CurrentFolder) + "\" +frmListEmail.Text.Get(3,0) + ".eml")
+		MyLoadFile.Open (MailStore+ MailStoreFile (CurrentFolder) + "\" +frmListEmail.Text.Get(3,0) + ".eml")
+		If MyLoadFile.Status > 0 Then
+			TempStoreTEXT=MyLoadFile.ReadString +  " " + MyLoadFile.ReadString // date time skip
+			
+			NetSend("MAIL FROM:<"+frm3Email.Text.Get+">")		// FROM
+			
+			
+			////TO
+			
+			TempStoreTO = MyLoadFile.ReadString				// READ TO FROM FILE TO
+			MyString = "<" + Replace(TempStoreTO,";",">,<") +">"
+			ToCCStringSending //send TO LIST
+			
+			////CC
+			
+			
+			
+			tempStoreCC = MyLoadFile.ReadString
+			tempStoreCCorg = tempStoreCC
+			MyString = "<" + Replace(tempStoreCC,";",">,<") +">"
+			ToCCStringSending //send to CC list
+			
+			
+			
+			NetSend("DATA")							// DATA
+			NetSend("Return-Path: <" +frm3Email.Text.Get+">")
+			// MIME FORMAT
+			
+			
+			NetSend("Date: " + TempStoreTEXT)				// Date
+			NetSend("To: <"+Replace(TempStoreTO,";",">,<") +">")
+			NetSend("cc: " +Replace(tempStoreCCorg,";",";" +Chr(13)+Chr(10)+Chr(9)))			// CC
+			NetSend("From: " + MyLoadFile.ReadString )			// From
+			NetSend("Subject: " + MyLoadFile.ReadString 	)		// SUBJECT
+			
+			
+			NetSend("MIME-Version: 1.0")
+			NetSend("Content-Type: multipart/mixed; boundary=" + Chr(34) + "_Next_000_KkK170891tpbkKk__FV_KKKkkkjjwq" + Chr(34))
+			NetSend("X-Priority: 2")
+			NetSend("X-MSMail-Priority: Normal")
+			NetSend("X-Mailer: SymbOS Email for Z80")
+			NetSend("X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.2001")
+			NetSend("")
+			NetSend("This is a multi-part message in MIME format.")
+			NetSend(" ")
+			
+			NetSend("--_Next_000_KkK170891tpbkKk__FV_KKKkkkjjwq")
+			
+			NetSend("Content-Type: text/plain; charset="+ Chr(34) + "ASCII-US" + Chr(34) + "; Content-Transfer-Encoding: 7bit")
+			NetSend("")
+			NetSend("")
+			
+			TempStoreTEXT=""	//Send Email data to mail server
+			
+			While Not(MyLoadFile.EOF)
+				TempStoreTEXT = MyLoadFile.ReadString
+				NetSend(TempStoreTEXT)
+			Wend
+			
+			//			NetSend("--_Next_000_KkK170891tpbkKk__FV_KKKkkkjjwq")
+			
+			//			NetSend("Content-Type: application/x-msdownload; name=" + Chr(34) + "sym.bmp" + Chr(34))
+			//			NetSend("Content-Transfer-Encoding: base64")
+			//			NetSend("Content-Disposition: attachment; filename=" + Chr(34) + "sym.bmp" + Chr(34))
+			
+			//BASE64 PART
+			//			NetSend("")
+			
+			//			NetSend("Qk1+AAAAAAAAAD4AAAAoAAAAGQAAABAAAAABAAEAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+			//			NetSend("AP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA86IAABCiAAAQogAA96IAAISqAACEqgAA9L4AA")
+			//			NetSend("AAAAAAAAAAAAAAAA")
+			
+			//			NetSend("")
+			
+			
+			NetSend("--_Next_000_KkK170891tpbkKk__FV_KKKkkkjjwq--")
+			
+			
+			NetSend("")		//End Characters to stop data part
+			NetSend(".")
+			
+		EndIf
+		
+		MyLoadFile.Close
+	Else
+		ErrorDuringTransmit=1
+	EndIf
+	
+	//if email was sent correct then
+	//deleteline from the outbox list
+	If ErrorDuringTransmit=0 Then
+		
+		c1=0
+		For c2=c1 To frmListEmail.Rows.Get-1
+			For c3=0 To frmListEmail.Columns.Get-1
+				frmListEmail.Text.Set c3,c2,frmListEmail.Text.Get(c3,c2+1)
+			Next
+		Next
+		
+		
+		frmListEmail.Rows.Set frmListEmail.Rows.Get-1
+		SaveIndex.event(CurrentFolder) //save the outbox to dsk
+		
+		// Open the send items list and add the new item that just was sent correctly and move fhe file
+		
+		OpenSendItems.Event
+		SentIndexID=SentIndexID+1
+		
+		FRMListItemsDo
+		
+		File.Move(MailStore+ "OUTBOX\" + TempStoreFileIndex + ".eml",MailStore+ "SENT\")
+		
+		SaveIndex.event(3) //sent items save
+		WriteMailStore //save all the indexes
+		SwitchBackToFolder.event(SwitchBackFolderTEMP)
+		
+	EndIf
+	
+EndIf
+
+EndF
+
+Function CloseConection.event:Void()
+	ConnectTry(0)=0 //no connection
+	ConnectTry(1)=0 //no connection
+	ConnectTry(2)=0 //no connection
+	
+	Net.TCP.Close(socket)
+	
+	If ErrorDuringTransmit=1 Then
+		// leave text
+		
+	Else
+		DisplayStatus(1) //Complete
+		Message(5,6,2,"")
+	EndIf
+	
+	frm5statusbar.Value.Set (255)
+	frm5statusbar.Refresh
+	
+	If DebugDump.Ticked = 1  Then
+		MyLogFile.Close
+	EndIf
+	
+	RXTXCounter=RXTXCounter+5
+	
+EndF
+
+
+Function Tab1.Event:Void()
+	
+	Tab1.Refresh
+	
+	
+	frm3LblUsername.Position.Set(2000,2000)
+	frm3LblPassword.Position.Set(2000,2000)
+	frm3UserName.Position.Set(2000,2000)
+	frm3Password.Position.Set(2000,2000)
+	frm3SMTPHost.Position.Set(2000,2000)
+	frm3SMTPPort.Position.Set(2000,2000)
+	frm3SMTPAuth.Position.Set(2000,2000)
+	frm3LblSMTP.Position.Set(2000,2000)
+	frm3LblIMAP.Position.Set(2000,2000)
+	frm3ImapHost.Position.Set(2000,2000)
+	frm3IMAPPort.Position.Set(2000,2000)
+	frm3POPIMAPUsername.Position.Set(2000,2000)
+	frm3POPIMAPPassword.Position.Set(2000,2000)
+	frm3POP3Host.Position.Set(2000,2000)
+	frm3POP3Port.Position.Set(2000,2000)
+	frm3LblPop3.Position.Set(2000,2000)
+	frm3LblProtocol.Position.Set(2000,2000)
+	frm3RadioPOP.Position.Set(2000,2000)
+	frm3RadioIMAP.Position.Set(2000,2000)
+	frm3PopIMAPAuth.Position.Set(2000,2000)
+	CheckDeleteAll.Position.Set(2000,2000)
+	CheckHeaders.Position.Set(2000,2000)
+	CheckKeep.Position.Set(2000,2000)
+	CheckFilter.Position.Set(2000,2000)
+	CheckMIME.Position.Set(2000,2000)
+	CheckBase64SMTP.Position.Set(2000,2000)
+	CheckBase64POP.Position.Set(2000,2000)
+	DebugDump.Position.Set(2000,2000)
+	CheckMAXLine.Position.Set(2000,2000)
+	Frm3Help.Position.Set(2000,2000)
+	CheckCleanInbox.Position.Set	(2000,2000)
+	CheckCleanOutbox.Position.Set(2000,2000)
+	CheckCleanSent.Position.Set(2000,2000)
+	CheckCleanDeleted.Position.Set(2000,2000)
+	CheckCleanBut.Position.Set(2000,2000)
+	
+	If Tab1.Selected.Get = 0 Then
+		frm3LblUsername.Position.Set(22,32)
+		frm3LblPassword.Position.Set(23,45)
+		frm3UserName.Position.Set(65,31)
+		frm3Password.Position.Set(65,44)
+		frm3SMTPHost.Position.Set(65,57)
+		frm3SMTPPort.Position.Set(219,57)
+		frm3SMTPAuth.Position.Set(66,71)
+		frm3LblSMTP.Position.Set(9,58)
+		
+	EndIf
+	
+	If Tab1.Selected.Get = 1 Then
+		frm3LblUsername.Position.Set(22,32)
+		frm3LblPassword.Position.Set(23,45)
+		frm3LblIMAP.Position.Set(12,58)
+		frm3ImapHost.Position.Set(65,57)
+		frm3IMAPPort.Position.Set(219,57)
+		frm3POPIMAPUsername.Position.Set(65,31)
+		frm3POPIMAPPassword.Position.Set(65,44)
+		frm3POP3Host.Position.Set(65,70)
+		frm3POP3Port.Position.Set(219,70)
+		frm3LblPop3.Position.Set(10,71)
+		frm3LblProtocol.Position.Set(28,83)
+		frm3RadioPOP.Position.Set(65,83)
+		frm3RadioIMAP.Position.Set(100,83)
+		frm3PopIMAPAuth.Position.Set(65,93)
+	EndIf
+	
+	If Tab1.Selected.Get = 2 Then
+		CheckDeleteAll.Position.Set(9,31)
+		CheckHeaders.Position.Set(9,41)
+		CheckMAXLine.Position.Set(100,39)
+		CheckKeep.Position.Set(9,51)
+		CheckFilter.Position.Set(9,61)
+		CheckMIME.Position.Set(9,71)
+		CheckBase64SMTP.Position.Set(9,91)
+		CheckBase64POP.Position.Set(9,81)
+	EndIf
+	If Tab1.Selected.Get = 3 Then
+		DebugDump.Position.Set(9,31)
+		Frm3Help.Position.Set(9,51)
+	EndIf
+	If Tab1.Selected.Get = 4 Then
+		CheckCleanInbox.Position.Set	(9,31)
+		CheckCleanOutbox.Position.Set(9,41)
+		CheckCleanSent.Position.Set(9,51)
+		CheckCleanDeleted.Position.Set(9,61)
+		CheckCleanBut.Position.Set(9,81)
+	EndIf
+	
+	
+	Form3.Control.Refresh
+	
+EndF
+
+Function FRMListItemsDo:Void
+	
+	frmListEmail.Text.Set(0,frmListEmail.Rows.Get,TempStoreFrom)
+	frmListEmail.Text.Set(1,frmListEmail.Rows.Get,tempStoreSubject)
+	frmListEmail.Text.Set(2,frmListEmail.Rows.Get,TempStoreDate)
+	frmListEmail.Text.Set(3,frmListEmail.Rows.Get,TempStoreFileIndex)
+	frmListEmail.Text.Set(4,frmListEmail.Rows.Get,tempAttachments)
+	frmListEmail.Rows.Set (frmListEmail.Rows.Get+1)
+	
+EndF
+
+
+
+Function Form2.Open.Event:Void()
+	
+	Form2.Resize.Event
+EndF
+Function help.Event:Void()
+	
+	
+	If Execute(App.Path +"symemail.hlp")=0 Then
+		
+	EndIf
+	
+	
+EndF
+
+Function FolderClean.Event:Void()
+	If CheckCleanInbox.Ticked=1  Then
+		File.Delete(MailStore+"INBOX\*.eml")
+		File.Delete (MailStore+ "inbox.mdf")
+	EndIf
+	
+	If CheckCleanOutbox.Ticked=1  Then
+		File.Delete	(MailStore+"OUTBOX\*.eml")
+		File.Delete (MailStore+ "outbox.mdf")
+	EndIf
+	
+	
+	If CheckCleanSent.Ticked=1  Then
+		File.Delete	(MailStore+"SENT\*.eml")
+		File.Delete (MailStore+ "sent.mdf")
+	EndIf
+	
+	If CheckCleanDeleted.Ticked=1  Then
+		File.Delete	(MailStore+"DELETED\*.eml")
+		File.Delete (MailStore+ "deleted.mdf")
+	EndIf
+	
+	CheckCleanInbox.Tick.Set(0)
+	CheckCleanOutbox.Tick.Set(0)
+	CheckCleanSent.Tick.Set(0)
+	CheckCleanDeleted.Tick.Set(0)
+	CheckCleanInbox.Refresh
+	CheckCleanOutbox.Refresh
+	CheckCleanSent.Refresh
+	CheckCleanDeleted.Refresh
+	
+	OpenInbox.Event
+	
+EndF
+
+
+
+

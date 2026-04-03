@@ -1,0 +1,307 @@
+
+
+// Quigs Symbos G9K Application
+Var GameOn:Int=0
+Var PattsLoaded:Int=0
+Var f:Int=0
+Var k:Int=0
+Var k2:Int=0
+Var i:Int=0
+Var g:Int=0
+Var h:Int=0
+Var s1y:Int
+Var s1x:Int
+Var menu:Int=0
+Var menuX:Int=64
+Var menuY:Int=64
+Var Lastsprite:Int=0
+
+
+Var menuX1:Int=64
+Var menuY1:Int=150
+
+
+Var JumpIncrement:Int  = 0
+Var Jumping:Int=0
+
+
+
+
+
+
+// End declares
+
+
+
+
+Function Initialize:Void()
+   // Initialize G9K App
+   BackColour.Set 0
+   
+   
+   // Load background
+   PattsLoaded=Back.Pattern.Load(App.Path+"sheet2.qpt",0,16)
+   i=0
+   For f=0 To 31
+      For g=0 To 63
+         Back.Map.Set i,g,f
+         i=i+1
+      Next
+   Next
+   //Copies Inks from 16-31 To Palette 1
+   Ink.Palette.Set 1,16
+   
+   
+   //Set  all Sprites to 0,0
+   For i=1 To 128
+      Sprite.Position.Set i,0,0
+   Next
+   Sprite.Refresh
+   //Load Sprites
+   PattsLoaded=Fore.Pattern.Load(App.Path+"sheet4.qpt",0,48)
+   For f=0 To 35
+      Sprite.Palette.Set f,3
+   Next
+   //Copies Inks from 48-63 To Palette 3
+   Ink.Palette.Set 3,48
+   
+   PattsLoaded=Fore.Pattern.Load(App.Path+"sheet1.qpt",384,32)
+   For f=50 To 55
+      Sprite.Palette.Set f,2
+   Next
+   //Copies Inks from 32-47 To Palette 2
+   Ink.Palette.Set 2,32
+   
+   //Load ForeGround
+   Lastsprite = 896+640
+   PattsLoaded= Fore.Pattern.Load(App.Path+"sheet3.qpt",Lastsprite,0)
+   i=Lastsprite
+   For f=0 To 31
+      For g=0 To 63
+         Fore.Map.Set i,g,f
+         i=i+1
+      Next
+   Next
+   //Copies Inks 0-15 To Palette 0
+   Ink.Palette.Set 0,0
+   
+   GameOn=1
+   
+EndF
+
+
+
+
+
+
+
+
+Function Main:Void()
+   // Main loop
+   If GameOn=1 Then
+     
+      BackColour.Set 0
+     
+      //   g=g+(n-Mouse.X)
+      //   n=Mouse.X
+     
+     
+      g=(g+1)  Mod 512            ;Layer 1 scroll moves left but wraps 512
+      h=(h+1)Mod 1024            ;Layer B scroll moves left but wraps 1024 as /2 for half speed
+      //   G9K.ScrollA g,40-(Mouse.Y/6)
+     
+     
+      Fore.Scroll    g,40-(Mouse.Y/6)
+      Back.Scroll h/2,40-(Mouse.Y/10)
+     
+     
+     
+      //   G9K.ScrollA g,0
+      //sprite walk
+     
+     
+      //Jump Part
+      If Mouse.Key = 1 And Jumping=0 Then
+         JumpIncrement = -10
+         Jumping=1
+      EndIf
+     
+      If Jumping = 1 Then
+         JumpIncrement=JumpIncrement+1
+         If JumpIncrement>=10 Then
+            Jumping=0
+            JumpIncrement=0
+         EndIf
+      EndIf
+      menuY1=menuY1+JumpIncrement
+      Sprite.Position.Set 50,menuX1,menuY1
+      Sprite.Position.Set 51,menuX1+16,menuY1
+      Sprite.Position.Set 52,menuX1,menuY1+16
+      Sprite.Position.Set 53,menuX1+16,menuY1+16
+      Sprite.Position.Set 54,menuX1,menuY1+32
+      Sprite.Position.Set 55,menuX1+16,menuY1+32
+     
+     
+      ;Basically loop 5 times until you update the Pattern to slow the animation. Cant have anims running at 50fps
+      If k2=0 Then
+         k=(k+2)Mod 8
+         Sprite.Pattern.Set 50,k+104
+         Sprite.Pattern.Set 51,k+105
+         Sprite.Pattern.Set 52,k+120
+         Sprite.Pattern.Set 53,k+121
+         Sprite.Pattern.Set 54,k+136
+         Sprite.Pattern.Set 55,k+137
+      EndIf
+      k2=(k2+1) Mod 5
+     
+     
+     
+      //mouse
+     
+     
+     
+      Sprite.Pattern.Set 0,2
+      Sprite.Pattern.Set 2,0
+      Sprite.Pattern.Set 1,1
+     
+     
+      Sprite.Position.Set 0,Mouse.X,Mouse.Y
+      Sprite.Position.Set 1,225,2
+      Sprite.Position.Set 2,238,2
+     
+      // play stuff
+     
+      //      If s1y=>9 Then
+      //         s1y=2
+      //
+      //      EndIf
+      //
+      //      s1y=s1y+1
+      //      Sprite.Pattern.Set 35,s1y
+      //
+      //
+      //
+      //      Sprite.Position.Set 35, s1x,100
+      //
+      //      s1x=s1x+1
+      //
+      //      If s1x=>256 Then
+      //         s1x=1
+      //      EndIf
+     
+     
+     
+     
+      If menu=1 Then
+         
+         Sprite.Position.Set 3,menuX,menuY
+         Sprite.Position.Set 4,menuX+16,menuY
+         Sprite.Position.Set 5,menuX+32,menuY
+         Sprite.Position.Set 6,menuX+48,menuY
+         Sprite.Position.Set 7,menuX+64,menuY
+         Sprite.Position.Set 8,menuX+80,menuY
+         Sprite.Position.Set 9,menuX+96,menuY
+         Sprite.Position.Set 10,menuX+112,menuY
+         
+         Sprite.Position.Set 11,menuX,menuY+16
+         Sprite.Position.Set 12,menuX+16,menuY+16
+         Sprite.Position.Set 13,menuX+32,menuY+16
+         Sprite.Position.Set 14,menuX+48,menuY+16
+         Sprite.Position.Set 15,menuX+64,menuY+16
+         Sprite.Position.Set 16,menuX+80,menuY+16
+         Sprite.Position.Set 17,menuX+96,menuY+16
+         Sprite.Position.Set 18,menuX+112,menuY+16
+         
+         Sprite.Position.Set 19,menuX,menuY+32
+         Sprite.Position.Set 20,menuX+16,menuY+32
+         Sprite.Position.Set 21,menuX+32,menuY+32
+         Sprite.Position.Set 22,menuX+48,menuY+32
+         Sprite.Position.Set 23,menuX+64,menuY+32
+         Sprite.Position.Set 24,menuX+80,menuY+32
+         Sprite.Position.Set 25,menuX+96,menuY+32
+         Sprite.Position.Set 26,menuX+112,menuY+32
+         
+         Sprite.Position.Set 27,menuX,menuY+48
+         Sprite.Position.Set 28,menuX+16,menuY+48
+         Sprite.Position.Set 29,menuX+32,menuY+48
+         Sprite.Position.Set 30,menuX+48,menuY+48
+         Sprite.Position.Set 31,menuX+64,menuY+48
+         Sprite.Position.Set 32,menuX+80,menuY+48
+         Sprite.Position.Set 33,menuX+96,menuY+48
+         Sprite.Position.Set 34,menuX+112,menuY+48
+         
+      EndIf
+     
+     
+      Sprite.Refresh
+     
+      If Mouse.Key = 2 And menu=0 Then
+         
+         menu=1
+         
+         Sprite.Pattern.Set 3,32
+         Sprite.Pattern.Set 4,33
+         Sprite.Pattern.Set 5,34
+         Sprite.Pattern.Set 6,35
+         Sprite.Pattern.Set 7,36
+         Sprite.Pattern.Set 8,37
+         Sprite.Pattern.Set 9,38
+         Sprite.Pattern.Set 10,39
+         
+         Sprite.Pattern.Set 11,48
+         Sprite.Pattern.Set 12,49
+         Sprite.Pattern.Set 13,50
+         Sprite.Pattern.Set 14,51
+         Sprite.Pattern.Set 15,52
+         Sprite.Pattern.Set 16,53
+         Sprite.Pattern.Set 17,54
+         Sprite.Pattern.Set 18,55
+         
+         Sprite.Pattern.Set 19,64
+         Sprite.Pattern.Set 20,65
+         Sprite.Pattern.Set 21,66
+         Sprite.Pattern.Set 22,67
+         Sprite.Pattern.Set 23,68
+         Sprite.Pattern.Set 24,69
+         Sprite.Pattern.Set 25,70
+         Sprite.Pattern.Set 26,71
+         
+         Sprite.Pattern.Set 27,80
+         Sprite.Pattern.Set 28,81
+         Sprite.Pattern.Set 29,82
+         Sprite.Pattern.Set 30,83
+         Sprite.Pattern.Set 31,84
+         Sprite.Pattern.Set 32,85
+         Sprite.Pattern.Set 33,86
+         Sprite.Pattern.Set 34,87
+         
+      EndIf
+     
+     
+      If Mouse.Key =1 And menu=1  Then
+         
+         menuX=Mouse.X
+         menuY=Mouse.Y
+         App.Exit
+      EndIf
+     
+     
+      //If Mouse.Key =1 And menu=0  Then
+     
+      If menuX1<Mouse.X Then
+         menuX1=menuX1+1
+      EndIf
+      If menuX1>Mouse.X Then
+         menuX1=menuX1-1
+      EndIf
+      //menuX1=Mouse.X
+      //menuY1=Mouse.Y
+     
+      //EndIf
+     
+      BackColour.Set 2
+     
+     
+   EndIf
+   
+EndF
